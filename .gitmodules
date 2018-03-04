@@ -1,0 +1,16 @@
+[submodule "deps/pure-platform"]
+	path = deps/pure-platform
+	url = git@github.com:grumply/pure-platform
+	branch = master
+[submodule "deps/pure-tagsoup"]
+	path = deps/pure-tagsoup
+	url = git@github.com:grumply/pure-tagsoup
+	branch = master
+[submodule "deps/excelsior"]
+	path = deps/excelsior
+	url = git@github.com:grumply/excelsior.git
+	branch = master
+[submodule "deps/semantic-ui-pure"]
+	path = deps/semantic-ui-pure
+	url = git@github.com:grumply/semantic-ui-pure.git
+	branch = master
