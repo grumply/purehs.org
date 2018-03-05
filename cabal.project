@@ -6,6 +6,10 @@ documentation: False
 allow-newer: all
 jobs: $ncpus
 packages:
+  deps/pure-tagsoup/
   common/
   backend/
   frontend/
+package digest
+  extra-lib-dirs: /usr/local/Cellar/zlib/1.2.11/lib/
+  extra-include-dirs: /usr/local/Cellar/zlib/1.2.11/include/

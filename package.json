@@ -30,13 +30,13 @@
         "run:common:bench": "./dist/ghc/common-bench/build/*/ghc-8.0.2/*/c/common-bench/noopt/build/common-bench/common-bench",
         "run:common:test": "./dist/ghc/common-test/build/*/ghc-8.0.2/*/c/common-test/noopt/build/common-test/common-test",
 
-        "run:server": "./dist/ghc/backend/build/*/ghc-8.0.2/*/c/backend/noopt/build/backend/backend",
+        "run:server": "./dist/ghc/backend/build/*/ghc-8.0.2/*/c/backend/noopt/build/backend/backend --addr :8000",
 
         "run:serve:bench": "lite-server -c bs-config-bench.js",
         "run:serve:exe"  : "lite-server -c bs-config-exe.js",
         "run:serve:test" : "lite-server -c bs-config-test.js",
 
-        "kill:server": "killall -9 backend",
+        "kill:server": "killall -9 backend || true",
 
         "dev:ghcjs:frontend:bench" : "./ghcjs cabal new-build frontend:frontend-bench --enable-benchmarks --project-file=cabal-ghcjs.project --builddir=dist/ghcjs/frontend-bench/ && npm run delete:indexes && npm run distribute:bench",
         "dev:ghcjs:frontend:exe"   : "./ghcjs cabal new-build frontend --project-file=cabal-ghcjs.project --builddir=dist/ghcjs/frontend/ && npm run delete:indexes && npm run distribute:exe",

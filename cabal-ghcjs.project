@@ -6,5 +6,7 @@ optimization: 0
 documentation: False
 jobs: $ncpus
 packages:
+  deps/excelsior/
+  deps/semantic-ui-pure/
   common/
   frontend/

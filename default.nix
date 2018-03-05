@@ -23,7 +23,7 @@
   };
 
   shells = {
-    ghc = ["common" "backend" "frontend"];
-    ghcjs = ["common" "frontend"];
+    ghc = ["excelsior" "semantic-ui-pure" "pure-tagsoup" "common" "backend" "frontend"];
+    ghcjs = ["excelsior" "semantic-ui-pure" "common" "frontend"];
   };
 })
