@@ -1,12 +1,16 @@
-{-# LANGUAGE TemplateHaskell, CPP, DeriveAnyClass, ImplicitParams, NoMonomorphismRestriction #-}
-module Lib where
+{-# LANGUAGE DeriveGeneric, NoMonomorphismRestriction, TemplateHaskell, FlexibleContexts, PolyKinds, DataKinds, MultiParamTypeClasses, PartialTypeSignatures, DeriveDataTypeable #-}
+module Shared where
 
-import Pure.Data
-import Pure.Render
-import Pure.View
-import Pure.Service
+import Pure hiding (Doc)
+import Pure.Data.JSON
+import Pure.Data.Render
 import Pure.WebSocket hiding (api)
 import qualified Pure.WebSocket as WS
+
+import GHC.Generics
+
+host = "10.0.1.15"
+port = 8081
 
 
 -- DocMeta
@@ -27,7 +31,7 @@ documentName  = (\(_,_,n) -> n) . dmPath
 
 data Doc = Doc
   { dMeta :: {-# UNPACK #-}!DocMeta
-  , dContent :: ![View '[]]
+  , dContent :: ![View]
   } deriving (Generic,ToJSON,FromJSON)
 
 
@@ -44,14 +48,14 @@ data ExampleMeta = ExampleMeta
 
 data Example = Example
   { eMeta    :: {-# UNPACK #-}!ExampleMeta
-  , eCode    :: ![View '[]]
-  , eContent :: ![View '[]]
+  , eCode    :: ![View]
+  , eContent :: ![View]
   } deriving (Generic,ToJSON,FromJSON)
 
 
 -- Markdown
 
-newtype Markdown = Markdown [View '[]]
+newtype Markdown = Markdown [View]
   deriving (Generic,ToJSON,FromJSON)
 
 
@@ -74,7 +78,7 @@ postName  = (\(_,_,_,n) -> n) . pmPath
 
 data Post = Post
   { pMeta :: {-# UNPACK #-}!PostMeta
-  , pContent :: ![View '[]]
+  , pContent :: ![View]
   } deriving (Generic,ToJSON,FromJSON)
 
 
@@ -97,15 +101,14 @@ tutorialSlug  = (\(_,_,_,s) -> s) . tmPath
 
 data Tutorial = Tutorial
   { tMeta :: {-# UNPACK #-}!TutorialMeta
-  , tContent :: ![View '[]]
+  , tContent :: ![View]
   } deriving (Generic,ToJSON,FromJSON)
 
 
 -- API
 
 
-mkMessage "ReloadMarkdown" [t|()|]
-
+mkRequest "ReloadMarkdown" [t|() -> ()|]
 mkRequest "GetFeaturedTutorial" [t|() -> Maybe Tutorial|]
 mkRequest "GetFeaturedPost" [t|() -> Maybe Post|]
 mkRequest "GetFeaturedDocumentation" [t|() -> Maybe Doc|]
@@ -120,10 +123,9 @@ mkRequest "GetExamples" [t|() -> [Example]|]
 
 api = WS.api msgs reqs
   where
-    msgs =
-          reloadMarkdown <:>
-          WS.none
+    msgs = WS.none
     reqs =
+          reloadMarkdown <:>
           getFeaturedTutorial <:>
           getFeaturedPost <:>
           getFeaturedDocumentation <:>
@@ -136,35 +138,3 @@ api = WS.api msgs reqs
           getDocMetas <:>
           getExamples <:>
           WS.none
-
-
--- Server Service
-
-purehsorgServer = Service {..}
-  where
-    key = "purehsorgServer"
-    build base = do
-#ifdef __GHCJS__
-      return (ws ?purehsorgServerIp ?purehsorgServerPort *:* base)
-#else
-      ws <- websocket unlimited
-      return (state ws *:* base)
-#endif
-    prime = void $ do
-#ifdef __GHCJS__
-      wsInitialize
-      onWSStatus $ \s -> liftIO $ print ("purehsorgServer WSStatus change",s)
-#else
-      initializeClientWS ?purehsorgServerIp ?purehsorgServerPort "/"
-#endif
-
-message = apiMessageWith api purehsorgServer
-
-remote reqPrxy req onSuccess = do
-  pr <- withPromise $ \pr -> void $ do
-    u <- fresh
-    apiRequestWith api purehsorgServer reqPrxy (u,req) $ \done rsp -> lift $ do
-      either (const $ fulfill pr Nothing) (fulfill pr . Just) rsp
-      done
-  attach pr def { success = onSuccess }
-

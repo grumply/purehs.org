@@ -2,11 +2,9 @@ compiler: ghcjs
 profiling: False
 tests: False
 benchmarks: False
-optimization: 0
 documentation: False
+allow-newer: all
 jobs: $ncpus
 packages:
-  deps/excelsior/
-  deps/semantic-ui-pure/
-  common/
+  shared/
   frontend/

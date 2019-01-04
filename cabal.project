@@ -1,15 +1,11 @@
-profiling: False
-tests: False
+tests: True
 benchmarks: False
-optimization: 0
+optimization: 2
+profiling: False
 documentation: False
 allow-newer: all
 jobs: $ncpus
 packages:
-  deps/pure-tagsoup/
-  common/
   backend/
   frontend/
-package digest
-  extra-lib-dirs: /usr/local/Cellar/zlib/1.2.11/lib/
-  extra-include-dirs: /usr/local/Cellar/zlib/1.2.11/include/
+  shared/

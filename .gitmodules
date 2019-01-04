@@ -1,6 +1,6 @@
 [submodule "deps/pure-platform"]
 	path = deps/pure-platform
-	url = git@github.com:grumply/pure-platform
+	url = https://github.com/grumply/pure-platform.git
 	branch = master
 [submodule "deps/pure-tagsoup"]
 	path = deps/pure-tagsoup
@@ -13,4 +13,8 @@
 [submodule "deps/semantic-ui-pure"]
 	path = deps/semantic-ui-pure
 	url = git@github.com:grumply/semantic-ui-pure.git
+	branch = master
+[submodule "deps/pure-normalize"]
+	path = deps/pure-normalize
+	url = git@github.com:grumply/pure-normalize.git
 	branch = master

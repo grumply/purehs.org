@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+$DIR/dist/ghc/exe/$1/build/*/ghc-8.4.4/*/x/$2/*/build/$2/$2
