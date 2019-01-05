@@ -9,7 +9,7 @@ import qualified Pure.WebSocket as WS
 
 import GHC.Generics
 
-host = "10.0.1.15"
+host = "10.0.1.16"
 port = 8081
 
 

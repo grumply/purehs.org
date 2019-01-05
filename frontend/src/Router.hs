@@ -1,18 +1,14 @@
 module Router where
 
-import App
 import Lenses
 import Routes
 import Scope
 import Shared
 import State
 
-import Data.Kind
-import Text.Read (readMaybe)
-
 router = do
 
-  path "/blog/:year/:month/:day/:slug" $
+  path "/blog/:year/:month/:day/:slug" $ do
     dispatch =<< PostR <$> "year" <*> "month" <*> "day" <*> "slug"
 
   path "/docs/:group/:module/:function" $

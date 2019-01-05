@@ -132,7 +132,7 @@ instance Themeable GetStartedT where
   theme c _ = void $ do
     is c $ do
       let buttonBoxShadow opacity vOff blur vOff' blur' =
-                 zero <<>> pxs vOff  <<>> pxs blur  <<>> hsla(250,48.59,69,opacity)
+                 zero <<>> pxs vOff  <<>> pxs blur  <<>> darkLavender -- hsla(250,48.59,69,opacity)
             <&>> zero <<>> pxs vOff' <<>> pxs blur' <<>> rgba(0,0,0,0.1)
 
       apply $ do
@@ -150,14 +150,14 @@ instance Themeable GetStartedT where
         textTransform =: uppercase
         "letter-spacing" =: ems 0.025
         textDecoration =: none
-        transition =: "all" <<>> sec 0.15 <<>> ease
+        transition =: "all" <<>> sec 0.1 <<>> easeInOut
 
       is hovered .> do
-        transform =: translateY(pxs (-1))
-        boxShadow =: buttonBoxShadow 0.11 7 14 3 6
+        transform =: translateY(pxs (-3))
+        boxShadow =: buttonBoxShadow 0.11 10 14 3 6
 
       is active .> do
-        transform =: translateY(pxs 1)
+        transform =: translateY(pxs 5)
         boxShadow =: buttonBoxShadow 0.13 4 6 1 3
 
 startTutorial =
@@ -169,7 +169,7 @@ instance Themeable StartTutorialT where
   theme c _ = void $ do
     is c $ do
       let buttonBoxShadow opacity vOff blur vOff' blur' =
-                 zero <<>> pxs vOff  <<>> pxs blur  <<>> hsla(250,48.59,69,opacity)
+                 zero <<>> pxs vOff  <<>> pxs blur  <<>> darkLavender -- hsla(250,48.59,69,opacity)
             <&>> zero <<>> pxs vOff' <<>> pxs blur' <<>> rgba(0,0,0,0.1)
 
       apply $ do
@@ -187,15 +187,16 @@ instance Themeable StartTutorialT where
         textTransform =: uppercase
         "letter-spacing" =: ems 0.025
         textDecoration =: none
-        transition =: "all" <<>> sec 0.15 <<>> ease
+        transition =: "all" <<>> sec 0.1 <<>> easeInOut
 
       is hovered .> do
-        transform =: translateY(pxs (-1))
-        boxShadow =: buttonBoxShadow 0.11 7 14 3 6
+        transform =: translateY(pxs (-3))
+        boxShadow =: buttonBoxShadow 0.11 10 14 3 6
 
       is active .> do
-        transform =: translateY(pxs 1)
+        transform =: translateY(pxs 5)
         boxShadow =: buttonBoxShadow 0.13 4 6 1 3
+
 
 -- wave =
 --   Svg <| Theme WaveT . ViewBox "0 0 1200 28" |>

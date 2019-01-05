@@ -4,14 +4,11 @@ import Pure (Time)
 import Pure.Data.JSON (ToJSON,FromJSON)
 
 import App
+import Routes
 import Shared
 
 import GHC.Generics
 
-data ActivePage = BlogActive | DocsActive | TutsActive
-  deriving (Eq,Enum,Generic,ToJSON,FromJSON)
-
 data State = State
-    { _stateStartup    :: Time
-    , _stateActivePage :: Maybe ActivePage
+    { _stateStartup :: Time
     } deriving (Generic,ToJSON,FromJSON)

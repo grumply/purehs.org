@@ -49,7 +49,7 @@ pages pg =
 main :: IO ()
 main = do
   now <- time
-  Scope.run (State now Nothing) NoR Router.router setup id pages
+  Scope.run (State now) NoR Router.router setup id pages
 
 blogPage = Null
 postPage _ _ _ _ = Null

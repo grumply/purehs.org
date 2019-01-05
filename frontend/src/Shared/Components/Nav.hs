@@ -12,13 +12,13 @@ import Shared.Colors
 import Scope hiding (none,has)
 
 nav :: PageScope => View
-nav = withState $ \(Scope.view activePage -> active) ->
+nav = withRoute $ \rt ->
   Nav <| Theme NavT |>
-    [ navLink (Just x == active) l t
+    [ navLink (Just x == (toPageType rt)) l t
     | (x,l,t) <-
-      [ (BlogActive,"/blog","Blog")
-      , (DocsActive,"/docs","Docs")
-      , (TutsActive,"/tuts","Tutorial")
+      [ (BlogPage,"/blog","Blog")
+      , (DocsPage,"/docs","Docs")
+      , (TutsPage,"/tuts","Tutorial")
       ]
     ]
 
@@ -73,4 +73,7 @@ instance Themeable NavLinkT where
         paddingLeft  =: pxs 10
         paddingRight =: pxs 10
         fontSize     =: pxs 18
+
+      is ":hover" .> do
+        textShadow =: zero <<>> zero <<>> pxs 5 <<>> lightGreen
 
