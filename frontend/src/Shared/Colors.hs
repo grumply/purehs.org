@@ -80,7 +80,7 @@ orange2   = hsl( 39,67,69) -- hue6-2
 
 -- fg, bg, gutter, guide, accent, selection :: Txt
 fg        = mono1
-bg        = hsl(220,13,18)
+bg        = black -- hsl(220,13,18)
 gutter    = hsl(h,14,45)
 guide     = hsla(h,14,71,0.15)
 accent    = hsl(h,100,66)

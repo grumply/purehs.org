@@ -2,6 +2,8 @@
 module Scope (module Scope, module Lenses, module App, module Routes, module Shared, module State, module Services) where
 
 import Pure (Txt)
+import Pure.Cache
+import Pure.Cache.DynamicMap
 
 import App hiding (Route)
 import Lenses
@@ -17,7 +19,7 @@ type AppContext = ContextApp Route State
 type StateScope = (?state :: State)
 type RouteScope = (?route :: Route)
 type AppScope   = (?app   :: AppRef Route State)
-type PageScope  = (AppScope,RouteScope,StateScope)
+type PageScope  = (AppScope,RouteScope,StateScope,Caching)
 
 type DocScope  = (PageScope,?docPath  :: (Txt,Txt,Txt)    )
 type TutScope  = (PageScope,?tutPath  :: (Txt,Txt,Txt,Txt))
@@ -65,12 +67,13 @@ instance Supply AppScope where
         in f
 
 instance Supply PageScope where
-    type Ctx PageScope = (AppRef Route State,Route,State)
-    reflect f = f (?app,?route,?state)
-    reify (app,route,state) f =
+    type Ctx PageScope = (AppRef Route State,Route,State,Cache)
+    reflect f = f (?app,?route,?state,?__dynamicCache)
+    reify (app,route,state,cache) f =
         let ?app = app
             ?route = route
             ?state = state
+            ?__dynamicCache = cache
         in f
 
 instance Supply DocScope where
@@ -103,7 +106,7 @@ withState = reflect @StateScope
 withRoute :: RouteScope => (Route -> a) -> a
 withRoute = reflect @RouteScope
 
-withPage :: PageScope => ((AppRef Route State,Route,State) -> a) -> a
+withPage :: PageScope => ((AppRef Route State,Route,State,Cache) -> a) -> a
 withPage = reflect @PageScope
 
 withDoc :: DocScope => ((Txt,Txt,Txt) -> a) -> a

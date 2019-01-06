@@ -145,7 +145,7 @@ getDocsFiles cd = filter validMarkdown <$> getDirectoryContents (cd </> "docs")
 loadDocs = do
   cd <- liftIO getCurrentDirectory
   ds <- liftIO $ traverse (readDoc cd) =<< getDocsFiles cd
-  pure $ sortBy (flip compare `on` (dmPath . dMeta)) $ catMaybes ds
+  pure $ sortBy (compare `on` (dmPath . dMeta)) $ catMaybes ds
 
 safeTail t = if T.null t then t else T.tail t
 
@@ -195,7 +195,7 @@ getExamplesFiles cd = filter validMarkdown <$> getDirectoryContents (cd </> "exa
 loadExamples = do
   cd <- liftIO getCurrentDirectory
   es <- liftIO $ traverse (readExample cd) =<< getExamplesFiles cd
-  pure $ sortBy (flip compare `on` (emPath . eMeta)) (catMaybes es)
+  pure $ sortBy (compare `on` (emPath . eMeta)) (catMaybes es)
 
 readExample :: FilePath -> FilePath -> IO (Maybe Example)
 readExample cd fp = do
@@ -278,6 +278,7 @@ getLatestPosts = do
 -- Tutorials
 
 {-
+-- Number and chapter control ordering.
 -- Num/Ch/Tut/Title
 01-01-quickstart-setting-up.md
 01-02-quickstart-first-build.md

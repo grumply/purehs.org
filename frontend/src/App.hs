@@ -22,6 +22,11 @@ import Control.Lens as Export hiding (Context,(<|),(|>),(.>))
 import Control.Lens.At as Export
 import GHC.Generics as Export (Generic)
 
+import Pure.Cache
+
+import Data.Maybe
+import Debug.Trace
+
 -- A component reference with `rt` for props and `st` for state.
 type AppRef rt st = Ref IO rt st
 
@@ -70,8 +75,8 @@ run :: (Typeable rt)
     -> rt
     -> (ScopedApp rt st => Routing rt)
     -> (ScopedApp rt st => IO ())
-    -> ((ContextApp rt st, ScopedPage rt st) => a -> View)
-    -> ((ContextApp rt st, ScopedPage rt st) => rt -> a)
+    -> ((ContextApp rt st, ScopedPage rt st) => a -> (Caching => View))
+    -> ((ContextApp rt st, ScopedPage rt st) => rt -> (Caching => a))
     -> IO ()
 run initial route routes startup page pages =
   inject body $ flip ComponentIO () $ \self ->
@@ -84,7 +89,7 @@ run initial route routes startup page pages =
             def
               { construct = return initial
               , executing = startup
-              , render = withContext self $ \rt st ->
+              , render = withContext self $ \rt st -> caching $
                 let ?state = st
                     ?route = rt
                     ?scope = []

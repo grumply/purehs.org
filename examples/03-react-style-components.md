@@ -3,36 +3,34 @@ title: React-style Components
 highlights: []
 ----------------
 
-Pure components are much like [React](https://reactjs.org) components; they admit local state and injectable properties. Unlike [React](https://reactjs.org), Pure components are rendered with preemptive multitasking.
+A Pure component is much like a [ReactJS](https://reactjs.org) component; they admit local state and injectable properties. However, unlike ReactJS components, components in Pure run asynchronously using [GHCJS](https://github.com/ghcjs/ghcjs)'s preemptively-multitasking runtime system. Thus, one component cannot prevent another from doing work - even diffing is multitasked. And since components are multi-tasked, they are able to communicate directly; with a reference to a component, you can execute actions in the computational context of that component, asynchronously.
+
+Below is an example of a simple counter using a Pure component.
 
 # Code
 
 ```haskell
-data Timer = Timer
+module Main where
 
-instance (VC ctx) =>
-  Pure (Renderable Timer) ctx where
-    render (Render Timer) =
-      Component () $ \self ->
-        let
-          reset = void $ setState self $ \_ _ -> 0
+import Pure
 
-          mounted = void $ forkIO $ do
-            threadDelay 1000000
-            void $ setStateIO self $ \() seconds ->
-              return (seconds + 1,mounted)
+data Counter = Counter
 
-        in
-          def
-            { construct = return (0 :: Int)
-            , mounted   = mounted
-            , renderer  = \_ seconds ->
-                Div []
-                  [ "Seconds: ", Translated seconds
-                  , Br [] []
-                  , Button [ onClick reset ] "Reset"
-                  ]
-            }
+counter :: View
+counter = flip ComponentIO Counter $ \self -> 
+  let 
+    tick f = modify_ self -> \_ -> f 
+    button f = Button <| OnClick (const $ tick f)
+  in
+    def
+      { construct = return 0
+      , render = \_ n -> 
+        Div <||>
+          [ button pred |> [ "-1" ]
+          , text n
+          , button succ |> [ "+1" ]
+          ]
+      }
 
-timer = View (Render Timer)
+main = inject body counter
 ```

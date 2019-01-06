@@ -18,7 +18,8 @@ nav = withRoute $ \rt ->
     | (x,l,t) <-
       [ (BlogPage,"/blog","Blog")
       , (DocsPage,"/docs","Docs")
-      , (TutsPage,"/tuts","Tutorial")
+      , (ExamplesPage,"/examples","Examples")
+      , (TutsPage,"/tuts","Tutorials")
       ]
     ]
 
@@ -32,10 +33,6 @@ instance Themeable NavT where
         overflowX      =: auto
         justifyContent =: flexEnd
 
-      atMedia "(max-width: 48em)" .> do
-        width        =: per 80
-        alignItems   =: start
-
 navLink active link text =
   A <| lref link . Theme NavLinkT |>
     [ text
@@ -48,32 +45,29 @@ instance Themeable NavLinkT where
   theme c _ = void $ do
     is c $ do
       apply $ do
-        display       =: flex
-        flexDirection =: row
-        alignItems    =: center
-        alignContent  =: spaceBetween
-        height         =: per 100
-        paddingLeft    =: pxs 20
-        paddingRight   =: pxs 20
-        position       =: relative
-        fontSize       =: pxs 24
-        fontWeight     =: int 200
-        color          =: white
-        textDecoration =: none
+        display         =: flex
+        flexDirection   =: row
+        alignItems      =: center
+        alignContent    =: spaceBetween
+        height          =: per 100
+        paddingLeft     =: pxs 10
+        position        =: relative
+        fontSize        =: pxs 24
+        fontWeight      =: int 200
+        color           =: white
+        textDecoration  =: none
 
       has "span" .> do
         position        =: absolute
-        height          =: pxs 3
-        left            =: zero
+        height          =: pxs 1
+        left            =: pxs 10
         right           =: zero
         bottom          =: pxs 0
         backgroundColor =: blueHighlight
 
       atMedia "(max-width: 48em)" .> do
-        paddingLeft  =: pxs 10
-        paddingRight =: pxs 10
-        fontSize     =: pxs 18
+        fontSize        =: pxs 18
 
       is ":hover" .> do
-        textShadow =: zero <<>> zero <<>> pxs 5 <<>> lightGreen
+        textShadow      =: zero <<>> zero <<>> pxs 5 <<>> lightGreen
 

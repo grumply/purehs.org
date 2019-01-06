@@ -19,11 +19,12 @@ cabal-version:       >=1.10
 executable frontend
   main-is:             Main.hs
   other-modules:       App
-                       Containers.Doc
-                       Containers.Example
+                       Containers.Docs
+                       Containers.Examples
                        Containers.Post
                        Containers.Tutorial
                        Lenses
+                       Pages.Examples
                        Pages.Home
                        Router
                        Routes
@@ -66,11 +67,14 @@ executable frontend
                        ConstraintKinds
   build-depends:       base >=4.11 && <4.12,
                        pure >= 0.7 && < 1,
+                       pure-async >= 0.7 && < 1,
+                       pure-cache >= 0.7 && < 1,
                        pure-css >= 0.7 && <1,
                        pure-json >= 0.7 && < 1,
                        pure-router >= 0.7 && < 1,
-                       pure-styles >= 0.7 && <1,
-                       pure-svg >= 0.7 && <1,
+                       pure-styles >= 0.7 && < 1,
+                       pure-suspense >= 0.7 && < 1,
+                       pure-svg >= 0.7 && < 1,
                        pure-theme >= 0.7 && < 1,
                        pure-websocket >= 0.7 && < 1,
                        shared == 0.1.*,

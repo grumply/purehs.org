@@ -2,8 +2,8 @@ module Shared.Components.Logo where
 
 import Pure
 import Pure.Data.CSS
-import Pure.Data.SVG
-import Pure.Data.SVG.Properties
+import Pure.Data.SVG as SVG
+import Pure.Data.SVG.Properties as SVG
 import Pure.Router
 import Pure.Theme
 

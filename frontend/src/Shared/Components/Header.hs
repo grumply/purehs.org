@@ -51,6 +51,8 @@ instance Themeable BarT where
         flexDirection =: row
 
       atMedia "(max-width: 48em)" .> do
+        paddingLeft =: pxs 15
+        paddingRight =: pxs 15
         height =: pxs 40
 
       atMedia "(min-width: 780px)" .> do
@@ -61,10 +63,10 @@ instance Themeable BarT where
 
 headerOffset = do
     apply $ do
-      marginTop =: pxs 60
+      marginTop =: pxs 75
 
     atMedia "(max-width: 48em)" .> do
-      marginTop =: pxs 40
+      marginTop =: pxs 50
 
 left =
   Div <| Theme LeftT |>
@@ -107,10 +109,10 @@ instance Themeable HeaderGitHubLinkT where
   theme c _ = void $
     is c $ do
       apply $ do
-        marginLeft =: ems 3
+        marginLeft =: pxs 20
         fill =: white
 
-      atMedia "(max-width: 48em)" .> do
+      atMedia "(max-width: 500px)" .> do
         display =: none
 
       has "svg" .> do

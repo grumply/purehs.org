@@ -18,18 +18,30 @@ data Route
   | DocsR
   | DocR Txt Txt Txt
 
-  | TutR
+  | TutsR
   | TutorialR Txt Txt Txt Txt
 
-data PageType = BlogPage | DocsPage | TutsPage
+  | ExamplesR
+  | ExampleR Txt
+
+-- To highlight active links in the navigation bar, we have to be able to
+-- contextualize the route scope; towards that end, this type is a
+-- categorization of page context.
+data PageType = BlogPage | DocsPage | ExamplesPage | TutsPage
   deriving (Eq,Ord,Enum)
 
 toPageType NoR = Nothing
+
 toPageType HomeR = Nothing
+
 toPageType BlogR = Just BlogPage
 toPageType (PostR _ _ _ _) = Just BlogPage
+
 toPageType DocsR = Just DocsPage
 toPageType (DocR _ _ _) = Just DocsPage
-toPageType TutR = Just TutsPage
+
+toPageType TutsR = Just TutsPage
 toPageType (TutorialR _ _ _ _) = Just TutsPage
 
+toPageType ExamplesR = Just ExamplesPage
+toPageType (ExampleR _) = Just ExamplesPage

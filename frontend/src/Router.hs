@@ -17,6 +17,9 @@ router = do
   path "/tuts/:num/:chapter/:group/:name" $
     dispatch =<< TutorialR <$> "num" <*> "chapter" <*> "group" <*> "name"
 
+  path "/exampls/:name" $
+    dispatch =<< ExampleR <$> "name"
+
   path "/blog" $
     dispatch BlogR
 
@@ -24,6 +27,9 @@ router = do
     dispatch DocsR
 
   path "/tuts" $
-    dispatch TutR
+    dispatch TutsR
+
+  path "/examples" $
+    dispatch ExamplesR
 
   dispatch HomeR
