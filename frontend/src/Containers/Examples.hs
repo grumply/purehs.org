@@ -25,5 +25,5 @@ container fallback render =
           | otherwise = req Scope.getExamples () (store proxy)
 
   in
-    async fetch $
+    asyncAs @Example fetch $
       suspense 1000000 fallback render lookup

@@ -18,6 +18,9 @@ import Scope hiding (has,none)
 header :: PageScope => View
 header = Header <| Theme HeaderT |> [ bar ]
 
+headerTransparent :: PageScope => View
+headerTransparent = Header <| Theme HeaderTransparentT |> [ barMinusLogo ]
+
 data HeaderT = HeaderT
 instance Themeable HeaderT where
   theme c _ = void $ do
@@ -27,7 +30,17 @@ instance Themeable HeaderT where
       Pure.left       =: zero
       zIndex          =: int 100
       width           =: per 100
-      backgroundColor =: darkLavender
+      backgroundColor =: hsla(250,49,49,0.9)
+
+data HeaderTransparentT = HeaderTransparentT
+instance Themeable HeaderTransparentT where
+  theme c _ = void $ do
+    is c .> do
+      position        =: absolute
+      top             =: zero
+      Pure.left       =: zero
+      zIndex          =: int 100
+      width           =: per 100
 
 bar :: PageScope => View
 bar =
@@ -35,6 +48,11 @@ bar =
     [ left
     , right
     ]
+
+barMinusLogo :: PageScope => View
+barMinusLogo =
+  Div <| Theme BarT |>
+    [ right ]
 
 data BarT = BarT
 instance Themeable BarT where

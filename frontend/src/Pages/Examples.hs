@@ -62,6 +62,7 @@ instance Themeable ExamplesContainerT where
 data ExamplesHeaderT = ExamplesHeaderT
 instance Themeable ExamplesHeaderT where
   theme c _ = void $ is c .> do
+    marginTop =: ems 0.2
     fontSize =: ems 3
     color =: darkGray
 
@@ -80,7 +81,6 @@ instance Themeable ExampleT where
 data TitleT = TitleT
 instance Themeable TitleT where
   theme c _ = void $ is c .> do
-    marginTop =: ems 2
     color =: darkLavender
 
 data ContentT = ContentT

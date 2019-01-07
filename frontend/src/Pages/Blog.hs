@@ -19,7 +19,9 @@ blogPage =
   Div <| Theme BlogPageT . Theme PageT |>
     [ header
     , Div <| Theme BlogContainerT |>
-      [ container loading postMetas
+      [ H1 <| Theme BlogHeaderT |>
+        [ "Posts" ]
+      , container loading postMetas
       ]
     ]
 
@@ -52,14 +54,19 @@ instance Themeable BlogPageT where
 
 data BlogContainerT = BlogContainerT
 instance Themeable BlogContainerT where
-  theme c _ = void $ do
-    is c $ do
-      headerOffset
+  theme c _ = void $
+    is c .> do
+      width       =: per 100
+      maxWidth    =: pxs 1200
+      marginLeft  =: auto
+      marginRight =: auto
+      padding     =: ems 1
 
-      apply $ do
-        maxWidth   =: pxs 1200
-        margin     =: auto
-        padding    =: ems 1
+data BlogHeaderT = BlogHeaderT
+instance Themeable BlogHeaderT where
+  theme c _ = void $ is c .> do
+    fontSize =: ems 3
+    color =: darkGray
 
 data LoadingT = LoadingT
 instance Themeable LoadingT where
@@ -75,7 +82,9 @@ instance Themeable PostT where
 
 data TitleT = TitleT
 instance Themeable TitleT where
-  theme c _ = void $ is c $ return ()
+  theme c _ = void $ do
+    is c .> do
+      fontSize =: ems 2
 
 data AuthorT = AuthorT
 instance Themeable AuthorT where

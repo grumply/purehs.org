@@ -25,5 +25,5 @@ container fallback render =
           | otherwise = req Scope.getPostMetas () (store proxy)
 
   in
-    async fetch $
+    asyncAs @PostMeta fetch $
       suspense 1000000 fallback render lookup

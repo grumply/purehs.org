@@ -1,6 +1,6 @@
 module Main where
-
-import Pure (inject,time,View,pattern Null)
+import Pure
+import Pure (inject,body,time,View,pattern Null)
 
 import Router
 import Scope hiding (modify,get,contains,(#),transform,none,has)
@@ -10,6 +10,11 @@ import Pages.Blog
 import Pages.Examples
 import Pages.Home
 import Pages.Post
+
+import Control.Concurrent
+import Pure.Async
+import Pure.Cache
+import Pure.Suspense
 
 setup :: AppScope => IO ()
 setup = return ()
@@ -30,10 +35,26 @@ pages pg =
 
 
 -- MAIN
-main :: IO ()
-main = do
+main' :: IO ()
+main' = do
   now <- time
   Scope.run (State now) NoR Router.router setup id pages
+
+main = inject body (caching $ test (10 :: Int))
+
+test n =
+  asyncAs @Int (fetch n) $
+    suspense 1000000 "loading..." (\n -> Div <||> tree n) (load n)
+  where
+    fetch :: Caching => Int -> IO ()
+    fetch n = do
+      case load @Int n of
+        Nothing -> store n n
+        Just _  -> return ()
+
+    tree :: Int -> [View]
+    tree 1 = ["1"]
+    tree n = concat [[text n],tree (n - 1),tree (n - 1)]
 
 docsPage = Null
 docPage _ _ _ = Null

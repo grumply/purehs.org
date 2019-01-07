@@ -17,7 +17,7 @@ import Scope hiding (has,none,transform)
 homePage :: PageScope => View
 homePage =
   Div <| Theme PageT . Theme HomePageT |>
-    [ header
+    [ headerTransparent
     , Div <| Theme GradientT
     , Div <| Theme HomeT |>
       [ Div <| Theme IntroT |>
@@ -79,7 +79,7 @@ instance Themeable GradientT where
       background      =: linearGradient(gradient)
 
     is c . is ":before" .> do
-      let gradient = deg 240                   <&>>
+      let gradient = deg 210                   <&>>
                      darkLavender  <<>> per 15 <&>>
                      blueHighlight <<>> per 70 <&>>
                      lightGreen    <<>> per 95
