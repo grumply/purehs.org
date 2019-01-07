@@ -70,7 +70,7 @@ update f = modifyM_ ?app $ \props st -> do
 
 type ContextApp rt st = (?context :: ContextIO rt st (ContextIO () rt ()))
 
-run :: (Typeable rt)
+run :: (Typeable rt, Typeable st)
     => st
     -> rt
     -> (ScopedApp rt st => Routing rt)

@@ -19,13 +19,16 @@ cabal-version:       >=1.10
 executable frontend
   main-is:             Main.hs
   other-modules:       App
+                       Containers.Blog
                        Containers.Docs
                        Containers.Examples
                        Containers.Post
                        Containers.Tutorial
                        Lenses
+                       Pages.Blog
                        Pages.Examples
                        Pages.Home
+                       Pages.Post
                        Router
                        Routes
                        Scope
@@ -75,6 +78,7 @@ executable frontend
                        pure-styles >= 0.7 && < 1,
                        pure-suspense >= 0.7 && < 1,
                        pure-svg >= 0.7 && < 1,
+                       pure-txt-interpolate >= 0.7 && < 1,
                        pure-theme >= 0.7 && < 1,
                        pure-websocket >= 0.7 && < 1,
                        shared == 0.1.*,
@@ -83,5 +87,5 @@ executable frontend
                        mtl,
                        transformers
   hs-source-dirs:      src
-  ghc-options:         -O1 -DGHCJS_BROWSER
+  ghc-options:         -O2 -dedupe -DGHCJS_BROWSER
   default-language:    Haskell2010

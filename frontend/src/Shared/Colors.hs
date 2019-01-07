@@ -6,7 +6,7 @@ import Pure
 
 -- pureBlue, pureLavender, pureWhite, pureGreen :: Double -> Txt
 pureBlue p = hsl(215,35.14,p)
-pureLavender p = hsl(250,48.59,p)
+pureLavender p = hsl(250,49,p)
 pureWhite p = hsl(210,2,p)
 pureGreen p = hsl(139,68,p)
 
@@ -20,6 +20,7 @@ lightBlue = pureBlue 90
 baseLavender = pureLavender 69
 darkLavender = pureLavender 49
 lightLavender = pureLavender 89
+deepLavender = pureLavender 14
 
 -- baseWhite, baseGray, lightGray, darkGray :: Txt
 baseWhite = pureWhite 99

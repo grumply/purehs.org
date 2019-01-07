@@ -57,7 +57,7 @@ getIP _ = error "getIP: Invalid socket type; cannot extract address."
 deriving instance Show CloseReason
 deriving instance Show Status
 
-run :: Typeable appState
+run :: (Typeable appState, Typeable connState)
     => String
     -> Int
     -> appState

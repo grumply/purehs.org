@@ -2,8 +2,6 @@ module Pages.Examples (examplesPage) where
 
 import Pure hiding (Transform)
 import Pure.Data.CSS
-import Pure.Data.SVG
-import Pure.Data.SVG.Properties
 import Pure.Router
 import Pure.Theme
 
@@ -14,14 +12,15 @@ import Shared.Styles
 
 import Scope hiding (has,none,transform)
 
-import Pure.Cache
-
 examplesPage :: PageScope => View
 examplesPage =
   Div <| Theme ExamplesPageT . Theme PageT |>
     [ header
     , Div <| Theme ExamplesContainerT |>
-      [ container loading examples ]
+      [ H1 <| Theme ExamplesHeaderT |>
+        [ "Examples" ]
+      , container loading examples
+      ]
     ]
 
 loading =
@@ -32,7 +31,7 @@ examples es =
     (es <&> example)
 
 example Example {..} =
-  Div <| Theme MarkdownT |>
+  Div <| Theme MarkdownT . Theme ExampleT |>
     [ H2  <| Theme TitleT |> [ text (emTitle eMeta) ]
     , Div <| Theme ContentT |> eContent
     , Div <| Theme CodeT |> eCode
@@ -60,6 +59,12 @@ instance Themeable ExamplesContainerT where
         margin     =: auto
         padding    =: ems 1
 
+data ExamplesHeaderT = ExamplesHeaderT
+instance Themeable ExamplesHeaderT where
+  theme c _ = void $ is c .> do
+    fontSize =: ems 3
+    color =: darkGray
+
 data LoadingT = LoadingT
 instance Themeable LoadingT where
   theme c _ = void $ is c $ return ()
@@ -68,9 +73,15 @@ data ExamplesT = ExamplesT
 instance Themeable ExamplesT where
   theme c _ = void $ is c $ return ()
 
+data ExampleT = ExampleT
+instance Themeable ExampleT where
+  theme c _ = void $ is c $ return ()
+
 data TitleT = TitleT
 instance Themeable TitleT where
-  theme c _ = void $ is c $ return ()
+  theme c _ = void $ is c .> do
+    marginTop =: ems 2
+    color =: darkLavender
 
 data ContentT = ContentT
 instance Themeable ContentT where

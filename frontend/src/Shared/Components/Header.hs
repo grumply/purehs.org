@@ -25,6 +25,7 @@ instance Themeable HeaderT where
       position        =: absolute
       top             =: zero
       Pure.left       =: zero
+      zIndex          =: int 100
       width           =: per 100
       backgroundColor =: darkLavender
 

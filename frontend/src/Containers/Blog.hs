@@ -1,5 +1,5 @@
 {-# LANGUAGE NoMonomorphismRestriction #-}
-module Containers.Post where
+module Containers.Blog where
 
 import Pure
 import Pure.Async
@@ -12,14 +12,17 @@ import Data.Maybe
 import Data.Proxy
 import Control.Concurrent
 
-container :: (PostScope, Caching) => View -> (Maybe Post -> View) -> View
-container fallback render = withPost $ \p ->
+container :: Caching => View -> ([PostMeta] -> View) -> View
+container fallback render =
   let
-    lookup :: Maybe (Maybe Post)
-    lookup = load p
+    proxy :: Proxy [PostMeta]
+    proxy = Proxy
+
+    lookup :: Maybe [PostMeta]
+    lookup = load proxy
 
     fetch | isJust lookup = return ()
-          | otherwise = req Scope.getPost p (store p)
+          | otherwise = req Scope.getPostMetas () (store proxy)
 
   in
     async fetch $

@@ -16,48 +16,100 @@ import Scope hiding (has,none,transform)
 
 homePage :: PageScope => View
 homePage =
-  Div <| Theme HomeT . Theme PageT |>
+  Div <| Theme PageT . Theme HomePageT |>
     [ header
-    , Div <| Theme IntroT |>
-      [ Div <| Theme HeroT |>
-        [ logo False False HeroLogoT
-        , H1 <| Theme SloganT |>
-          [ Span <||> [ "The web from a " ]
-          , Span <||> [ I <||> [ "different angle." ] ]
-          ]
-        , P <| Theme DescriptionT |>
-          [ "Pure is a Haskell-based web stack that focuses on"
-          , Br
-          , "performance, expressiveness, and asynchrony."
-          ]
-        , Div <| Theme CallToActionT |>
-          [ A <| lref "/docs" . Theme GetPureT |>
-            [ "Get Pure" ]
-          , A <| lref "/tuts" . Theme StartTutorialT |>
-            [ "Start Tutorial" ]
+    , Div <| Theme GradientT
+    , Div <| Theme HomeT |>
+      [ Div <| Theme IntroT |>
+        [ Div <| Theme HeroT |>
+          [ logo False False HeroLogoT
+          , H1 <| Theme SloganT |>
+            [ Span <||> [ "The web from a " ]
+            , Span <||> [ I <||> [ "different angle." ] ]
+            ]
+          , P <| Theme DescriptionT |>
+            [ "Pure is a Haskell-based web stack that focuses on"
+            , Br
+            , "performance, expressiveness, and asynchrony."
+            ]
+          , Div <| Theme CallToActionT |>
+            [ A <| lref "/docs" . Theme GetPureT |>
+              [ "Get Pure" ]
+            , A <| lref "/tuts" . Theme StartTutorialT |>
+              [ "Start Tutorial" ]
+            ]
           ]
         ]
       ]
     ]
 
-data HomeT = HomeT
-instance Themeable HomeT where
+data HomePageT = HomePageT
+instance Themeable HomePageT where
   theme c _ = void $ do
+    is c .> do
+      height          =: per 100
+
+    atMedia "(max-height: 500px)" $
+      is c .> do
+        paddingTop    =: ems 3
+        paddingBottom =: ems 3
+
+data GradientT = GradientT
+instance Themeable GradientT where
+  theme c _ = void $ do
+
+    atKeyframes "shimmer" $ do
+      is (per   0) .> opacity =: one
+      is (per 100) .> opacity =: zero
+
+
     is c .> do
       let gradient = deg 150                   <&>>
                      darkLavender  <<>> per 15 <&>>
                      blueHighlight <<>> per 70 <&>>
                      lightGreen    <<>> per 95
 
-      minHeight       =: per 100
-      display         =: flex
-      flexDirection   =: column
+      position        =: absolute
+      height          =: per 100
+      width           =: per 100
+      top             =: zero
+      Pure.left       =: zero
+      zIndex          =: neg (int 100)
+      opacity         =: one
       background      =: linearGradient(gradient)
+
+    is c . is ":before" .> do
+      let gradient = deg 240                   <&>>
+                     darkLavender  <<>> per 15 <&>>
+                     blueHighlight <<>> per 70 <&>>
+                     lightGreen    <<>> per 95
+
+      content         =: "\"\""
+      position        =: absolute
+      display         =: block
+      height          =: per 100
+      width           =: per 100
+      top             =: zero
+      Pure.left       =: zero
+      zIndex          =: neg (int 99)
+      opacity         =: zero
+      background      =: linearGradient(gradient)
+      animation       =: "shimmer" <<>> sec 3 <<>> easeInOut <<>> normal
 
     atMedia "(max-height: 500px)" $
       is c .> do
         paddingTop    =: ems 3
         paddingBottom =: ems 3
+
+data HomeT = HomeT
+instance Themeable HomeT where
+  theme c _ = void $ do
+
+    is c .> do
+      display         =: flex
+      flexDirection   =: column
+      justifyContent  =: center
+      height          =: per 100
 
 data IntroT = IntroT
 instance Themeable IntroT where
@@ -153,8 +205,8 @@ instance Themeable CallToActionT where
       display          =: inlineBlock
       marginLeft       =: pxs 16
       marginRight      =: pxs 16
-      height           =: pxs 40
-      lineHeight       =: pxs 40
+      height           =: pxs 44
+      lineHeight       =: pxs 44
       padding          =: zero <<>> pxs 14
       boxShadow        =: buttonBoxShadow 0.13 4 6 1 3
       borderRadius     =: pxs 5

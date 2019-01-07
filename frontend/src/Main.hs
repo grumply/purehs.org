@@ -1,32 +1,15 @@
 module Main where
 
-import Pure hiding (modify,get,none,Transform)
-import Pure.Data.Styles
-import Pure.Data.CSS
-import Pure.Theme
-
-import Pure.Data.SVG
-import Pure.Data.SVG.Properties
-
-import Shared.Colors
-import Shared.Styles
-import Shared.Components.GitHubLogo
-import Shared.Components.Logo
+import Pure (inject,time,View,pattern Null)
 
 import Router
 import Scope hiding (modify,get,contains,(#),transform,none,has)
 import qualified Scope
 
+import Pages.Blog
 import Pages.Examples
 import Pages.Home
-
-import Control.Applicative
-import Control.Concurrent
-import Control.Monad
-import qualified Control.Monad.Trans.State as St
-import Data.Foldable
-
-import Pure.Cache
+import Pages.Post
 
 setup :: AppScope => IO ()
 setup = return ()
@@ -34,20 +17,14 @@ setup = return ()
 pages :: PageScope => Route -> View
 pages pg =
   case pg of
-
     NoR               -> Null
-
     HomeR             -> homePage
-
     BlogR             -> blogPage
-    PostR y m d s     -> postPage y m d s
-
+    PostR y m d s     -> usingPost (y,m,d,s) postPage
     DocsR             -> docsPage
     DocR n g nm       -> docPage n g nm
-
     TutsR             -> tutorialsPage
     TutorialR g c n t -> tutorialPage g c n t
-
     ExamplesR         -> examplesPage
     ExampleR nm       -> Null
 
@@ -57,9 +34,6 @@ main :: IO ()
 main = do
   now <- time
   Scope.run (State now) NoR Router.router setup id pages
-
-blogPage = Null
-postPage _ _ _ _ = Null
 
 docsPage = Null
 docPage _ _ _ = Null

@@ -27,42 +27,39 @@ pageStyles = do
 
 data PageT = PageT
 instance Themeable PageT where
-  theme c _ = void $ pageStyles
+  theme c _ = void $ do
+    pageStyles
 
 markdownStyles = do
     apply $ do
       marginTop  =: pxs 16
 
-    child "p" . is ":first-child" .> do
+    has "p" .> do
       lineHeight =: ems 1.7
       fontSize   =: pxs 18
       fontWeight =: int 300
-      color      =: rgba(81,81,81,0.7)
+      color      =: darkGray
+      margin     =: pxs 16
 
-    -- child "p" . is ":first-child" .> do
-    --   marginTop  =: zero
+    has "p" . has "a" $ do
+      apply $ do
+        background       =: pureGreen 85
+        borderBottom     =: pxs 1 <<>> solid <<>> baseGreen
+        color            =: selection
+        textDecoration   =: none
+
+      is hovered .> do
+        background       =: lightGreen
+        borderBottom     =: pxs 1 <<>> solid <<>> darkGreen
 
     has "h2" .> do
-      margin     =: zero
       fontSize   =: pxs 32
 
     has "h3" .> do
-      margin     =: zero
       fontSize   =: pxs 28
 
-    has "h2" . is ":first-child" .> do
-      marginTop  =: zero
-      paddingTop =: zero
-
-    has "h2" . next "h3" .> do
-      paddingTop =: pxs 16
-
-    has "p" .> do
-      marginTop  =: pxs 16
-      fontSize   =: pxs 16
-
     has "p" . has "code" .> do
-      fontFamily       =: "'Operator Mono', source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace"
+      fontFamily       =: "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace"
       wordBreak        =: breakWord
       padding          =: zero <<>> pxs 4
       background       =: pureOrange 88
@@ -77,32 +74,22 @@ markdownStyles = do
       atMedia "(max-width: 48em)" .> do
         marginRight =: pxs (-16)
 
-      has "h1" .> do
+      has "h2" .> do
         margin =: pxs 8
         fontSize =: pxs 20
 
       has "p" .> do
         marginTop =: zero
 
-    has "p" . has "a" $ do
-      apply $ do
-        background       =: pureGreen 85
-        borderBottom     =: pxs 1 <<>> solid <<>> baseGreen
-        color            =: selection
-        textDecoration   =: none
-
-      is hovered .> do
-        background       =: lightGreen
-        borderBottom     =: pxs 1 <<>> solid <<>> darkGreen
-
     has "pre" . is ".sourceCode" .> do
-      marginTop        =: pxs 32
+      marginTop        =: pxs 40
       marginLeft       =: pxs (-16)
       marginRight      =: pxs (-16)
       marginBottom     =: pxs 16
       fontSize         =: ems 1
-      fontFamily       =: "'Operator Mono', source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace"
+      fontFamily       =: "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace"
       fontWeight       =: int 300
+      "-webkit-font-smoothing" =: auto
       backgroundColor  =: bg
       color            =: fg
       overflow         =: auto
