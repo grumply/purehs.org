@@ -1,11 +1,6 @@
-----------------
-title: Control Flow
-highlights: []
-----------------
+## Control Flow
 
 Using Pure components, it is possible to implement view generation via monadic control flow. This is especially useful for forms with complex behaviors. Below is a counter using state supplied by an implicit component via `runPureWithIO`.
-
-# Code
 
 ```haskell
 import Pure

@@ -1,4 +1,4 @@
-module Pages.Post (postPage) where
+module Pages.Tutorial (tutorialPage) where
 
 import Pure hiding (Transform)
 import Pure.Data.CSS
@@ -6,35 +6,35 @@ import Pure.Data.Txt as Txt
 import Pure.Router
 import Pure.Theme
 
-import Containers.Post
+import Containers.Tutorial
 import Shared.Colors
 import Shared.Components.Header
 import Shared.Styles
 
 import Scope hiding (has,none,transform)
 
-postPage :: (PostScope, PageScope) => View
-postPage =
-  Div <| Theme PostPageT . Theme PageT |>
+tutorialPage :: (TutScope, PageScope) => View
+tutorialPage =
+  Div <| Theme TutorialPageT . Theme PageT |>
     [ header
-    , Div <| Theme PostContainerT |>
-      [ container loading post
+    , Div <| Theme TutorialContainerT |>
+      [ container loading tutorial
       ]
     ]
 
 loading =
   Div <| Theme LoadingT
 
-post Nothing =
-  Div <| Theme NoPostT |>
-    [ "Post not found." ]
+tutorial Nothing =
+  Div <| Theme NoTutorialT |>
+    [ "Tutorial not found." ]
 
-post (Just Post { meta = PostMeta {..}, ..}) =
-  Div <| Theme MarkdownT . Theme PostT |>
+tutorial (Just Tutorial { meta = TutorialMeta {..}, ..}) =
+  Div <| Theme MarkdownT . Theme TutorialT |>
     content
 
-data PostPageT = PostPageT
-instance Themeable PostPageT where
+data TutorialPageT = TutorialPageT
+instance Themeable TutorialPageT where
   theme c _ = void $ do
     is c .> do
       minHeight     =: per 100
@@ -44,8 +44,8 @@ instance Themeable PostPageT where
       paddingTop    =: ems 3
       paddingBottom =: ems 3
 
-data PostContainerT = PostContainerT
-instance Themeable PostContainerT where
+data TutorialContainerT = TutorialContainerT
+instance Themeable TutorialContainerT where
   theme c _ = void $ do
     is c $ do
       headerOffset
@@ -59,10 +59,10 @@ data LoadingT = LoadingT
 instance Themeable LoadingT where
   theme c _ = void $ is c $ return ()
 
-data NoPostT = NoPostT
-instance Themeable NoPostT where
+data NoTutorialT = NoTutorialT
+instance Themeable NoTutorialT where
   theme c _ = void $ is c $ return ()
 
-data PostT = PostT
-instance Themeable PostT where
+data TutorialT = TutorialT
+instance Themeable TutorialT where
   theme c _ = void $ is c $ return ()

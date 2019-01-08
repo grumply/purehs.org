@@ -1,8 +1,4 @@
-----------------
-title: Hello World
-author: sean
-highlights: []
-----------------
+# Hello World
 
 The simplest application is a single line:
 

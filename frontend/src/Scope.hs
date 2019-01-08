@@ -21,9 +21,9 @@ type RouteScope = (?route :: Route)
 type AppScope   = (?app   :: AppRef Route State)
 type PageScope  = (AppScope,RouteScope,StateScope,Caching)
 
-type DocScope  = (PageScope,?docPath  :: (Txt,Txt,Txt)    )
-type TutScope  = (PageScope,?tutPath  :: (Txt,Txt,Txt,Txt))
-type PostScope = (PageScope,?postPath :: (Txt,Txt,Txt,Txt))
+type DocScope  = (PageScope,?doc  :: (Txt,Txt))
+type TutScope  = (PageScope,?tut  :: Txt)
+type PostScope = (PageScope,?post :: Txt)
 
 -- TODO: I'm not especially thrilled with this approach. It was copied from gitguilds.
 class Supply (scope :: Constraint) where
@@ -77,27 +77,27 @@ instance Supply PageScope where
         in f
 
 instance Supply DocScope where
-  type Ctx DocScope = (Ctx PageScope,(Txt,Txt,Txt))
-  reflect f = reflect @PageScope $ \ps -> f (ps,?docPath)
+  type Ctx DocScope = (Ctx PageScope,(Txt,Txt))
+  reflect f = reflect @PageScope $ \ps -> f (ps,?doc)
   reify (pg,dp) f =
     reify @PageScope pg $
-      let ?docPath = dp
+      let ?doc = dp
       in f
 
 instance Supply TutScope where
-  type Ctx TutScope = (Ctx PageScope,(Txt,Txt,Txt,Txt))
-  reflect f = reflect @PageScope $ \ps -> f (ps,?tutPath)
+  type Ctx TutScope = (Ctx PageScope,Txt)
+  reflect f = reflect @PageScope $ \ps -> f (ps,?tut)
   reify (pg,tp) f =
     reify @PageScope pg $
-      let ?tutPath = tp
+      let ?tut = tp
       in f
 
 instance Supply PostScope where
-  type Ctx PostScope = (Ctx PageScope,(Txt,Txt,Txt,Txt))
-  reflect f = reflect @PageScope $ \ps -> f (ps,?postPath)
+  type Ctx PostScope = (Ctx PageScope,Txt)
+  reflect f = reflect @PageScope $ \ps -> f (ps,?post)
   reify (pg,pp) f =
     reify @PageScope pg $
-      let ?postPath = pp
+      let ?post = pp
       in f
 
 withState :: StateScope => (State -> a) -> a
@@ -109,13 +109,13 @@ withRoute = reflect @RouteScope
 withPage :: PageScope => ((AppRef Route State,Route,State,Cache) -> a) -> a
 withPage = reflect @PageScope
 
-withDoc :: DocScope => ((Txt,Txt,Txt) -> a) -> a
+withDoc :: DocScope => ((Txt,Txt) -> a) -> a
 withDoc f = reflect @DocScope $ \(_,dp) -> f dp
 
-withTut :: TutScope => ((Txt,Txt,Txt,Txt) -> a) -> a
+withTut :: TutScope => (Txt -> a) -> a
 withTut f = reflect @TutScope $ \(_,tp) -> f tp
 
-withPost :: PostScope => ((Txt,Txt,Txt,Txt) -> a) -> a
+withPost :: PostScope => (Txt -> a) -> a
 withPost f = reflect @PostScope $ \(_,pp) -> f pp
 
 usingState :: State -> (StateScope => b) -> b
@@ -124,11 +124,11 @@ usingState = reify @StateScope
 usingRoute :: Route -> (RouteScope => b) -> b
 usingRoute = reify @RouteScope
 
-usingDoc :: PageScope => (Txt,Txt,Txt) -> (DocScope => b) -> b
+usingDoc :: PageScope => (Txt,Txt) -> (DocScope => b) -> b
 usingDoc dp f = withPage $ \ps -> reify @DocScope (ps,dp) f
 
-usingTut :: PageScope => (Txt,Txt,Txt,Txt) -> (TutScope => b) -> b
+usingTut :: PageScope => Txt -> (TutScope => b) -> b
 usingTut tp f = withPage $ \ps -> reify @TutScope (ps,tp) f
 
-usingPost :: PageScope => (Txt,Txt,Txt,Txt) -> (PostScope => b) -> b
+usingPost :: PageScope => Txt -> (PostScope => b) -> b
 usingPost pp f = withPage $ \ps -> reify @PostScope (ps,pp) f

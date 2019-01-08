@@ -7,9 +7,13 @@ import Scope hiding (modify,get,contains,(#),transform,none,has)
 import qualified Scope
 
 import Pages.Blog
+import Pages.Doc
+import Pages.Docs
 import Pages.Examples
 import Pages.Home
 import Pages.Post
+import Pages.Tutorial
+import Pages.Tutorials
 
 import Control.Concurrent
 import Pure.Async
@@ -22,45 +26,20 @@ setup = return ()
 pages :: PageScope => Route -> View
 pages pg =
   case pg of
-    NoR               -> Null
-    HomeR             -> homePage
-    BlogR             -> blogPage
-    PostR y m d s     -> usingPost (y,m,d,s) postPage
-    DocsR             -> docsPage
-    DocR n g nm       -> docPage n g nm
-    TutsR             -> tutorialsPage
-    TutorialR g c n t -> tutorialPage g c n t
-    ExamplesR         -> examplesPage
-    ExampleR nm       -> Null
+    NoR       -> Null
+    HomeR     -> homePage
+    BlogR     -> blogPage
+    PostR s   -> usingPost s postPage
+    DocsR     -> docsPage
+    DocR p v  -> usingDoc (p,v) docPage
+    TutsR     -> tutorialsPage
+    TutR s    -> usingTut s tutorialPage
+    ExamplesR -> examplesPage
 
-
--- MAIN
-main' :: IO ()
-main' = do
+main :: IO ()
+main = do
   now <- time
   Scope.run (State now) NoR Router.router setup id pages
-
-main = inject body (caching $ test (10 :: Int))
-
-test n =
-  asyncAs @Int (fetch n) $
-    suspense 1000000 "loading..." (\n -> Div <||> tree n) (load n)
-  where
-    fetch :: Caching => Int -> IO ()
-    fetch n = do
-      case load @Int n of
-        Nothing -> store n n
-        Just _  -> return ()
-
-    tree :: Int -> [View]
-    tree 1 = ["1"]
-    tree n = concat [[text n],tree (n - 1),tree (n - 1)]
-
-docsPage = Null
-docPage _ _ _ = Null
-
-tutorialsPage = Null
-tutorialPage _ _ _ _ = Null
 
 --     has ".header" .> do
 --       backgroundColor =: initial

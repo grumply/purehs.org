@@ -1,40 +1,40 @@
-module Pages.Post (postPage) where
+module Pages.Doc (docPage) where
 
-import Pure hiding (Transform)
+import Pure hiding (Doc,content)
 import Pure.Data.CSS
 import Pure.Data.Txt as Txt
 import Pure.Router
 import Pure.Theme
 
-import Containers.Post
+import Containers.Doc
 import Shared.Colors
 import Shared.Components.Header
 import Shared.Styles
 
 import Scope hiding (has,none,transform)
 
-postPage :: (PostScope, PageScope) => View
-postPage =
-  Div <| Theme PostPageT . Theme PageT |>
+docPage :: (DocScope, PageScope) => View
+docPage =
+  Div <| Theme DocPageT . Theme PageT |>
     [ header
-    , Div <| Theme PostContainerT |>
-      [ container loading post
+    , Div <| Theme DocContainerT |>
+      [ container loading doc
       ]
     ]
 
 loading =
   Div <| Theme LoadingT
 
-post Nothing =
-  Div <| Theme NoPostT |>
-    [ "Post not found." ]
+doc Nothing =
+  Div <| Theme NoDocT |>
+    [ "Doc not found." ]
 
-post (Just Post { meta = PostMeta {..}, ..}) =
-  Div <| Theme MarkdownT . Theme PostT |>
+doc (Just Doc { meta = DocMeta {..}, ..}) =
+  Div <| Theme MarkdownT . Theme DocT |>
     content
 
-data PostPageT = PostPageT
-instance Themeable PostPageT where
+data DocPageT = DocPageT
+instance Themeable DocPageT where
   theme c _ = void $ do
     is c .> do
       minHeight     =: per 100
@@ -44,8 +44,8 @@ instance Themeable PostPageT where
       paddingTop    =: ems 3
       paddingBottom =: ems 3
 
-data PostContainerT = PostContainerT
-instance Themeable PostContainerT where
+data DocContainerT = DocContainerT
+instance Themeable DocContainerT where
   theme c _ = void $ do
     is c $ do
       headerOffset
@@ -59,10 +59,10 @@ data LoadingT = LoadingT
 instance Themeable LoadingT where
   theme c _ = void $ is c $ return ()
 
-data NoPostT = NoPostT
-instance Themeable NoPostT where
+data NoDocT = NoDocT
+instance Themeable NoDocT where
   theme c _ = void $ is c $ return ()
 
-data PostT = PostT
-instance Themeable PostT where
+data DocT = DocT
+instance Themeable DocT where
   theme c _ = void $ is c $ return ()

@@ -1,3 +1,0 @@
-# Documentation
-
-something about what can be found in the sidebar....

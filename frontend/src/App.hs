@@ -94,7 +94,7 @@ run initial route routes startup page pages =
                     ?route = rt
                     ?scope = []
                 in
-                  Div <| Height (per 100) |>
+                  Div <| MinHeight (per 100) . Height (per 100) |>
                     [ View (Router route (Export.route routes))
                     , page (pages rt)
                     ]

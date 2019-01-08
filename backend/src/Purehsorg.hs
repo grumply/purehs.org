@@ -1,16 +1,15 @@
-{-# LANGUAGE ImplicitParams, NoMonomorphismRestriction, DeriveAnyClass,
-             TemplateHaskell, FunctionalDependencies, BangPatterns,
-             PackageImports, DeriveGeneric, TypeSynonymInstances,
-             FlexibleInstances, DataKinds, TypeApplications, ViewPatterns,
-             FlexibleContexts, GADTs, OverloadedStrings, RankNTypes,
-             RecordWildCards, PatternSynonyms #-}
+{-# LANGUAGE ImplicitParams, DeriveAnyClass, BangPatterns, DeriveGeneric,
+             ViewPatterns, OverloadedStrings, RecordWildCards,
+             PatternSynonyms, TypeApplications, DuplicateRecordFields,
+             RankNTypes
+  #-}
 module Purehsorg where
 
 import App hiding (none)
 import Shared
 
 import Pure hiding (Left,Right,Doc,reverse,none,get,modify)
-import qualified Pure.Data.Txt as T
+import qualified Pure.Data.Txt as Txt
 import Pure.Data.JSON hiding (Null,(.=),parseField)
 import Pure.WebSocket as WS hiding (respond,Closed)
 
@@ -74,14 +73,10 @@ impl self = Impl Shared.api msgs reqs
     msgs = none
     reqs =
           handleReloadMarkdown self <:>
-          handleGetFeaturedTutorial self <:>
-          handleGetFeaturedPost self <:>
-          handleGetFeaturedDocumentation self <:>
           handleGetPost self <:>
           handleGetTutorial self <:>
           handleGetDoc self <:>
           handleGetPostMetas self <:>
-          handleGetLatestPosts self <:>
           handleGetTutorialMetas self <:>
           handleGetDocMetas self <:>
           handleGetExamples self <:>
@@ -99,15 +94,6 @@ handleReloadMarkdown = respond $ do
   st <- liftIO loadMarkdown
   void $ modifyApp (put st)
 
-handleGetFeaturedTutorial :: Handler GetFeaturedTutorial
-handleGetFeaturedTutorial = respond Purehsorg.getFeaturedTutorial
-
-handleGetFeaturedPost :: Handler GetFeaturedPost
-handleGetFeaturedPost = respond Purehsorg.getFeaturedPost
-
-handleGetFeaturedDocumentation :: Handler GetFeaturedDocumentation
-handleGetFeaturedDocumentation = respond Purehsorg.getFeaturedDocumentation
-
 handleGetPost :: Handler GetPost
 handleGetPost = respond $ req >>= Purehsorg.getPost
 
@@ -120,9 +106,6 @@ handleGetDoc = respond $ req >>= Purehsorg.getDoc
 handleGetPostMetas :: Handler GetPostMetas
 handleGetPostMetas = respond Purehsorg.getPostMetas
 
-handleGetLatestPosts :: Handler GetLatestPosts
-handleGetLatestPosts = respond Purehsorg.getLatestPosts
-
 handleGetTutorialMetas :: Handler GetTutorialMetas
 handleGetTutorialMetas = respond Purehsorg.getTutorialMetas
 
@@ -133,92 +116,69 @@ handleGetExamples :: Handler GetExamples
 handleGetExamples = respond Purehsorg.getExamples
 
 
--- Docs
+-- Utilities
 
-getDocsFiles :: FilePath -> IO [FilePath]
-getDocsFiles cd = filter validMarkdown <$> getDirectoryContents (cd </> "docs")
+listMarkdownFiles :: FilePath -> IO [FilePath]
+listMarkdownFiles cd = filter validMarkdown <$> getDirectoryContents cd
   where
     validMarkdown ('.':_) = False
     validMarkdown (takeExtension -> ".md") = True
     validMarkdown _ = False
 
-loadDocs = do
-  cd <- liftIO getCurrentDirectory
-  ds <- liftIO $ traverse (readDoc cd) =<< getDocsFiles cd
-  pure $ sortBy (compare `on` (dmPath . dMeta)) $ catMaybes ds
-
-safeTail t = if T.null t then t else T.tail t
-
-pattern Dash before after <- (T.breakOn "-" -> (before,safeTail -> after))
-
-readDoc :: FilePath -> FilePath -> IO (Maybe Doc)
-readDoc cd fp = do
-  cnt <- readFile (cd </> "docs" </> fp)
-  return $ parseDoc fp cnt
+load :: FilePath -> (Txt -> [View] -> a) -> IO [a]
+load sub parse = do
+  cd <- getCurrentDirectory
+  fs <- listMarkdownFiles (cd </> sub)
+  traverse (read cd) fs
   where
-    parsePath :: FilePath -> (Txt,Txt,Txt)
-    parsePath (toTxt . dropExtension -> num `Dash` (group `Dash` name)) = (num,group,name)
+    read cd fp@(toTxt . dropExtension -> fn) = do
+      cnt <- readFile (cd </> sub </> fp)
+      pure $ parse (Txt.replace "^" " " fn) (parseContent $ toTxt cnt)
 
-    parseDoc :: FilePath -> String -> Maybe Doc
-    parseDoc (parsePath -> dmPath) cnt@(lines -> ls) =
-      let (dmAuthor,(dmTitle,dmHighlights)) = (parseAuthor &&& parseTitle &&& parseHighlights) $ take 3 $ tail ls
-          dMeta = DocMeta {..}
-          dContent = parseContent $ toTxt $ unlines $ drop 5 ls
-      in Just Doc {..}
+safeTail t = if Txt.null t then t else Txt.tail t
 
-getDoc t = do
+pattern Dash before after <- (Txt.breakOn "-" -> (before,safeTail -> after))
+
+parseContent :: Txt -> [View]
+parseContent cnt =
+    let Right !result = Text.Pandoc.Class.runPure $ do
+          !md <- readMarkdown
+                   Pandoc.def
+                     { Pandoc.readerExtensions = Pandoc.pandocExtensions }
+                   (Txt.repack cnt)
+          !str <- writeHtml5String Pandoc.def md
+          let !view = parseView str
+          pure view
+    in result
+
+sendMaybeFromList [] = send Nothing
+sendMaybeFromList (x : _) = send (Just x)
+
+
+-- Docs
+
+dMeta Doc {..} = meta
+
+loadDocs = fmap (sortOn dMeta) $ load "docs" $ \fn ->
+  let (Txt.reverse -> version) `Dash` (Txt.reverse -> package) = Txt.reverse fn
+  in Doc DocMeta {..}
+
+getDoc (uncurry DocMeta -> m) = do
   State {..} <- app
-  case filter ((t ==) . dmPath . dMeta) docs of
-    []    -> send Nothing
-    (d:_) -> send (Just d)
+  sendMaybeFromList (filter ((m ==) . dMeta) docs)
 
 getDocMetas = do
   State {..} <- app
-  send $ fmap dMeta docs
-
-getFeaturedDocumentation = do
-  State {..} <- app
-  case docs of
-    []    -> send Nothing
-    (d:_) -> send (Just d)
+  send (fmap dMeta docs)
 
 
 -- Examples
 
-getExamplesFiles :: FilePath -> IO [FilePath]
-getExamplesFiles cd = filter validMarkdown <$> getDirectoryContents (cd </> "examples")
-  where
-    validMarkdown ('.':_) = False
-    validMarkdown (takeExtension -> ".md") = True
-    validMarkdown _ = False
+eMeta Example {..} = meta
 
-loadExamples = do
-  cd <- liftIO getCurrentDirectory
-  es <- liftIO $ traverse (readExample cd) =<< getExamplesFiles cd
-  pure $ sortBy (compare `on` (emPath . eMeta)) (catMaybes es)
-
-readExample :: FilePath -> FilePath -> IO (Maybe Example)
-readExample cd fp = do
-  cnt <- readFile (cd </> "examples" </> fp)
-  return $ parseExample fp cnt
-  where
-    parsePath :: FilePath -> (Txt,Txt)
-    parsePath (toTxt -> num `Dash` file) = (num,file)
-
-    parseExample :: FilePath -> String -> Maybe Example
-    parseExample (parsePath -> emPath) cnt@(lines -> ls) =
-      let (emTitle,emHighlights) = (parseTitle &&& parseHighlights) $ take 2 $ tail ls
-          eMeta = ExampleMeta {..}
-          (content,_:code) = span (/= "# Code") (drop 4 ls)
-          eContent = parseContent $ toTxt $ unlines content
-          eCode = parseContent $ toTxt $ unlines code
-      in Just Example {..}
-
-getExample t = do
-  State {..} <- app
-  case filter ((t ==) . emPath . eMeta) examples of
-    []    -> send Nothing
-    (e:_) -> send (Just e)
+loadExamples = fmap (reverse . sortOn eMeta) $ load "examples" $ \fn ->
+  let num `Dash` slug = fn
+  in Example ExampleMeta {..}
 
 getExamples = do
   State {..} <- app
@@ -227,134 +187,37 @@ getExamples = do
 
 -- Posts
 
-getPostsFiles :: FilePath -> IO [FilePath]
-getPostsFiles cd = filter validMarkdown <$> getDirectoryContents (cd </> "posts")
-  where
-    validMarkdown ('.':_) = False
-    validMarkdown (takeExtension -> ".md") = True
-    validMarkdown _ = False
+pMeta Post {..} = meta
+pmSlug PostMeta {..} = slug
 
-loadPosts = do
-  cd <- liftIO getCurrentDirectory
-  ps <- liftIO $ traverse (readPost cd) =<< getPostsFiles cd
-  pure $ sortBy (flip compare `on` (pmPath . pMeta)) (catMaybes ps)
+loadPosts = fmap (sortOn pMeta) $ load "posts" $ \fn ->
+  let year `Dash` (month `Dash` (day `Dash` slug)) = fn
+      title = Txt.toTitle slug
+  in Post PostMeta {..}
 
-readPost :: FilePath -> FilePath -> IO (Maybe Post)
-readPost cd fp = do
-  cnt <- readFile (cd </> "posts" </> fp)
-  return $ parsePost fp cnt
-  where
-    parsePath :: FilePath -> (Txt,Txt,Txt,Txt)
-    parsePath (toTxt . dropExtension -> year `Dash` (month `Dash` (day `Dash` title))) = (year,month,day,title)
-
-    parsePost :: FilePath -> String -> Maybe Post
-    parsePost (parsePath -> pmPath) cnt@(lines -> ls) =
-      let (pmAuthor,(pmTitle,pmHighlights)) = (parseAuthor &&& parseTitle &&& parseHighlights) $ take 3 $ tail ls
-          pMeta = PostMeta {..}
-          pContent = parseContent $ toTxt $ unlines $ drop 5 ls
-      in Just Post {..}
-
-getPost p = do
+getPost s = do
   State {..} <- app
-  case filter ((p ==) . pmPath . pMeta) posts of
-    []    -> send Nothing
-    (p:_) -> send (Just p)
-
--- featured post is simply the latest
-getFeaturedPost = do
-  State {..} <- app
-  case posts of
-    []    -> send Nothing
-    (p:_) -> send (Just p)
+  sendMaybeFromList (filter ((s ==) . pmSlug . pMeta) posts)
 
 getPostMetas = do
   State {..} <- app
-  send $ fmap pMeta posts
+  send (fmap pMeta posts)
 
-getLatestPosts = do
-  State {..} <- app
-  send $ take 10 posts
-
+
 -- Tutorials
 
-{-
--- Number and chapter control ordering.
--- Num/Ch/Tut/Title
-01-01-quickstart-setting-up.md
-01-02-quickstart-first-build.md
--}
+tMeta Tutorial {..} = meta
+tmSlug TutorialMeta {..} = slug
 
-getTutorialsFiles :: FilePath -> IO [FilePath]
-getTutorialsFiles cd = filter validMarkdown <$> getDirectoryContents (cd </> "tutorials")
-  where
-    validMarkdown ('.':_) = False
-    validMarkdown (takeExtension -> ".md") = True
-    validMarkdown _ = False
+loadTutorials = fmap (reverse . sortOn tMeta) $ load "tutorials" $ \fn ->
+  let number `Dash` slug = fn
+      title = Txt.toTitle slug
+  in Tutorial TutorialMeta {..}
 
-loadTutorials = do
-  cd <- liftIO getCurrentDirectory
-  ts <- liftIO $ traverse (readTutorial cd) =<< getTutorialsFiles cd
-  pure $ sortBy (compare `on` (tmPath . tMeta)) (catMaybes ts)
-
-readTutorial :: FilePath -> FilePath -> IO (Maybe Tutorial)
-readTutorial cd fp = do
-  cnt <- readFile (cd </> "tutorials" </> fp)
-  return $ parseTutorial fp cnt
-  where
-    parsePath :: FilePath -> (Txt,Txt,Txt,Txt)
-    parsePath (toTxt . dropExtension -> group `Dash` (chapter `Dash` (name `Dash` title))) = (group,chapter,name,title)
-
-    parseTutorial :: FilePath -> String -> Maybe Tutorial
-    parseTutorial (parsePath -> tmPath) cnt@(lines -> ls) =
-      let (tmAuthor,(tmTitle,tmHighlights)) = (parseAuthor &&& parseTitle &&& parseHighlights) $ take 3 $ tail ls
-          tMeta = TutorialMeta {..}
-          tContent = parseContent $ toTxt $ unlines $ drop 5 ls
-      in Just Tutorial {..}
-
-getTutorial t = do
+getTutorial s = do
   State {..} <- app
-  case filter ((t ==) . tmPath . tMeta) tutorials of
-    []    -> send Nothing
-    (t:_) -> send (Just t)
-
-getFeaturedTutorial = do
-  State {..} <- app
-  case tutorials of
-    []    -> send Nothing
-    (t:_) -> send (Just t)
+  sendMaybeFromList (filter ((s ==) . tmSlug . tMeta) tutorials)
 
 getTutorialMetas = do
   State {..} <- app
-  send $ map tMeta tutorials
-
-
--- Markdown
-
-parseContent :: Txt -> [View]
-parseContent cnt =
-    let Right !result = Text.Pandoc.Class.runPure $ do
-          !md <- readMarkdown Pandoc.def { Pandoc.readerExtensions = Pandoc.pandocExtensions } (T.repack cnt)
-          !str <- writeHtml5String Pandoc.def md
-          let !view = parseView str
-          pure view
-    in result
-
-parseAuthor :: [String] -> Txt
-parseAuthor = parseField "author:"
-
-parseTitle :: [String] -> Txt
-parseTitle = parseField "title:"
-
-parseHighlights :: [String] -> [(Int,Int)]
-parseHighlights ls =
-  let hs = parseField "highlights:" ls
-  in fromMaybe [] $ readMaybe (fromTxt hs)
-
-parseField :: String -> [String] -> Txt
-parseField field ls =
-  case filter (field `isInfixOf`) ls of
-    [] -> ""
-    (f:_) -> toTxt $ trim $ tail $ dropWhile (/= ':') f
-  where
-    trim = unpad . unpad
-    unpad = dropWhile isSpace . reverse
+  send (fmap tMeta tutorials)

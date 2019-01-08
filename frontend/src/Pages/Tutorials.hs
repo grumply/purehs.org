@@ -1,48 +1,45 @@
-{-# LANGUAGE QuasiQuotes #-}
-module Pages.Blog (blogPage) where
+module Pages.Tutorials (tutorialsPage) where
 
 import Pure hiding (Transform)
 import Pure.Data.CSS
-import Pure.Data.Txt as Txt
 import Pure.Data.Txt.Interpolate
 import Pure.Router
 import Pure.Theme
 
-import Containers.Blog
+import Containers.Tutorials
 import Shared.Colors
 import Shared.Components.Header
 import Shared.Styles
 
 import Scope hiding (has,none,transform)
 
-blogPage :: PageScope => View
-blogPage =
-  Div <| Theme BlogPageT . Theme PageT |>
+tutorialsPage :: PageScope => View
+tutorialsPage =
+  Div <| Theme TutorialsPageT . Theme PageT |>
     [ header
-    , Div <| Theme BlogContainerT |>
-      [ H1 <| Theme BlogHeaderT |>
-        [ "Posts" ]
-      , container loading postMetas
+    , Div <| Theme TutorialsContainerT |>
+      [ H1 <| Theme TutorialsHeaderT |>
+        [ "Tutorials" ]
+      , container loading tutorialMetas
       ]
     ]
 
 loading =
   Div <| Theme LoadingT
 
-postMetas pms =
-  Div <| Theme PostsT |> (fmap postMeta pms)
+tutorialMetas pms =
+  Div <| Theme TutorialsT |> (fmap tutorialMeta pms)
 
-postMeta PostMeta {..} =
+tutorialMeta TutorialMeta {..} =
   let
-    ref = [i|/blog/#{slug}|]
+    ref = [i|/tut/#{slug}|]
   in
-    Div <| Theme PostT . lref ref |>
+    Div <| Theme TutorialT . lref ref |>
       [ Div <| Theme TitleT |> [ text title ]
-      , Div <| Theme DateT  |> [ ]
       ]
 
-data BlogPageT = BlogPageT
-instance Themeable BlogPageT where
+data TutorialsPageT = TutorialsPageT
+instance Themeable TutorialsPageT where
   theme c _ = void $ do
     is c .> do
       minHeight     =: per 100
@@ -52,8 +49,8 @@ instance Themeable BlogPageT where
       paddingTop    =: ems 3
       paddingBottom =: ems 3
 
-data BlogContainerT = BlogContainerT
-instance Themeable BlogContainerT where
+data TutorialsContainerT = TutorialsContainerT
+instance Themeable TutorialsContainerT where
   theme c _ = void $
     is c .> do
       width       =: per 100
@@ -62,8 +59,8 @@ instance Themeable BlogContainerT where
       marginRight =: auto
       padding     =: ems 1
 
-data BlogHeaderT = BlogHeaderT
-instance Themeable BlogHeaderT where
+data TutorialsHeaderT = TutorialsHeaderT
+instance Themeable TutorialsHeaderT where
   theme c _ = void $ is c .> do
     fontSize =: ems 3
     color =: darkGray
@@ -72,12 +69,12 @@ data LoadingT = LoadingT
 instance Themeable LoadingT where
   theme c _ = void $ is c $ return ()
 
-data PostsT = PostsT
-instance Themeable PostsT where
+data TutorialsT = TutorialsT
+instance Themeable TutorialsT where
   theme c _ = void $ is c $ return ()
 
-data PostT = PostT
-instance Themeable PostT where
+data TutorialT = TutorialT
+instance Themeable TutorialT where
   theme c _ = void $ is c $ return ()
 
 data TitleT = TitleT
@@ -85,7 +82,3 @@ instance Themeable TitleT where
   theme c _ = void $ do
     is c .> do
       fontSize =: ems 2
-
-data DateT = DateT
-instance Themeable DateT where
-  theme c _ = void $ is c $ return ()

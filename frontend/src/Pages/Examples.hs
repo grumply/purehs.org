@@ -30,11 +30,9 @@ examples es =
   Div <| Theme ExamplesT |>
     (es <&> example)
 
-example Example {..} =
+example Example { meta = ExampleMeta {..}, ..} =
   Div <| Theme MarkdownT . Theme ExampleT |>
-    [ H2  <| Theme TitleT |> [ text (emTitle eMeta) ]
-    , Div <| Theme ContentT |> eContent
-    , Div <| Theme CodeT |> eCode
+    [ Div <| Theme ContentT |> content
     ]
 
 data ExamplesPageT = ExamplesPageT
@@ -78,15 +76,9 @@ data ExampleT = ExampleT
 instance Themeable ExampleT where
   theme c _ = void $ is c $ return ()
 
-data TitleT = TitleT
-instance Themeable TitleT where
-  theme c _ = void $ is c .> do
-    color =: darkLavender
-
 data ContentT = ContentT
 instance Themeable ContentT where
-  theme c _ = void $ is c $ return ()
+  theme c _ = void $ do
+    is c . has "h2" .> do
+      color =: darkLavender
 
-data CodeT = CodeT
-instance Themeable CodeT where
-  theme c _ = void $ is c $ return ()

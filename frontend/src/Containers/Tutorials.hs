@@ -1,4 +1,4 @@
-module Containers.Examples where
+module Containers.Tutorials where
 
 import Pure
 import Pure.Async
@@ -11,18 +11,18 @@ import Data.Maybe
 import Data.Proxy
 import Control.Concurrent
 
-container :: Caching => View -> ([Example] -> View) -> View
+container :: Caching => View -> ([TutorialMeta] -> View) -> View
 container fallback render =
   let
-    proxy :: Proxy [Example]
+    proxy :: Proxy [TutorialMeta]
     proxy = Proxy
 
-    lookup :: Maybe [Example]
+    lookup :: Maybe [TutorialMeta]
     lookup = load proxy
 
     fetch | isJust lookup = return ()
-          | otherwise = req Scope.getExamples () (store proxy)
+          | otherwise = req Scope.getTutorialMetas () (store proxy)
 
   in
-    asyncAs @Example fetch $
+    asyncAs @TutorialMeta fetch $
       suspense 1000000 fallback render lookup

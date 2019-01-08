@@ -20,15 +20,21 @@ executable frontend
   main-is:             Main.hs
   other-modules:       App
                        Containers.Blog
+                       Containers.Doc
                        Containers.Docs
                        Containers.Examples
                        Containers.Post
                        Containers.Tutorial
+                       Containers.Tutorials
                        Lenses
                        Pages.Blog
+                       Pages.Doc
+                       Pages.Docs
                        Pages.Examples
                        Pages.Home
                        Pages.Post
+                       Pages.Tutorial
+                       Pages.Tutorials
                        Router
                        Routes
                        Scope
@@ -78,6 +84,7 @@ executable frontend
                        pure-styles >= 0.7 && < 1,
                        pure-suspense >= 0.7 && < 1,
                        pure-svg >= 0.7 && < 1,
+                       pure-txt >= 0.7 && < 1,
                        pure-txt-interpolate >= 0.7 && < 1,
                        pure-theme >= 0.7 && < 1,
                        pure-websocket >= 0.7 && < 1,

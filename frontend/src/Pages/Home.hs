@@ -84,7 +84,7 @@ instance Themeable GradientT where
                      blueHighlight <<>> per 70 <&>>
                      lightGreen    <<>> per 95
 
-      content         =: "\"\""
+      Pure.content    =: "\"\""
       position        =: absolute
       display         =: block
       height          =: per 100
