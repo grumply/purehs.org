@@ -20,6 +20,7 @@ postPage =
     , Div <| Theme PostContainerT |>
       [ container loading post
       ]
+    , fetcher
     ]
 
 loading =

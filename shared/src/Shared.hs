@@ -9,7 +9,7 @@ import qualified Pure.WebSocket as WS
 
 import GHC.Generics
 
-host = "10.0.1.15"
+host = "10.0.1.16"
 port = 8081
 
 data DocMeta = DocMeta
@@ -37,7 +37,7 @@ data PostMeta = PostMeta
   , month :: {-# UNPACK #-}!Txt
   , day   :: {-# UNPACK #-}!Txt
   , slug  :: {-# UNPACK #-}!Txt
-  , title :: {-# UNPACK #-}!Txt -- GHCJS can't call toTitle on slug
+  , title :: {-# UNPACK #-}!Txt -- work around GHCJS toTitle bug
   } deriving (Eq,Ord,Generic,ToJSON,FromJSON)
 
 data Post = Post
@@ -48,7 +48,7 @@ data Post = Post
 data TutorialMeta = TutorialMeta
   { number :: {-# UNPACK #-}!Txt
   , slug   :: {-# UNPACK #-}!Txt
-  , title  :: {-# UNPACK #-}!Txt -- GHCJS can't call toTitle on slug
+  , title  :: {-# UNPACK #-}!Txt -- work around GHCJS toTitle bug
   } deriving (Eq,Ord,Generic,ToJSON,FromJSON)
 
 data Tutorial = Tutorial

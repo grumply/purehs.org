@@ -11,8 +11,8 @@ import Data.Maybe
 import Data.Proxy
 import Control.Concurrent
 
-container :: Caching => View -> ([TutorialMeta] -> View) -> View
-container fallback render =
+fetcher :: Caching => View
+fetcher =
   let
     proxy :: Proxy [TutorialMeta]
     proxy = Proxy
@@ -22,7 +22,13 @@ container fallback render =
 
     fetch | isJust lookup = return ()
           | otherwise = req Scope.getTutorialMetas () (store proxy)
-
   in
-    asyncAs @TutorialMeta fetch $
-      suspense 1000000 fallback render lookup
+    asyncAs @TutorialMeta fetch Null
+
+container :: Caching => View -> ([TutorialMeta] -> View) -> View
+container fallback render =
+  let
+    proxy :: Proxy [TutorialMeta]
+    proxy = Proxy
+  in
+    maybe fallback render (load proxy)

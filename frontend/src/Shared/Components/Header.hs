@@ -42,17 +42,18 @@ instance Themeable HeaderTransparentT where
       zIndex          =: int 100
       width           =: per 100
 
-bar :: PageScope => View
-bar =
+bar_ :: PageScope => Bool -> View
+bar_ b =
   Div <| Theme BarT |>
-    [ left
+    [ if b then left else Null
     , right
     ]
 
+bar :: PageScope => View
+bar = bar_ True
+
 barMinusLogo :: PageScope => View
-barMinusLogo =
-  Div <| Theme BarT |>
-    [ right ]
+barMinusLogo = bar_ False
 
 data BarT = BarT
 instance Themeable BarT where

@@ -1,12 +1,15 @@
 module Pages.Home (homePage) where
 
 import Pure hiding (Transform)
+import Pure.Async
+import Pure.Cache
 import Pure.Data.CSS
 import Pure.Data.SVG
 import Pure.Data.SVG.Properties
 import Pure.Router
 import Pure.Theme
 
+import Containers.Tutorial
 import Shared.Colors
 import Shared.Components.Header
 import Shared.Components.Logo
@@ -14,34 +17,51 @@ import Shared.Styles
 
 import Scope hiding (has,none,transform)
 
+import Data.Maybe
+
+data Home
+
 homePage :: PageScope => View
 homePage =
   Div <| Theme PageT . Theme HomePageT |>
     [ headerTransparent
-    , Div <| Theme GradientT
     , Div <| Theme HomeT |>
-      [ Div <| Theme IntroT |>
-        [ Div <| Theme HeroT |>
-          [ logo False False HeroLogoT
-          , H1 <| Theme SloganT |>
-            [ Span <||> [ "The web from a " ]
-            , Span <||> [ I <||> [ "different angle." ] ]
-            ]
-          , P <| Theme DescriptionT |>
-            [ "Pure is a Haskell-based web stack that focuses on"
-            , Br
-            , "performance, expressiveness, and asynchrony."
-            ]
-          , Div <| Theme CallToActionT |>
-            [ A <| lref "/docs" . Theme GetPureT |>
-              [ "Get Pure" ]
-            , A <| lref "/tuts" . Theme StartTutorialT |>
-              [ "Start Tutorial" ]
+        [ Div <| Theme IntroT |>
+          [ Div <| Theme HeroT |>
+            [ logo False False HeroLogoT
+            , H1 <| Theme SloganT |>
+              [ Span <||> [ "The web from a " ]
+              , Span <||> [ I <||> [ "different angle." ] ]
+              ]
+            , P <| Theme DescriptionT |>
+              [ "Pure is a Haskell-based web stack that focuses on"
+              , Br
+              , "performance, expressiveness, and asynchrony."
+              ]
+            , Div <| Theme CallToActionT |>
+                [ A <| lref "/tut/install" . Theme GetPureT |>
+                  [ "Get Pure" ]
+                , A <| lref "/tut/quickstart" . Theme StartTutorialT |>
+                  [ "Start Tutorial" ]
+                ]
             ]
           ]
+        , Div <| Theme GradientT
         ]
-      ]
+
+    -- This is an interesting trade-off: by pushing this as far down the tree
+    -- and as shallowly as possible, we can avoid forcing updates to the main
+    -- part of the view tree and share as much as possible across pages.
+    , asyncAs @Home prefetcher Null
     ]
+  where
+    prefetcher = do
+      prefetch "install"
+      prefetch "quickstart"
+
+    prefetch t@(Tut_ -> t_)
+      | isJust (load t_ :: Maybe (Maybe Tutorial)) = return ()
+      | otherwise = void $ req Scope.getTutorial t (store t_)
 
 data HomePageT = HomePageT
 instance Themeable HomePageT where

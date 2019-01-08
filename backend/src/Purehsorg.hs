@@ -176,7 +176,7 @@ getDocMetas = do
 
 eMeta Example {..} = meta
 
-loadExamples = fmap (reverse . sortOn eMeta) $ load "examples" $ \fn ->
+loadExamples = fmap (sortOn eMeta) $ load "examples" $ \fn ->
   let num `Dash` slug = fn
   in Example ExampleMeta {..}
 
@@ -190,7 +190,7 @@ getExamples = do
 pMeta Post {..} = meta
 pmSlug PostMeta {..} = slug
 
-loadPosts = fmap (sortOn pMeta) $ load "posts" $ \fn ->
+loadPosts = fmap (reverse . sortOn pMeta) $ load "posts" $ \fn ->
   let year `Dash` (month `Dash` (day `Dash` slug)) = fn
       title = Txt.toTitle slug
   in Post PostMeta {..}
@@ -209,7 +209,7 @@ getPostMetas = do
 tMeta Tutorial {..} = meta
 tmSlug TutorialMeta {..} = slug
 
-loadTutorials = fmap (reverse . sortOn tMeta) $ load "tutorials" $ \fn ->
+loadTutorials = fmap (sortOn tMeta) $ load "tutorials" $ \fn ->
   let number `Dash` slug = fn
       title = Txt.toTitle slug
   in Tutorial TutorialMeta {..}

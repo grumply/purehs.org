@@ -20,6 +20,7 @@ tutorialPage =
     , Div <| Theme TutorialContainerT |>
       [ container loading tutorial
       ]
+    , fetcher
     ]
 
 loading =

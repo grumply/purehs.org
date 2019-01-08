@@ -11,8 +11,8 @@ import Data.Maybe
 import Data.Proxy
 import Control.Concurrent
 
-container :: Caching => View -> ([Example] -> View) -> View
-container fallback render =
+fetcher :: Caching => View
+fetcher =
   let
     proxy :: Proxy [Example]
     proxy = Proxy
@@ -22,7 +22,13 @@ container fallback render =
 
     fetch | isJust lookup = return ()
           | otherwise = req Scope.getExamples () (store proxy)
-
   in
-    asyncAs @Example fetch $
-      suspense 1000000 fallback render lookup
+    asyncAs @Example fetch Null
+
+container :: Caching => View -> ([Example] -> View) -> View
+container fallback render =
+  let
+    proxy :: Proxy [Example]
+    proxy = Proxy
+  in
+    maybe fallback render (load proxy)

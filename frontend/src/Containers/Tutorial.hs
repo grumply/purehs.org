@@ -12,15 +12,22 @@ import Data.Proxy
 import Debug.Trace
 import Control.Concurrent
 
-container :: (TutScope, Caching) => View -> (Maybe Tutorial -> View) -> View
-container fallback render = withTut $ \t ->
+newtype Tut_ = Tut_ Txt
+  deriving (Eq,Ord)
+
+fetcher :: (TutScope, Caching) => View
+fetcher = withTut $ \t ->
   let
     lookup :: Maybe (Maybe Tutorial)
-    lookup = load t
+    lookup = load (Tut_ t)
 
     fetch | isJust lookup = return ()
-          | otherwise = req Scope.getTutorial t (store t)
+          | otherwise = req Scope.getTutorial t (store (Tut_ t))
 
   in
-    asyncAs @Tutorial fetch $
-      suspense 1000000 fallback render lookup
+    asyncAs @Tutorial fetch Null
+
+container :: (TutScope, Caching) => View -> (Maybe Tutorial -> View) -> View
+container fallback render =
+  withTut (maybe fallback render . load . Tut_)
+

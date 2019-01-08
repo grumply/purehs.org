@@ -20,6 +20,7 @@ docPage =
     , Div <| Theme DocContainerT |>
       [ container loading doc
       ]
+    , fetcher
     ]
 
 loading =
