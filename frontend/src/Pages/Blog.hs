@@ -38,7 +38,7 @@ postMeta PostMeta {..} =
   in
     Div <| Theme PostT . lref ref |>
       [ Div <| Theme TitleT |> [ text title ]
-      , Div <| Theme DateT  |> [ ]
+      , Div <| Theme DateT  |> [ text year, "-", text month, "-" , text day ]
       ]
 
 data BlogPageT = BlogPageT
@@ -88,4 +88,7 @@ instance Themeable TitleT where
 
 data DateT = DateT
 instance Themeable DateT where
-  theme c _ = void $ is c $ return ()
+  theme c _ = void $ do
+    is c .> do
+      fontSize =: ems 1
+      color =: darkGray

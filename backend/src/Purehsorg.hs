@@ -191,8 +191,9 @@ pMeta Post {..} = meta
 pmSlug PostMeta {..} = slug
 
 loadPosts = fmap (reverse . sortOn pMeta) $ load "posts" $ \fn ->
-  let year `Dash` (month `Dash` (day `Dash` slug)) = fn
-      title = Txt.toTitle slug
+  let year `Dash` (month `Dash` (day `Dash` slug_)) = fn
+      slug = Txt.replace "_" "-" slug_
+      title = Txt.toTitle . Txt.replace "_" "-"  . Txt.replace "-" " " $ slug_
   in Post PostMeta {..}
 
 getPost s = do

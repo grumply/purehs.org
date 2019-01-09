@@ -8,22 +8,42 @@ import Control.Monad
 
 import Shared.Colors
 
+import Prelude hiding (or)
+
 fontStyle = "font-style"
 
+-- Page styles:
+--  Set font default to system fonts
+--  Optimize fonts for clean look and feel
+--  Set box model to border-box
+--  Set a default 100% height
 pageStyles = do
+
+  -- opinionated resets
+  -- system fonts chosen under the assumption that they are well-optimized.
+  -- border-box is the only sane box model.
+
+  is "*" . or is ":after" . or is ":before" .> do
+    boxSizing  =: inherit
+    "-wekit-box-sizing" =: inherit
+
   is "html" .> do
-    boxSizing  =: borderBox
-    "-wekit-box-sizing" =: borderBox
-    "-moz-box-sizing" =: borderBox
-    height =: per 100
+    boxSizing =: borderBox
 
   is "body" .> do
-    height =: per 100
-    margin =: zero
     fontFamily =: "-apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', sans-serif;"
     "text-rendering" =: "optimizeLegibility"
     "-webkit-font-smoothing" =: antialiased
     "-moz-osx-font-smoothing" =: "grayscale"
+
+  -- page defaults
+
+  is "html" .> do
+    height =: per 100
+
+  is "body" .> do
+    margin =: zero
+    height =: per 100
 
 data PageT = PageT
 instance Themeable PageT where

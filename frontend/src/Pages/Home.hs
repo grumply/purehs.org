@@ -34,9 +34,9 @@ homePage =
               , Span <||> [ I <||> [ "different angle." ] ]
               ]
             , P <| Theme DescriptionT |>
-              [ "Pure is a Haskell-based web stack that focuses on"
+              [ "Pure is a unified development architecture for interactive systems"
               , Br
-              , "performance, expressiveness, and asynchrony."
+              , "that strives for performance, expressiveness, and asynchrony."
               ]
             , Div <| Theme CallToActionT |>
                 [ A <| lref "/tut/install" . Theme GetPureT |>
@@ -220,6 +220,7 @@ instance Themeable CallToActionT where
       display          =: flex
       flexDirection    =: row
       justifyContent   =: center
+      marginTop        =: ems 1
 
     is c . has "a" .> do
       display          =: inlineBlock
