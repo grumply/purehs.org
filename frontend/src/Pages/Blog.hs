@@ -74,7 +74,8 @@ instance Themeable LoadingT where
 
 data PostsT = PostsT
 instance Themeable PostsT where
-  theme c _ = void $ is c $ return ()
+  theme c _ = void $ is c .> do
+    cursor =: pointer
 
 data PostT = PostT
 instance Themeable PostT where

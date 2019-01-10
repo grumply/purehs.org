@@ -72,6 +72,13 @@ markdownStyles = do
         background       =: lightGreen
         borderBottom     =: pxs 1 <<>> solid <<>> darkGreen
 
+    has "ul" .> do
+      listStyle =: none
+
+    has "h1" .> do
+      fontFamily =: "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace"
+      fontSize   =: pxs 48
+
     has "h2" .> do
       fontSize   =: pxs 32
 
@@ -94,6 +101,9 @@ markdownStyles = do
       atMedia "(max-width: 48em)" .> do
         marginRight =: pxs (-16)
 
+      atMedia "(min-width: 48em)" .> do
+        marginLeft  =: pxs 16
+
       has "h2" .> do
         margin =: pxs 8
         fontSize =: pxs 20
@@ -102,10 +112,8 @@ markdownStyles = do
         marginTop =: zero
 
     has "pre" . is ".sourceCode" .> do
-      marginTop        =: pxs 40
       marginLeft       =: pxs (-16)
       marginRight      =: pxs (-16)
-      marginBottom     =: pxs 16
       fontSize         =: ems 1
       fontFamily       =: "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace"
       fontWeight       =: int 300

@@ -21,7 +21,7 @@ docsPage =
     [ header
     , Div <| Theme DocsContainerT |>
       [ H1 <| Theme DocsHeaderT |>
-        [ "Documentation" ]
+        [ "Documentation - WIP" ]
       , container loading docMetas
       ]
     ]
@@ -78,7 +78,8 @@ instance Themeable DocMetasT where
 
 data DocMetaT = DocMetaT
 instance Themeable DocMetaT where
-  theme c _ = void $ is c $ return ()
+  theme c _ = void $ is c .> do
+    cursor =: pointer
 
 data PackageT = PackageT
 instance Themeable PackageT where

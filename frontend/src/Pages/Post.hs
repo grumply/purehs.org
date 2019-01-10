@@ -32,7 +32,7 @@ post Nothing =
 
 post (Just Post { meta = PostMeta {..}, ..}) =
   Div <| Theme MarkdownT . Theme PostT |>
-    content
+    (fmap captureLocalRefs content)
 
 data PostPageT = PostPageT
 instance Themeable PostPageT where
@@ -66,4 +66,9 @@ instance Themeable NoPostT where
 
 data PostT = PostT
 instance Themeable PostT where
-  theme c _ = void $ is c $ return ()
+  theme c _ = void $ do
+    is c $ do
+      has "h2" .> do
+        marginTop =: ems 2
+        padding =: pxs 8
+        backgroundColor =: lightLavender

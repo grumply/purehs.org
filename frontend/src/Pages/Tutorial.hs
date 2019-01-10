@@ -32,7 +32,7 @@ tutorial Nothing =
 
 tutorial (Just Tutorial { meta = TutorialMeta {..}, ..}) =
   Div <| Theme MarkdownT . Theme TutorialT |>
-    content
+    (fmap captureLocalRefs content)
 
 data TutorialPageT = TutorialPageT
 instance Themeable TutorialPageT where

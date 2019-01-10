@@ -19,7 +19,7 @@ tutorialsPage =
     [ header
     , Div <| Theme TutorialsContainerT |>
       [ H1 <| Theme TutorialsHeaderT |>
-        [ "Tutorials" ]
+        [ "Tutorials - WIP" ]
       , container loading tutorialMetas
       ]
     ]

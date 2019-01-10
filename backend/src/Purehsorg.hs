@@ -1,7 +1,7 @@
 {-# LANGUAGE ImplicitParams, DeriveAnyClass, BangPatterns, DeriveGeneric,
              ViewPatterns, OverloadedStrings, RecordWildCards,
              PatternSynonyms, TypeApplications, DuplicateRecordFields,
-             RankNTypes
+             RankNTypes, NoMonomorphismRestriction, FlexibleContexts
   #-}
 module Purehsorg where
 
@@ -90,30 +90,30 @@ loadMarkdown = do
   pure (State ds es ps ts)
 
 handleReloadMarkdown :: Handler ReloadMarkdown
-handleReloadMarkdown = respond $ do
+handleReloadMarkdown conn = handle $ do
   st <- liftIO loadMarkdown
   void $ modifyApp (put st)
 
 handleGetPost :: Handler GetPost
-handleGetPost = respond $ req >>= Purehsorg.getPost
+handleGetPost conn = handle $ req >>= Purehsorg.getPost
 
 handleGetTutorial :: Handler GetTutorial
-handleGetTutorial = respond $ req >>= Purehsorg.getTutorial
+handleGetTutorial conn = handle $ req >>= Purehsorg.getTutorial
 
 handleGetDoc :: Handler GetDoc
-handleGetDoc = respond $ req >>= Purehsorg.getDoc
+handleGetDoc conn = handle $ req >>= Purehsorg.getDoc
 
 handleGetPostMetas :: Handler GetPostMetas
-handleGetPostMetas = respond Purehsorg.getPostMetas
+handleGetPostMetas conn = handle Purehsorg.getPostMetas
 
 handleGetTutorialMetas :: Handler GetTutorialMetas
-handleGetTutorialMetas = respond Purehsorg.getTutorialMetas
+handleGetTutorialMetas conn = handle Purehsorg.getTutorialMetas
 
 handleGetDocMetas :: Handler GetDocMetas
-handleGetDocMetas = respond Purehsorg.getDocMetas
+handleGetDocMetas conn = handle Purehsorg.getDocMetas
 
 handleGetExamples :: Handler GetExamples
-handleGetExamples = respond Purehsorg.getExamples
+handleGetExamples conn = handle Purehsorg.getExamples
 
 
 -- Utilities
@@ -151,8 +151,8 @@ parseContent cnt =
           pure view
     in result
 
-sendMaybeFromList [] = send Nothing
-sendMaybeFromList (x : _) = send (Just x)
+sendMaybeFromList [] = reply Nothing
+sendMaybeFromList (x : _) = reply (Just x)
 
 
 -- Docs
@@ -169,7 +169,7 @@ getDoc (uncurry DocMeta -> m) = do
 
 getDocMetas = do
   State {..} <- app
-  send (fmap dMeta docs)
+  reply (fmap dMeta docs)
 
 
 -- Examples
@@ -182,7 +182,7 @@ loadExamples = fmap (sortOn eMeta) $ load "examples" $ \fn ->
 
 getExamples = do
   State {..} <- app
-  send examples
+  reply examples
 
 
 -- Posts
@@ -202,7 +202,7 @@ getPost s = do
 
 getPostMetas = do
   State {..} <- app
-  send (fmap pMeta posts)
+  reply (fmap pMeta posts)
 
 
 -- Tutorials
@@ -221,4 +221,4 @@ getTutorial s = do
 
 getTutorialMetas = do
   State {..} <- app
-  send (fmap tMeta tutorials)
+  reply (fmap tMeta tutorials)

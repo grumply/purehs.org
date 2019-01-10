@@ -5,6 +5,7 @@ import Shared
 
 import Pure hiding (update,modify)
 import Pure.Data.JSON as Export (logJSON,ToJSON,FromJSON)
+import Pure.Data.Txt as Txt
 import Pure.Router as Export
 import Pure.Router.Internal
 import Pure.Theme
@@ -21,6 +22,8 @@ import Data.Unique
 import Control.Lens as Export hiding (Context,(<|),(|>),(.>))
 import Control.Lens.At as Export
 import GHC.Generics as Export (Generic)
+
+import Data.Map as Map
 
 import Pure.Cache
 
@@ -101,33 +104,6 @@ run initial route routes startup page pages =
               }
       }
 
--- this debugging approach won't work with asynchronous request handling
-remote :: ( Request rqTy
-          , Req rqTy ~ (Int,request)
-          , ToJSON request
-          , ToJSON response
-          , Rsp rqTy ~ response
-          , FromJSON response
-          , (rqTy WS.∈ rqs) ~ 'True
-          )
-       => FullAPI msgs rqs
-       -> WS.WebSocket
-       -> Proxy rqTy
-       -> request
-       -> (response -> IO ())
-       -> IO ()
-remote api ws p rq f = do
-  u   <- hashUnique <$> newUnique
-  u'  <- hashUnique <$> newUnique
-  void $ forkIO $ void $ do
-    s <- time
-    r <- WS.apiRequest api ws p (u,rq) $ \_ rsp -> do
-      e <- time
-      logJSON (requestHeader p,rsp,e - s)
-      traverse_ f rsp
-    -- when debug (void $ WS.apiRequest api ws debugServer (u',()) $ \_ rsp -> traverse_ logJSON rsp)
-    return r
-
 -- Placeholder during development for future view themes.
 instance Themeable () where
   theme c _ = return ()
@@ -137,3 +113,15 @@ calc x = "calc(" <> x <> ")"
 
 fill :: Txt
 fill = "fill"
+
+-- quick and dirty solution
+captureLocalRefs :: View -> View
+captureLocalRefs v =
+  let ps = attributes (getFeatures v)
+      v' = setChildren (fmap captureLocalRefs (getChildren v)) v
+  in case Map.lookup "href" ps of
+       Just ref ->
+         case Txt.uncons ref of
+           Just ('/',_) -> Export.lref ref v'
+           _ -> v'
+       Nothing -> v'

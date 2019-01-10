@@ -7,7 +7,8 @@ import Pure hiding (update,modify,Left,Right,ref)
 import Pure.Data.JSON as Export (ToJSON,FromJSON)
 import Pure.Data.JSON (toJSON,logJSON)
 import Pure.Server
-import Pure.WebSocket as WS
+import Pure.WebSocket as WS hiding (Responding)
+import qualified Pure.WebSocket as WS
 
 import Control.Concurrent
 import Control.Monad.Reader as R
@@ -86,48 +87,10 @@ run host port initial impl f c = do
             }
     takeMVar mv
 
-type Responding app conn request response a = ReaderT request (ReaderT (ConnRef app conn,IO (),Either LazyByteString response -> IO ()) IO) a
-
-req :: Responding app conn request response request
-req = R.ask
-
-done :: Responding app conn request response ()
-done = do
-    (_,d,_) <- lift R.ask
-    lift (lift d)
-
-send :: response -> Responding app conn request response ()
-send rsp = do
-    (_,_,s) <- lift R.ask
-    lift (lift (s $ Right rsp))
-
-ref :: Responding app conn request response (ConnRef app conn)
-ref = lift (R.asks (Export.view _1))
+type Responding app conn request response a = (?app :: AppRef app) => WS.Responding request response a
 
 app :: Responding app conn request response app
-app = ref >>= liftIO . Pure.ask <&> Export.view _2
-
-conn :: Responding app conn request response conn
-conn = ref >>= liftIO . Pure.get
-
-modifyConn :: (app -> conn -> conn) -> Responding app conn request response ()
-modifyConn f = do
-    r <- ref
-    liftIO (modify_ r $ \(_,app) conn -> f app conn)
+app = liftIO $ Pure.get ?app
 
 modifyApp :: ToJSON app => (?app :: AppRef app) => AppM app r -> Responding app conn request response (MVar r)
 modifyApp f = liftIO $ update f
-
-respond :: forall rqTy request response app conn.
-              ( Request rqTy
-              , Req rqTy ~ (Int,request)
-              , Identify (Req rqTy)
-              , I (Req rqTy) ~ Int
-              , FromJSON request
-              , Rsp rqTy ~ response
-              , ToJSON response
-              )
-           => Responding app conn request response () -> ConnRef app conn -> RequestHandler rqTy
-respond rspndng ref = responds (Proxy @ rqTy) $ \done -> \case
-    Left dsp           -> logJSON dsp
-    Right (rsp,(_,rq)) -> runReaderT (runReaderT rspndng rq) (ref,done,void . rsp)

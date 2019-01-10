@@ -13,8 +13,10 @@ import Shared.Styles
 
 import Scope hiding (has,none,transform)
 
+import Debug.Trace
+
 docPage :: (DocScope, PageScope) => View
-docPage =
+docPage = withDoc $ \d -> traceShow d $
   Div <| Theme DocPageT . Theme PageT |>
     [ header
     , Div <| Theme DocContainerT |>
@@ -32,7 +34,7 @@ doc Nothing =
 
 doc (Just Doc { meta = DocMeta {..}, ..}) =
   Div <| Theme MarkdownT . Theme DocT |>
-    content
+    (fmap captureLocalRefs content)
 
 data DocPageT = DocPageT
 instance Themeable DocPageT where
