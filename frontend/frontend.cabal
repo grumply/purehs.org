@@ -84,6 +84,7 @@ executable frontend
                        pure-styles >= 0.7 && < 1,
                        pure-suspense >= 0.7 && < 1,
                        pure-svg >= 0.7 && < 1,
+                       pure-try >= 0.7 && < 1,
                        pure-txt >= 0.7 && < 1,
                        pure-txt-interpolate >= 0.7 && < 1,
                        pure-theme >= 0.7 && < 1,

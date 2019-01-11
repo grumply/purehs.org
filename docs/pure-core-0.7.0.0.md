@@ -32,7 +32,7 @@ For SVG `View` construction, see [pure-svg](/doc/pure-svg/0.7.0.0).
 
 ## Pure.Data.View.Patterns
 
-`Pure.Data.View.Patterns` exports patterns, classes, and combinators for `View` construction.
+`Pure.Data.View.Patterns` exports patterns, classes, and combinators for [View](#View) construction.
 
 ### `HasChildren`
 

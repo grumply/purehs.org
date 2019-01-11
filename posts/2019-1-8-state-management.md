@@ -125,7 +125,7 @@ command SomeCommand
 
 ### Demonstration
 
-Putting it all together, here is the same counter implemented with `excelsior`:
+Putting it all together (modulo middlewares), here is the same counter implemented with `excelsior`:
 
 ```haskell
 data Counter = Counter !Int
@@ -158,4 +158,4 @@ main = inject body $
     ]
 ```
 
-The difference between this implementation and the component implementation above is that the state of this counter is implicitly shared across the application; any place that wants to send `command`s or call `watch` will witness the same counter.
+The difference between this implementation and the component implementation above is that the state of this counter is implicitly shared across the application; any expression that uses `command`, or calls `watch`, will witness the same counter state.

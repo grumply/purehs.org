@@ -48,20 +48,7 @@ homePage =
           ]
         , Div <| Theme GradientT
         ]
-
-    -- This is an interesting trade-off: by pushing this as far down the tree
-    -- and as shallowly as possible, we can avoid forcing updates to the main
-    -- part of the view tree and share as much as possible across pages.
-    , asyncAs @Home prefetcher Null
     ]
-  where
-    prefetcher = do
-      prefetch "install"
-      prefetch "quickstart"
-
-    prefetch t@(Tut_ -> t_)
-      | isJust (load t_ :: Maybe (Maybe Tutorial)) = return ()
-      | otherwise = void $ req Scope.getTutorial t (store t_)
 
 data HomePageT = HomePageT
 instance Themeable HomePageT where

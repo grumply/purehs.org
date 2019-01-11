@@ -7,10 +7,6 @@ import Pure.Data.SVG.Properties
 import Pure.Router
 import Pure.Theme
 
-import Containers.Blog as Blog
-import Containers.Docs as Docs
-import Containers.Examples as Examples
-import Containers.Tutorials as Tuts
 import Shared.Colors
 
 import Scope hiding (none,has)
@@ -18,12 +14,12 @@ import Scope hiding (none,has)
 nav :: PageScope => View
 nav = withRoute $ \rt ->
   Nav <| Theme NavT |>
-    [ navLink (Just x == (toPageType rt)) l t f
-    | (f,x,l,t) <-
-      [ (Blog.fetcher,BlogPage,"/blog","Blog")
-      , (Docs.fetcher,DocsPage,"/docs","Docs")
-      , (Examples.fetcher,ExamplesPage,"/examples","Examples")
-      , (Tuts.fetcher,TutsPage,"/tuts","Tutorials")
+    [ navLink (Just x == (toPageType rt)) l t
+    | (x,l,t) <-
+      [ (BlogPage,"/blog","Blog")
+      , (DocsPage,"/docs","Docs")
+      , (ExamplesPage,"/examples","Examples")
+      , (TutsPage,"/tuts","Tutorials")
       ]
     ]
 
@@ -37,12 +33,11 @@ instance Themeable NavT where
         overflowX      =: auto
         justifyContent =: flexEnd
 
-navLink active link text f =
+navLink active link text =
   A <| lref link . Theme NavLinkT |>
     [ text
     , if active then Span else Null
       -- existence of span is a highlight
-    , f
     ]
 
 data NavLinkT = NavLinkT

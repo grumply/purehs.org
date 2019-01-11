@@ -9,7 +9,7 @@ import qualified Pure.WebSocket as WS
 
 import GHC.Generics
 
-host = "10.0.1.15"
+host = "35.153.138.195"
 port = 8081
 
 data DocMeta = DocMeta
