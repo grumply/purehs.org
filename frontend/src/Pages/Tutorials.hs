@@ -22,6 +22,7 @@ tutorialsPage =
         [ "Tutorials - WIP" ]
       , container loading tutorialMetas
       ]
+    , fetcher
     ]
 
 loading =

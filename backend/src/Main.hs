@@ -16,7 +16,7 @@ import           System.FilePath
 import Control.Concurrent
 
 main = do
-  forkIO $ staticHTML5Server "./dist/site/exe:frontend/"
+  -- forkIO $ staticHTML5Server "./dist/site/exe:frontend/"
   purehsorg
 
 staticHTML5Server root = run 80 (compressing app)

@@ -24,6 +24,7 @@ docsPage =
         [ "Documentation - WIP" ]
       , container loading docMetas
       ]
+    , fetcher
     ]
 
 loading =

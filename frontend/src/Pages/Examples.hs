@@ -21,6 +21,7 @@ examplesPage =
         [ "Examples" ]
       , container loading examples
       ]
+    , fetcher
     ]
 
 loading =

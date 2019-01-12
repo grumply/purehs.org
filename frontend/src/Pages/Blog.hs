@@ -24,6 +24,7 @@ blogPage =
         [ "Posts" ]
       , container loading postMetas
       ]
+    , fetcher
     ]
 
 loading =
