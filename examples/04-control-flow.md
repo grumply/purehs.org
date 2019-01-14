@@ -25,13 +25,13 @@ counter = runPureWithIO (0 :: Int) $ \ref -> do
   
   let 
 
-    button f = 
-      Button <| OnClick (\_ -> _modifyWith ref f)
+    button f cs = 
+      Button <| OnClick (\_ -> modifyWith ref f) |> cs
 
   Div =<||>
-    [ button pred |> [ "-1" ]
+    [ button pred [ "-1" ]
     , text n
-    , button succ |> [ "+1" ]
+    , button succ [ "+1" ]
     ]
     
 main = inject body counter
