@@ -19,13 +19,9 @@ examplesPage =
     , Div <| Theme ExamplesContainerT |>
       [ H1 <| Theme ExamplesHeaderT |>
         [ "Examples" ]
-      , container loading examples
+      , fetcher examples
       ]
-    , fetcher
     ]
-
-loading =
-  Div <| Theme LoadingT
 
 examples es =
   Div <| Theme ExamplesT |>
@@ -64,10 +60,6 @@ instance Themeable ExamplesHeaderT where
     marginTop =: ems 0.2
     fontSize =: ems 3
     color =: darkGray
-
-data LoadingT = LoadingT
-instance Themeable LoadingT where
-  theme c _ = void $ is c $ return ()
 
 data ExamplesT = ExamplesT
 instance Themeable ExamplesT where

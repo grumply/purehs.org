@@ -78,6 +78,7 @@ executable frontend
                        pure >= 0.7 && < 1,
                        pure-async >= 0.7 && < 1,
                        pure-cache >= 0.7 && < 1,
+                       pure-fetch >= 0.7 && <1,
                        pure-css >= 0.7 && <1,
                        pure-json >= 0.7 && < 1,
                        pure-router >= 0.7 && < 1,
@@ -89,6 +90,11 @@ executable frontend
                        pure-txt-interpolate >= 0.7 && < 1,
                        pure-theme >= 0.7 && < 1,
                        pure-websocket >= 0.7 && < 1,
+
+                       pure-lifted,
+                       pure-queue,
+                       pure-core,
+
                        shared == 0.1.*,
                        containers,
                        lens,

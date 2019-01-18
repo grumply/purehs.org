@@ -26,28 +26,28 @@ homePage =
   Div <| Theme PageT . Theme HomePageT |>
     [ headerTransparent
     , Div <| Theme HomeT |>
-        [ Div <| Theme IntroT |>
-          [ Div <| Theme HeroT |>
-            [ logo False False HeroLogoT
-            , H1 <| Theme SloganT |>
-              [ Span <||> [ "The web from a " ]
-              , Span <||> [ I <||> [ "different angle." ] ]
-              ]
-            , P <| Theme DescriptionT |>
-              [ "Pure is a unified development architecture for interactive systems"
-              , Br
-              , "that strives for performance, expressiveness, and asynchrony."
-              ]
-            , Div <| Theme CallToActionT |>
-                [ A <| lref "/tut/install" . Theme GetPureT |>
-                  [ "Get Pure" ]
-                , A <| lref "/tut/quickstart" . Theme StartTutorialT |>
-                  [ "Start Tutorial" ]
-                ]
+      [ Div <| Theme IntroT |>
+        [ Div <| Theme HeroT |>
+          [ logo False False HeroLogoT
+          , H1 <| Theme SloganT |>
+            [ Span <||> [ "The web from a " ]
+            , Span <||> [ I <||> [ "different angle." ] ]
+            ]
+          , P <| Theme DescriptionT |>
+            [ "Pure is a unified development architecture for interactive systems"
+            , Br
+            , "that strives for performance, expressiveness, and asynchrony."
+            ]
+          , Div <| Theme CallToActionT |>
+            [ A <| lref "/tut/install" . Theme GetPureT |>
+              [ "Get Pure" ]
+            , A <| lref "/tut/quickstart" . Theme StartTutorialT |>
+              [ "Start Tutorial" ]
             ]
           ]
-        , Div <| Theme GradientT
         ]
+      , Div <| Theme GradientT
+      ]
     ]
 
 data HomePageT = HomePageT

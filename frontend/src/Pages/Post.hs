@@ -18,13 +18,9 @@ postPage =
   Div <| Theme PostPageT . Theme PageT |>
     [ header
     , Div <| Theme PostContainerT |>
-      [ container loading post
+      [ fetcher post
       ]
-    , fetcher
     ]
-
-loading =
-  Div <| Theme LoadingT
 
 post Nothing =
   Div <| Theme NoPostT |>

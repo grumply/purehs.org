@@ -22,13 +22,9 @@ blogPage =
     , Div <| Theme BlogContainerT |>
       [ H1 <| Theme BlogHeaderT |>
         [ "Posts" ]
-      , container loading postMetas
+      , fetcher postMetas
       ]
-    , fetcher
     ]
-
-loading =
-  Div <| Theme LoadingT
 
 postMetas pms =
   Div <| Theme PostsT |> (fmap postMeta pms)
@@ -68,10 +64,6 @@ instance Themeable BlogHeaderT where
   theme c _ = void $ is c .> do
     fontSize =: ems 3
     color =: darkGray
-
-data LoadingT = LoadingT
-instance Themeable LoadingT where
-  theme c _ = void $ is c $ return ()
 
 data PostsT = PostsT
 instance Themeable PostsT where

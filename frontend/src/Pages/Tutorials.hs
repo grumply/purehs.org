@@ -20,13 +20,9 @@ tutorialsPage =
     , Div <| Theme TutorialsContainerT |>
       [ H1 <| Theme TutorialsHeaderT |>
         [ "Tutorials - WIP" ]
-      , container loading tutorialMetas
+      , fetcher tutorialMetas
       ]
-    , fetcher
     ]
-
-loading =
-  Div <| Theme LoadingT
 
 tutorialMetas pms =
   Div <| Theme TutorialsT |> (fmap tutorialMeta pms)
@@ -65,10 +61,6 @@ instance Themeable TutorialsHeaderT where
   theme c _ = void $ is c .> do
     fontSize =: ems 3
     color =: darkGray
-
-data LoadingT = LoadingT
-instance Themeable LoadingT where
-  theme c _ = void $ is c $ return ()
 
 data TutorialsT = TutorialsT
 instance Themeable TutorialsT where

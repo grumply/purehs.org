@@ -85,8 +85,7 @@ run initial route routes startup page pages =
   inject body $ flip ComponentIO () $ \self ->
     def
       { construct = return route
-      , executing = void $ onRoute' $ \rt -> do
-          modify_ self $ \_ _ -> rt
+      , executing = void $ onRoute' $ \rt -> modify_ self $ \_ _ -> rt
       , render = newContext self $ \_ rt ->
           flip ComponentIO rt $ \self -> let ?app = self in
             def
@@ -97,7 +96,7 @@ run initial route routes startup page pages =
                     ?route = rt
                     ?scope = []
                 in
-                  Div <| MinHeight (per 100) . Height (per 100) |>
+                  Div <| Height (per 100) . Width (per 100) |>
                     [ View (Router route (Export.route routes))
                     , page (pages rt)
                     ]

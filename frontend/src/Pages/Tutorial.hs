@@ -18,13 +18,9 @@ tutorialPage =
   Div <| Theme TutorialPageT . Theme PageT |>
     [ header
     , Div <| Theme TutorialContainerT |>
-      [ container loading tutorial
+      [ fetcher tutorial
       ]
-    , fetcher
     ]
-
-loading =
-  Div <| Theme LoadingT
 
 tutorial Nothing =
   Div <| Theme NoTutorialT |>

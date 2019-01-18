@@ -20,13 +20,9 @@ docPage = withDoc $ \d -> traceShow d $
   Div <| Theme DocPageT . Theme PageT |>
     [ header
     , Div <| Theme DocContainerT |>
-      [ container loading doc
+      [ fetcher doc
       ]
-    , fetcher
     ]
-
-loading =
-  Div <| Theme LoadingT
 
 doc Nothing =
   Div <| Theme NoDocT |>

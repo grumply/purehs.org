@@ -22,13 +22,9 @@ docsPage =
     , Div <| Theme DocsContainerT |>
       [ H1 <| Theme DocsHeaderT |>
         [ "Documentation - WIP" ]
-      , container loading docMetas
+      , fetcher docMetas
       ]
-    , fetcher
     ]
-
-loading =
-  Div <| Theme LoadingT
 
 docMetas dms =
   Div <| Theme DocMetasT |> (fmap docMeta dms)
@@ -68,10 +64,6 @@ instance Themeable DocsHeaderT where
   theme c _ = void $ is c .> do
     fontSize =: ems 3
     color =: darkGray
-
-data LoadingT = LoadingT
-instance Themeable LoadingT where
-  theme c _ = void $ is c $ return ()
 
 data DocMetasT = DocMetasT
 instance Themeable DocMetasT where
