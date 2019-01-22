@@ -15,7 +15,13 @@ $ ./deps/pure-platform/try-pure
 
 Note that `try-pure` will take a very long time to run the first time. Since Pure uses [nix](https://nixos.org/nix/) to manage dependencies and memoize builds, subsequent runs of `try-pure` will not be slow. 
 
-Now that you have the pure platform available within nix, build and run a frontend development server:
+Now install node depenencies:
+
+```bash
+$ ./ghc npm install
+```
+
+And we can finally build and run a frontend development server:
 
 ```bash
 $ ./ghc npm run dev:frontend
@@ -29,4 +35,4 @@ In a different shell, build and run the backend server:
 $ ./ghc npm run dev:backend
 ```
 
-
+This server will warch `shared/` and `backend/` and rebuild and reload the server as necessary when files change.
