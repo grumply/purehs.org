@@ -25,8 +25,8 @@ import GHC.Generics as Export (Generic)
 import Network.Socket as Network
 import System.IO
 
-type AppRef st = Ref IO () st
-type ConnRef as cs = Ref IO (WebSocket,as) cs
+type AppRef st = Ref () st
+type ConnRef as cs = Ref (WebSocket,as) cs
 type AppM st = StateT st IO
 type AppView st = (?app :: AppRef st) => View
 type AppComponent st a = (?app :: AppRef st) => a -> View

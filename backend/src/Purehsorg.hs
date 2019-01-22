@@ -90,30 +90,30 @@ loadMarkdown = do
   pure (State ds es ps ts)
 
 handleReloadMarkdown :: Handler ReloadMarkdown
-handleReloadMarkdown conn = handle $ do
+handleReloadMarkdown conn = responding $ do
   st <- liftIO loadMarkdown
   void $ modifyApp (put st)
 
 handleGetPost :: Handler GetPost
-handleGetPost conn = handle $ req >>= Purehsorg.getPost
+handleGetPost conn = responding $ acquire >>= Purehsorg.getPost
 
 handleGetTutorial :: Handler GetTutorial
-handleGetTutorial conn = handle $ req >>= Purehsorg.getTutorial
+handleGetTutorial conn = responding $ acquire >>= Purehsorg.getTutorial
 
 handleGetDoc :: Handler GetDoc
-handleGetDoc conn = handle $ req >>= Purehsorg.getDoc
+handleGetDoc conn = responding $ acquire >>= Purehsorg.getDoc
 
 handleGetPostMetas :: Handler GetPostMetas
-handleGetPostMetas conn = handle Purehsorg.getPostMetas
+handleGetPostMetas conn = responding Purehsorg.getPostMetas
 
 handleGetTutorialMetas :: Handler GetTutorialMetas
-handleGetTutorialMetas conn = handle Purehsorg.getTutorialMetas
+handleGetTutorialMetas conn = responding Purehsorg.getTutorialMetas
 
 handleGetDocMetas :: Handler GetDocMetas
-handleGetDocMetas conn = handle Purehsorg.getDocMetas
+handleGetDocMetas conn = responding Purehsorg.getDocMetas
 
 handleGetExamples :: Handler GetExamples
-handleGetExamples conn = handle Purehsorg.getExamples
+handleGetExamples conn = responding Purehsorg.getExamples
 
 
 -- Utilities
