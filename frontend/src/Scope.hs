@@ -38,8 +38,8 @@ class Supply (scope :: Constraint) where
 extend :: forall scope scope' a. (Supply scope, Supply scope', scope) => (Ctx scope -> Ctx scope') -> (scope' => a) -> a
 extend f a = reflect @scope $ \s -> reify @scope' (f s) a
 
-instance Supply (?context :: Context m p s super) where
-   type Ctx (?context :: Context m p s super) = Context m p s super
+instance Supply (?context :: Context p s super) where
+   type Ctx (?context :: Context p s super) = Context p s super
    reflect f = f ?context
    reify context f =
        let ?context = context

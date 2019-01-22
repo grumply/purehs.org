@@ -1,41 +1,32 @@
 ## Getting And Running Pure
 
-Pure uses [nix](https://nixos.org/nix/) to set up a development environment. 
-
-### Hello, World!
-
-If this is your first time using Pure, know that the first build can take a while. Subsequent builds will be much faster.
-
-First, clone [pure-platform](https://github.com/grumply/pure-platform):
+To get started, clone the project skeleton:
 
 ```bash
-git clone https://github.com/grumply/pure-platform
-cd pure-platform
+$ git clone https://github.com/grumply/pure-project-skeleton myapp/ --recurse-submodules
+$ cd myapp/
 ```
 
-Now, build the necessary development tools and drop into a shell with access to them:
+If this is your first time running Pure, you'll have to run `try-pure` to install dependencies: 
 
 ```bash
-./try-pure
+$ ./deps/pure-platform/try-pure
 ```
 
-Now create a file `Main.hs` with these contents:
+Note that `try-pure` will take a very long time to run the first time. Since Pure uses [nix](https://nixos.org/nix/) to manage dependencies and memoize builds, subsequent runs of `try-pure` will not be slow. 
 
-```haskell
-{-# LANGUAGE OverloadedStrings #-}
-import Pure
-
-main = inject body "Hello, World!"
-```
-
-Build the application:
+Now that you have the pure platform available within nix, build and run a frontend development server:
 
 ```bash
-ghcjs --make Main.hs
+$ ./ghc npm run dev:frontend
 ```
 
-Run the result:
+This server will watch `shared/` and `frontend/` and rebuild and reload the application as necessary when files change.
+
+In a different shell, build and run the backend server:
 
 ```bash
-open Main.jsexe/index.html
+$ ./ghc npm run dev:backend
 ```
+
+

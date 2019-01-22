@@ -55,15 +55,20 @@ instance Themeable BlogContainerT where
     is c .> do
       width       =: per 100
       maxWidth    =: pxs 1200
+      padding     =: ems 2
       marginLeft  =: auto
       marginRight =: auto
-      padding     =: ems 1
+      marginTop   =: ems 2
 
 data BlogHeaderT = BlogHeaderT
 instance Themeable BlogHeaderT where
-  theme c _ = void $ is c .> do
-    fontSize =: ems 3
-    color =: darkGray
+  theme c _ = void $ do
+    is c $ do
+      apply $ do
+        fontSize =: pxs 60
+        color =: darkGray
+      atMedia "(max-width: 779px)" . is c .> do
+        fontSize =: pxs 40
 
 data PostsT = PostsT
 instance Themeable PostsT where

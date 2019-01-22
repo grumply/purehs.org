@@ -31,7 +31,7 @@ import Data.Maybe
 import Debug.Trace
 
 -- A component reference with `rt` for props and `st` for state.
-type AppRef rt st = Ref IO rt st
+type AppRef rt st = Ref rt st
 
 -- Core scoping types.
 -- ScopedApp is used on initialization of router and startup code.
@@ -43,24 +43,22 @@ type ScopedPage rt st = (ScopedApp rt st, ?route :: rt, ?state :: st, ?scope :: 
 -- An update type used when updating application state.
 type AppM st = StateT st IO
 
-data Context m p s super = Context
+data Context p s super = Context
     { cProps :: p
     , cState :: s
-    , cSelf  :: Ref m p s
+    , cSelf  :: Ref p s
     , cSuper :: super
     }
 
-type ContextIO p s super = Context IO p s super
-
-context :: (?context :: Context m p s super) => Context m p s super
+context :: (?context :: Context p s super) => Context p s super
 context = ?context
 
 -- Requires TypeApplications at use site.
-withContext :: forall super m p s. (?context :: super)
-            => Ref m p s -> (p -> s -> ((?context :: Context m p s super) => View)) -> (p -> s -> View)
+withContext :: forall super p s. (?context :: super)
+            => Ref p s -> (p -> s -> ((?context :: Context p s super) => View)) -> (p -> s -> View)
 withContext self f = \p s -> let super = ?context in let ?context = Context p s self super in f p s
 
-newContext :: Ref m p s -> (p -> s -> ((?context :: Context m p s ()) => View)) -> (p -> s -> View)
+newContext :: Ref p s -> (p -> s -> ((?context :: Context p s ()) => View)) -> (p -> s -> View)
 newContext self f = \p s -> let ?context = Context p s self () in f p s
 
 -- Update the application state from IO as if we have access to a
@@ -71,7 +69,7 @@ update f = modifyM_ ?app $ \props st -> do
     logJSON st'
     return (st',return ())
 
-type ContextApp rt st = (?context :: ContextIO rt st (ContextIO () rt ()))
+type ContextApp rt st = (?context :: Context rt st (Context () rt ()))
 
 run :: (Typeable rt, Typeable st)
     => st
