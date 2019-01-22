@@ -48,6 +48,7 @@ homePage =
         ]
       , Div <| Theme GradientT
       ]
+    , titler "Pure - Haskell Application Framework"
     ]
 
 data HomePageT = HomePageT

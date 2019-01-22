@@ -24,6 +24,7 @@ blogPage =
         [ "Posts" ]
       , fetcher postMetas
       ]
+    , titler "Pure - Blog"
     ]
 
 postMetas pms =

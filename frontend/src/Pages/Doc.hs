@@ -16,12 +16,13 @@ import Scope hiding (has,none,transform)
 import Debug.Trace
 
 docPage :: (DocScope, PageScope) => View
-docPage = withDoc $ \d -> traceShow d $
+docPage = withDoc $ \(pkg,ver) ->
   Div <| Theme DocPageT . Theme PageT |>
     [ header
     , Div <| Theme DocContainerT |>
       [ fetcher doc
       ]
+    , titler ("Pure - " <> pkg <> "-v" <> ver)
     ]
 
 doc Nothing =

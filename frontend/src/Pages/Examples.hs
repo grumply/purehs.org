@@ -21,6 +21,7 @@ examplesPage =
         [ "Examples" ]
       , fetcher examples
       ]
+    , titler "Pure - Examples"
     ]
 
 examples es =

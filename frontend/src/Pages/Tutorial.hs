@@ -14,12 +14,13 @@ import Shared.Styles
 import Scope hiding (has,none,transform)
 
 tutorialPage :: (TutScope, PageScope) => View
-tutorialPage =
+tutorialPage = withTut $ \t ->
   Div <| Theme TutorialPageT . Theme PageT |>
     [ header
     , Div <| Theme TutorialContainerT |>
       [ fetcher tutorial
       ]
+    , titler ("Pure - " <> t)
     ]
 
 tutorial Nothing =

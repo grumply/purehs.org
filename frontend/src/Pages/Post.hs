@@ -14,12 +14,13 @@ import Shared.Styles
 import Scope hiding (has,none,transform)
 
 postPage :: (PostScope, PageScope) => View
-postPage =
+postPage = withPost $ \p ->
   Div <| Theme PostPageT . Theme PageT |>
     [ header
     , Div <| Theme PostContainerT |>
       [ fetcher post
       ]
+    , titler ("Pure - " <> p)
     ]
 
 post Nothing =

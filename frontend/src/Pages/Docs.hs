@@ -24,6 +24,7 @@ docsPage =
         [ "Documentation - WIP" ]
       , fetcher docMetas
       ]
+    , titler "Pure - Documentation"
     ]
 
 docMetas dms =

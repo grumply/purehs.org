@@ -22,6 +22,7 @@ tutorialsPage =
         [ "Tutorials - WIP" ]
       , fetcher tutorialMetas
       ]
+    , titler "Pure - Tutorials"
     ]
 
 tutorialMetas pms =
