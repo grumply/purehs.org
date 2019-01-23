@@ -12,3 +12,5 @@
 * [pure-html](/doc/pure-html/0.7.0.0)
 * [pure-state](/doc/pure-state/0.7.0.0)
 * [pure-styles](/doc/pure-styles/0.7.0.0)
+
+When developing a Pure application, most modules that use Pure functionality will import the `Pure` module.

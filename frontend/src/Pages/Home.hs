@@ -41,7 +41,7 @@ homePage =
           , Div <| Theme CallToActionT |>
             [ A <| lref "/tut/install" . Theme GetPureT |>
               [ "Get Pure" ]
-            , A <| lref "/tut/quickstart" . Theme StartTutorialT |>
+            , A <| lref "/tut/introduction" . Theme StartTutorialT |>
               [ "Start Tutorial" ]
             ]
           ]
