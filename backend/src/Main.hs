@@ -9,19 +9,22 @@ import           Network.HTTP.Types
 import           Network.Wai
 import           Network.Wai.Application.Static
 import           Network.Wai.Handler.Warp
-import           Network.Wai.Middleware.Gzip
+-- import           Network.Wai.Middleware.Gzip
 import           System.Environment
 import           System.FilePath
+
+import Shared (host,port)
 
 import Control.Concurrent
 
 main = do
-  -- forkIO $ staticHTML5Server "./dist/site/exe:frontend/"
-  purehsorg
+  forkIO $ staticHTML5Server "./dist/site/exe:frontend/"
+  -- purehsorg host port
+  purehsorg "127.0.0.1" port
 
-staticHTML5Server root = run 80 (compressing app)
+staticHTML5Server root = run 80 app -- (compressing app)
   where
-    compressing = gzip def { gzipFiles = GzipCacheFolder "/cache" }
+    -- compressing = gzip def { gzipFiles = GzipCacheFolder "/cache" }
     app req send =
       case pathInfo req of
         ["main.js"] -> fileServer req send

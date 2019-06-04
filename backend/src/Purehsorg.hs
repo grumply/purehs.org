@@ -1,224 +1,147 @@
-{-# LANGUAGE ImplicitParams, DeriveAnyClass, BangPatterns, DeriveGeneric,
-             ViewPatterns, OverloadedStrings, RecordWildCards,
-             PatternSynonyms, TypeApplications, DuplicateRecordFields,
-             RankNTypes, NoMonomorphismRestriction, FlexibleContexts
-  #-}
 module Purehsorg where
 
-import App hiding (none)
-import Shared
+import Pure hiding (ask,get)
+import Pure.Capability
+import Pure.Capability.TH
+import Pure.Server
+import Pure.WebSocket as WS
+import qualified Shared
 
-import Pure hiding (Left,Right,Doc,reverse,none,get,modify)
-import qualified Pure.Data.Txt as Txt
-import Pure.Data.JSON hiding (Null,(.=),parseField)
-import Pure.WebSocket as WS hiding (respond,Closed)
-
-import qualified Control.Monad.State as St
-
-import Control.Arrow hiding (app)
-import Control.Applicative
+import Control.Monad
 import Control.Concurrent
-import Data.Char
-import Data.Either
-import Data.Foldable
-import Data.Function
-import Data.List as List
-import Data.Maybe
-import Data.Ord
-import Data.Semigroup
-import Data.Traversable
-import GHC.Generics
-import System.Directory
-import System.FilePath
+import Data.IORef
+import Network.Socket as Network
 import System.IO
 
-import Pure.Data.Render
-import Pure.TagSoup
+import Control.Lens
+import Control.Lens.Operators
+import Control.Lens.TH
 
-import Text.Pandoc.Class
-import Text.Pandoc.Readers.Markdown
-import Text.Pandoc.Writers.HTML
-import qualified Text.Pandoc.Options as Pandoc
+import Services.Docs as Docs
+import Services.Examples as Examples
+import Services.Posts as Posts
+import Services.Tutorials as Tutorials
+import Context
 
-import Text.Read hiding (get,lift)
+data ConnEnv = ConnEnv WebSocket
 
-data State = State
-  { docs      :: [Doc]
-  , examples  :: [Example]
-  , posts     :: [Post]
-  , tutorials :: [Tutorial]
-  } deriving (Generic,ToJSON,FromJSON)
+data ConnState = ConnState 
+  { _enacted :: Bool
+  }
+makeLenses ''ConnState
 
-data Conn = Conn { _connIp :: Txt } deriving (Generic,ToJSON,FromJSON)
+newtype ConnM a = ConnM { runConnM :: Aspect (Ctx ConnM) ConnEnv ConnState a }
+mkAspect ''ConnM
 
-type Handler rqTy = (?app :: AppRef State) => ConnRef State Conn -> RequestHandler rqTy
+data AppEnv = AppEnv String Int
 
-
--- main
+data AppState = AppState 
+  { _loaded :: Bool
+  }
+makeLenses ''AppState
 
-purehsorg :: IO ()
-purehsorg = do
-  st <- loadMarkdown
-  run host port st impl state conn
+newtype AppM a = AppM { runAppM :: Aspect (Ctx AppM) AppEnv AppState a }
+mkAspect ''AppM
+
+viewApp :: Ctx AppM -> String -> Int -> View
+viewApp ctx host port = viewAppM app ctx (AppEnv host port) (AppState False)
+
+app :: AppM View
+app = do
+  AppEnv host port <- ask
+  AppState loaded <- get
+  unless loaded $ do
+    loadDocs
+    loadExamples
+    loadPosts
+    loadTutorials
+  c <- ctx >>= rebase
+  pure $
+    Server host port $ \ws ->
+      viewConn (ffmap liftIO c) ws
+
+viewConn :: Ctx ConnM -> WebSocket -> View
+viewConn ctx ws = viewConnM conn ctx (ConnEnv ws) (ConnState False)
+
+ip :: ConnM Txt
+ip = do
+  ConnEnv ws <- ask
+  Just (getIP -> ip,_,_,_) <- liftIO $ wsSocket <$> readIORef ws
+  pure ip
   where
-    state ip = return (Conn ip)
+    getIP :: Network.SockAddr -> Txt
+    getIP (SockAddrInet _ ha) = toTxt (show ha)
+    getIP (SockAddrInet6 _ _ ha _) = toTxt (show ha)
+    getIP _ = error "getIP: Invalid socket type; cannot extract address."
 
-    conn !as !st = Null
+conn :: ConnM View
+conn = do
+  env@(ConnEnv ws) <- ask
+  ConnState active <- get
+  ref <- sref
+  c <- ctx
+  unless active $ do
+    liftIO $ do
+      enact ws (impl c env ref)
+      activate ws
+    enacted #= True
+  -- do something here?
+  pure Null
 
-
+type Conn = SRef ConnState
+
+runConn :: Ctx ConnM -> ConnEnv -> Conn -> ConnM a -> IO a
+runConn ctx env conn connm = evalAspect (runConnM connm) ctx env conn
+
+purehsorg :: String -> Int -> IO ()
+purehsorg host port = do
+  inject body (viewApp productionCtx host port)
+  hSetBuffering stdout LineBuffering
+  sleep
+  where
+    sleep = forever (threadDelay (6 * 10 ^ 10))
+
 -- API Implementation
 
-impl self = Impl Shared.api msgs reqs
+impl ctx env conn = Impl Shared.api msgs reqs
   where
-    msgs = none
-    reqs =
-          handleReloadMarkdown self <:>
-          handleGetPost self <:>
-          handleGetTutorial self <:>
-          handleGetDoc self <:>
-          handleGetPostMetas self <:>
-          handleGetTutorialMetas self <:>
-          handleGetDocMetas self <:>
-          handleGetExamples self <:>
-          none
+    msgs = WS.none
+    reqs = handleReloadMarkdown ctx env conn <:>
+           handleGetPost ctx env conn <:>
+           handleGetTutorial ctx env conn <:>
+           handleGetDoc ctx env conn <:>
+           handleGetPostMetas ctx env conn <:>
+           handleGetTutorialMetas ctx env conn <:>
+           handleGetDocMetas ctx env conn <:>
+           handleGetExamples ctx env conn <:>
+           WS.none
 
-loadMarkdown = do
-  ds <- loadDocs
-  es <- loadExamples
-  ps <- loadPosts
-  ts <- loadTutorials
-  pure (State ds es ps ts)
+handleGetPost :: Ctx ConnM -> ConnEnv -> Conn -> RequestHandler Shared.GetPost
+handleGetPost ctx env conn = respondWith $ runConn ctx env conn . Posts.lookupPost
 
-handleReloadMarkdown :: Handler ReloadMarkdown
-handleReloadMarkdown conn = responding $ do
-  st <- liftIO loadMarkdown
-  void $ modifyApp (put st)
+handleGetTutorial :: Ctx ConnM -> ConnEnv -> Conn -> RequestHandler Shared.GetTutorial
+handleGetTutorial ctx env conn = respondWith $ runConn ctx env conn . Tutorials.lookupTutorial
 
-handleGetPost :: Handler GetPost
-handleGetPost conn = responding $ acquire >>= Purehsorg.getPost
+handleGetDoc :: Ctx ConnM -> ConnEnv -> Conn -> RequestHandler Shared.GetDoc
+handleGetDoc ctx env conn = respondWith $ runConn ctx env conn . Docs.lookupDoc . uncurry Shared.DocMeta
 
-handleGetTutorial :: Handler GetTutorial
-handleGetTutorial conn = responding $ acquire >>= Purehsorg.getTutorial
+handleGetPostMetas :: Ctx ConnM -> ConnEnv -> Conn -> RequestHandler Shared.GetPostMetas
+handleGetPostMetas ctx env conn = respondWith $ const $ runConn ctx env conn Posts.getPostMetas
 
-handleGetDoc :: Handler GetDoc
-handleGetDoc conn = responding $ acquire >>= Purehsorg.getDoc
+handleGetTutorialMetas :: Ctx ConnM -> ConnEnv -> Conn -> RequestHandler Shared.GetTutorialMetas
+handleGetTutorialMetas ctx env conn = respondWith $ const $ runConn ctx env conn Tutorials.getTutorialMetas
 
-handleGetPostMetas :: Handler GetPostMetas
-handleGetPostMetas conn = responding Purehsorg.getPostMetas
+handleGetDocMetas :: Ctx ConnM -> ConnEnv -> Conn -> RequestHandler Shared.GetDocMetas
+handleGetDocMetas ctx env conn = respondWith $ const $ runConn ctx env conn Docs.getDocMetas
 
-handleGetTutorialMetas :: Handler GetTutorialMetas
-handleGetTutorialMetas conn = responding Purehsorg.getTutorialMetas
+handleGetExamples :: Ctx ConnM -> ConnEnv -> Conn -> RequestHandler Shared.GetExamples
+handleGetExamples ctx env conn = respondWith $ const $ runConn ctx env conn Examples.getExamples
 
-handleGetDocMetas :: Handler GetDocMetas
-handleGetDocMetas conn = responding Purehsorg.getDocMetas
-
-handleGetExamples :: Handler GetExamples
-handleGetExamples conn = responding Purehsorg.getExamples
-
-
--- Utilities
-
-listMarkdownFiles :: FilePath -> IO [FilePath]
-listMarkdownFiles cd = filter validMarkdown <$> getDirectoryContents cd
+handleReloadMarkdown :: Ctx ConnM -> ConnEnv -> Conn -> RequestHandler Shared.ReloadMarkdown
+handleReloadMarkdown ctx env conn = respondWith $ const $ runConn ctx env conn reload
   where
-    validMarkdown ('.':_) = False
-    validMarkdown (takeExtension -> ".md") = True
-    validMarkdown _ = False
-
-load :: FilePath -> (Txt -> [View] -> a) -> IO [a]
-load sub parse = do
-  cd <- getCurrentDirectory
-  fs <- listMarkdownFiles (cd </> sub)
-  traverse (read cd) fs
-  where
-    read cd fp@(toTxt . dropExtension -> fn) = do
-      cnt <- readFile (cd </> sub </> fp)
-      pure $ parse (Txt.replace "^" " " fn) (parseContent $ toTxt cnt)
-
-safeTail t = if Txt.null t then t else Txt.tail t
-
-pattern Dash before after <- (Txt.breakOn "-" -> (before,safeTail -> after))
-
-parseContent :: Txt -> [View]
-parseContent cnt =
-    let Right !result = Text.Pandoc.Class.runPure $ do
-          !md <- readMarkdown
-                   Pandoc.def
-                     { Pandoc.readerExtensions = Pandoc.pandocExtensions }
-                   (Txt.repack cnt)
-          !str <- writeHtml5String Pandoc.def md
-          let !view = parseView str
-          pure view
-    in result
-
-sendMaybeFromList [] = reply Nothing
-sendMaybeFromList (x : _) = reply (Just x)
-
-
--- Docs
-
-dMeta Doc {..} = meta
-
-loadDocs = fmap (sortOn dMeta) $ load "docs" $ \fn ->
-  let (Txt.reverse -> version) `Dash` (Txt.reverse -> package) = Txt.reverse fn
-  in Doc DocMeta {..}
-
-getDoc (uncurry DocMeta -> m) = do
-  State {..} <- app
-  sendMaybeFromList (filter ((m ==) . dMeta) docs)
-
-getDocMetas = do
-  State {..} <- app
-  reply (fmap dMeta docs)
-
-
--- Examples
-
-eMeta Example {..} = meta
-
-loadExamples = fmap (sortOn eMeta) $ load "examples" $ \fn ->
-  let num `Dash` slug = fn
-  in Example ExampleMeta {..}
-
-getExamples = do
-  State {..} <- app
-  reply examples
-
-
--- Posts
-
-pMeta Post {..} = meta
-pmSlug PostMeta {..} = slug
-
-loadPosts = fmap (reverse . sortOn pMeta) $ load "posts" $ \fn ->
-  let year `Dash` (month `Dash` (day `Dash` slug_)) = fn
-      slug = Txt.replace "_" "-" slug_
-      title = Txt.toTitle . Txt.replace "_" "-"  . Txt.replace "-" " " $ slug_
-  in Post PostMeta {..}
-
-getPost s = do
-  State {..} <- app
-  sendMaybeFromList (filter ((s ==) . pmSlug . pMeta) posts)
-
-getPostMetas = do
-  State {..} <- app
-  reply (fmap pMeta posts)
-
-
--- Tutorials
-
-tMeta Tutorial {..} = meta
-tmSlug TutorialMeta {..} = slug
-
-loadTutorials = fmap (sortOn tMeta) $ load "tutorials" $ \fn ->
-  let number `Dash` slug = fn
-      title = Txt.toTitle slug
-  in Tutorial TutorialMeta {..}
-
-getTutorial s = do
-  State {..} <- app
-  sendMaybeFromList (filter ((s ==) . tmSlug . tMeta) tutorials)
-
-getTutorialMetas = do
-  State {..} <- app
-  reply (fmap tMeta tutorials)
+    reload = do
+      loadDocs
+      loadExamples
+      loadPosts
+      loadTutorials
