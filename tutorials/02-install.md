@@ -24,7 +24,7 @@ $ ./ghc npm install
 And we can finally build and run a frontend development server:
 
 ```bash
-$ ./ghc npm run dev:frontend
+$ ./ghcjs npm run dev:frontend
 ```
 
 This server will watch `shared/` and `frontend/` and rebuild and reload the application as necessary when files change.
