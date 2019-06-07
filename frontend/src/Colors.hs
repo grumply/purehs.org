@@ -1,6 +1,9 @@
-module Shared.Colors where
+module Colors where
 
 import Pure
+
+fill :: Txt
+fill = "fill"
 
 -- way too many colors
 

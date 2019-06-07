@@ -1,4 +1,4 @@
-module Shared.Styles where
+module Themes where
 
 import Pure
 import Pure.Data.CSS
@@ -6,7 +6,7 @@ import Pure.Theme
 
 import Control.Monad
 
-import Shared.Colors
+import Colors
 
 import Prelude hiding (or)
 

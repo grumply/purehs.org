@@ -18,83 +18,57 @@ cabal-version:       >=1.10
 
 executable frontend
   main-is:             Main.hs
-  other-modules:       App
-                       Containers.Blog
-                       Containers.Doc
-                       Containers.Docs
-                       Containers.Examples
-                       Containers.Post
-                       Containers.Tutorial
-                       Containers.Tutorials
-                       Lenses
-                       Pages.Blog
+  other-modules:       Colors
+                       Context
+                       Imports
+                       Themes
+                       Utils
+                       Components.GitHubLogo
+                       Components.Header
+                       Components.Logo
+                       Components.Nav
+                       Components.Titler
+                       Services.Client
+                       Services.Storage
                        Pages.Doc
                        Pages.Docs
                        Pages.Examples
                        Pages.Home
                        Pages.Post
+                       Pages.Posts
                        Pages.Tutorial
                        Pages.Tutorials
-                       Router
-                       Routes
-                       Scope
-                       Services
-                       Services.Client
-                       Shared.Colors
-                       Shared.Components.GitHubLogo
-                       Shared.Components.Header
-                       Shared.Components.Logo
-                       Shared.Components.Nav
-                       Shared.Styles
-                       State
   -- other-extensions:
-  default-extensions:  OverloadedStrings
-                       RecordWildCards
-                       FlexibleContexts
-                       UndecidableInstances
-                       FlexibleInstances
-                       ViewPatterns
-                       PatternSynonyms
-                       ScopedTypeVariables
-                       ExistentialQuantification
-                       DuplicateRecordFields
-                       LambdaCase
-                       MultiParamTypeClasses
-                       DeriveGeneric
-                       TemplateHaskell
-                       QuasiQuotes
-                       DeriveAnyClass
+  default-extensions:  TemplateHaskell
                        FunctionalDependencies
-                       DataKinds
-                       TypeApplications
-                       DefaultSignatures
-                       TypeFamilies
-                       RankNTypes
+                       MultiParamTypeClasses
+                       FlexibleInstances
+                       GeneralizedNewtypeDeriving
+                       OverloadedStrings
+                       QuasiQuotes
+                       FlexibleContexts
+                       StandaloneDeriving
                        LambdaCase
-                       DeriveDataTypeable
-                       InstanceSigs
-                       ConstraintKinds
+                       ScopedTypeVariables
+                       RecordWildCards
+                       TypeFamilies
+                       GADTs
+                       RankNTypes
   build-depends:       base >=4.11 && <4.12,
                        pure >= 0.7 && < 1,
-                       pure-async >= 0.7 && < 1,
-                       pure-cache >= 0.7 && < 1,
-                       pure-fetch >= 0.7 && <1,
+                       pure-capability >= 0.7 && <1,
                        pure-css >= 0.7 && <1,
                        pure-json >= 0.7 && < 1,
+                       pure-localstorage >= 0.7 && < 1,
+                       pure-lifted >= 0.7 && < 1,
                        pure-router >= 0.7 && < 1,
                        pure-styles >= 0.7 && < 1,
-                       pure-suspense >= 0.7 && < 1,
                        pure-svg >= 0.7 && < 1,
                        pure-try >= 0.7 && < 1,
                        pure-txt >= 0.7 && < 1,
                        pure-txt-interpolate >= 0.7 && < 1,
                        pure-theme >= 0.7 && < 1,
                        pure-websocket >= 0.7 && < 1,
-
-                       pure-lifted,
-                       pure-queue,
-                       pure-core,
-
                        shared == 0.1.*,
                        containers,
                        lens,

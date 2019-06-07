@@ -1,38 +1,89 @@
-module Pages.Post (postPage) where
+module Pages.Post where
 
-import Pure hiding (Transform)
 import Pure.Data.CSS
-import Pure.Data.Txt as Txt
-import Pure.Router
-import Pure.Theme
+import Pure.Data.Styles
 
-import Containers.Post
-import Shared.Colors
-import Shared.Components.Header
-import Shared.Styles
+import Colors
+import Context
+import Imports
+import Shared (Post(..),PostMeta(..))
+import Themes
+import Utils
 
-import Scope hiding (has,none,transform)
+import Components.Header (viewHeader,headerOffset)
+import Components.Titler (titler)
 
-postPage :: (PostScope, PageScope) => View
-postPage = withPost $ \p ->
-  Div <| Theme PostPageT . Theme PageT |>
-    [ header
-    , Div <| Theme PostContainerT |>
-      [ fetcher post
+import Services.Client hiding (client)
+import Services.Route
+import Services.Storage
+
+data Env = Env Txt
+
+data State = State (Maybe (Try Post))
+
+newtype PostM a = PostM { runPostM :: Aspect (Ctx PostM) Env State a }
+mkAspect ''PostM
+
+viewPost :: Ctx PostM -> Txt -> View
+viewPost c slug = viewPostM post c (Env slug) (State Nothing)
+
+post :: PostM View
+post = do
+  Env slug <- ask
+  State mtp <- get
+
+  request <- prepare0 $ do
+    GetPostResponse mp <- proxyRequest $
+      GetPostRequest slug
+    put $ State $ Just $ maybe Failed Done mp
+
+  when (isNothing mtp) $ do
+    liftIO $ forkIO request
+    put $ State (Just Trying)
+
+  page
+
+page :: PostM View
+page = do
+  Env slug <- ask
+  State mtp <- get
+
+  c <- ctx >>= rebase
+
+  cnt <- maybe loading (try loading failed success) mtp
+
+  pure $
+    Div <| Theme PageT . Theme PostT |>
+      [ viewHeader (ffmap liftIO c)
+      , Div <| Theme ContentT |>
+        [ cnt ]
+      , titler [i|Pure - #{slug}|]
       ]
-    , titler ("Pure - " <> p)
-    ]
 
-post Nothing =
-  Div <| Theme NoPostT |>
-    [ "Post not found." ]
+loading :: PostM View
+loading = do
+  Env slug <- ask
+  pure $
+    Div <| Theme LoadingT |>
+      [ [i|Loading #{slug}|] ]
 
-post (Just Post { meta = PostMeta {..}, ..}) =
-  Div <| Theme MarkdownT . Theme PostT |>
-    (fmap captureLocalRefs content)
+failed :: PostM View
+failed = do
+  Env slug <- ask
+  pure $
+    Div <| Theme FailedT |>
+      [ [i|Could not find post #{slug}|] ]
 
-data PostPageT = PostPageT
-instance Themeable PostPageT where
+success :: Post -> PostM View
+success Post { meta = PostMeta {..}, .. } =
+  pure $
+    Div <| Theme MarkdownT . Theme SuccessT |>
+      (fmap captureLocalRefs content)
+
+--------------------------------------------------------------------------------
+ 
+data PostT = PostT
+instance Themeable PostT where
   theme c _ = void $ do
     is c .> do
       minHeight     =: per 100
@@ -42,8 +93,8 @@ instance Themeable PostPageT where
       paddingTop    =: ems 3
       paddingBottom =: ems 3
 
-data PostContainerT = PostContainerT
-instance Themeable PostContainerT where
+data ContentT = ContentT
+instance Themeable ContentT where
   theme c _ = void $ do
     is c $ do
       headerOffset
@@ -57,15 +108,16 @@ data LoadingT = LoadingT
 instance Themeable LoadingT where
   theme c _ = void $ is c $ return ()
 
-data NoPostT = NoPostT
-instance Themeable NoPostT where
+data FailedT = FailedT
+instance Themeable FailedT where
   theme c _ = void $ is c $ return ()
 
-data PostT = PostT
-instance Themeable PostT where
+data SuccessT = SuccessT
+instance Themeable SuccessT where
   theme c _ = void $ do
     is c $ do
       has "h2" .> do
         marginTop =: ems 2
         padding =: pxs 8
         backgroundColor =: lightLavender
+

@@ -1,38 +1,89 @@
-module Pages.Tutorial (tutorialPage) where
+module Pages.Tutorial where
 
-import Pure hiding (Transform)
 import Pure.Data.CSS
-import Pure.Data.Txt as Txt
-import Pure.Router
-import Pure.Theme
+import Pure.Data.Styles
 
-import Containers.Tutorial
-import Shared.Colors
-import Shared.Components.Header
-import Shared.Styles
+import Colors
+import Context
+import Imports
+import Shared (Tutorial(..),TutorialMeta(..))
+import Themes
+import Utils
 
-import Scope hiding (has,none,transform)
+import Components.Header (viewHeader,headerOffset)
+import Components.Titler (titler)
 
-tutorialPage :: (TutScope, PageScope) => View
-tutorialPage = withTut $ \t ->
-  Div <| Theme TutorialPageT . Theme PageT |>
-    [ header
-    , Div <| Theme TutorialContainerT |>
-      [ fetcher tutorial
+import Services.Client hiding (client)
+import Services.Route
+import Services.Storage
+
+data Env = Env Txt
+
+data State = State (Maybe (Try Tutorial))
+
+newtype TutorialM a = TutorialM { runTutorialM :: Aspect (Ctx TutorialM) Env State a }
+mkAspect ''TutorialM
+
+viewTutorial :: Ctx TutorialM -> Txt -> View
+viewTutorial ctx slug = viewTutorialM tutorial ctx (Env slug) (State Nothing)
+
+tutorial :: TutorialM View
+tutorial = do
+  Env slug <- ask
+  State mtt <- get
+
+  request <- prepare0 $ do
+    GetTutorialResponse mt <- proxyRequest $
+      GetTutorialRequest slug
+    put $ State $ Just $ maybe Failed Done mt
+
+  when (isNothing mtt) $ do
+    liftIO $ forkIO request 
+    put $ State (Just Trying)
+
+  page
+
+page :: TutorialM View
+page = do
+  Env slug <- ask
+  State mtt <- get
+
+  c <- ctx >>= rebase
+
+  cnt <- maybe loading (try loading failed success) mtt
+
+  pure $
+    Div <| Theme PageT . Theme TutorialT |>
+      [ viewHeader (ffmap liftIO c)
+      , Div <| Theme ContentT |>
+        [ cnt ]
+      , titler [i|Pure - #{slug}|]
       ]
-    , titler ("Pure - " <> t)
-    ]
 
-tutorial Nothing =
-  Div <| Theme NoTutorialT |>
-    [ "Tutorial not found." ]
+loading :: TutorialM View
+loading = do
+  Env slug <- ask
+  pure $
+    Div <| Theme LoadingT |>
+      [ [i|Loading #{slug}|] ]
 
-tutorial (Just Tutorial { meta = TutorialMeta {..}, ..}) =
-  Div <| Theme MarkdownT . Theme TutorialT |>
-    (fmap captureLocalRefs content)
+failed :: TutorialM View
+failed = do
+  Env slug <- ask
+  pure $
+    Div <| Theme FailedT |>
+      [ [i|Could not find tutorial #{slug}|] ]
 
-data TutorialPageT = TutorialPageT
-instance Themeable TutorialPageT where
+success :: Tutorial -> TutorialM View
+success Tutorial { meta = TutorialMeta {..}, .. } =
+  pure $
+    Div <| Theme MarkdownT . Theme SuccessT |>
+      (fmap captureLocalRefs content)
+
+--------------------------------------------------------------------------------
+
+data TutorialT = TutorialT
+instance Themeable TutorialT where
   theme c _ = void $ do
     is c .> do
       minHeight     =: per 100
@@ -42,8 +93,8 @@ instance Themeable TutorialPageT where
       paddingTop    =: ems 3
       paddingBottom =: ems 3
 
-data TutorialContainerT = TutorialContainerT
-instance Themeable TutorialContainerT where
+data ContentT = ContentT
+instance Themeable ContentT where
   theme c _ = void $ do
     is c $ do
       headerOffset
@@ -57,10 +108,10 @@ data LoadingT = LoadingT
 instance Themeable LoadingT where
   theme c _ = void $ is c $ return ()
 
-data NoTutorialT = NoTutorialT
-instance Themeable NoTutorialT where
+data FailedT = FailedT
+instance Themeable FailedT where
   theme c _ = void $ is c $ return ()
 
-data TutorialT = TutorialT
-instance Themeable TutorialT where
+data SuccessT = SuccessT
+instance Themeable SuccessT where
   theme c _ = void $ is c $ return ()

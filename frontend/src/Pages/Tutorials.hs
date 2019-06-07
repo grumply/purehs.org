@@ -1,43 +1,89 @@
-module Pages.Tutorials (tutorialsPage) where
+module Pages.Tutorials where
 
-import Pure hiding (Transform)
+import Pure.Data.Styles
 import Pure.Data.CSS
-import Pure.Data.Txt.Interpolate
-import Pure.Router
-import Pure.Theme
 
-import Containers.Tutorials
-import Shared.Colors
-import Shared.Components.Header
-import Shared.Styles
+import Colors
+import Context
+import Imports
+import Shared (TutorialMeta(..))
+import Themes
 
-import Scope hiding (has,none,transform)
+import Components.Header (viewHeader)
+import Components.Titler (titler)
 
-tutorialsPage :: PageScope => View
-tutorialsPage =
-  Div <| Theme TutorialsPageT . Theme PageT |>
-    [ header
-    , Div <| Theme TutorialsContainerT |>
-      [ H1 <| Theme TutorialsHeaderT |>
-        [ "Tutorials - WIP" ]
-      , fetcher tutorialMetas
+import Services.Client hiding (client)
+import Services.Route
+import Services.Storage
+
+data Env = Env
+
+data State = State (Maybe [TutorialMeta])
+
+newtype TutorialsM a = TutorialsM { runTutorialsM :: Aspect (Ctx TutorialsM) Env State a }
+mkAspect ''TutorialsM
+
+viewTutorials :: Ctx TutorialsM -> View
+viewTutorials c = viewTutorialsM tutorials c Env (State Nothing)
+
+tutorials :: TutorialsM View
+tutorials = do
+  State mtms <- get
+
+  request <- prepare0 $ do
+    GetTutorialMetasResponse tms <- proxyRequest 
+      GetTutorialMetasRequest
+    put $ State $ Just tms
+
+  when (isNothing mtms) $ do
+    liftIO $ forkIO request
+    put $ State $ Just []
+
+  page
+
+page :: TutorialsM View
+page = do
+  State mtms <- get
+
+  c <- ctx >>= rebase
+
+  cnt <- maybe loading success mtms
+
+  pure $
+    Div <| Theme PageT . Theme TutorialsT |>
+      [ viewHeader (ffmap liftIO c)
+      , Div <| Theme ContentT |>
+        [ H1 <| Theme HeaderT |>
+          [ "Tutorials" ]
+        , cnt
+        ]
+      , titler [i|Pure - Tutorials|]
       ]
-    , titler "Pure - Tutorials"
-    ]
 
-tutorialMetas pms =
-  Div <| Theme TutorialsT |> (fmap tutorialMeta pms)
+loading :: TutorialsM View
+loading = do
+  pure $
+    Div <| Theme LoadingT |>
+      [ [i|Loading Tutorials|] ]
 
-tutorialMeta TutorialMeta {..} =
-  let
-    ref = [i|/tut/#{slug}|]
-  in
-    Div <| Theme TutorialT . lref ref |>
-      [ Div <| Theme TitleT |> [ text title ]
+success :: [TutorialMeta] -> TutorialsM View
+success tms = 
+  pure $
+    Div <| Theme SuccessT |>
+      [ tutorialMeta tm
+      | tm <- tms
       ]
+  where
+    tutorialMeta TutorialMeta {..} =
+      let
+        ref = [i|/tut/#{slug}|]
+      in
+        Div <| Theme TutorialT . lref ref |>
+          [ Div <| Theme TitleT |> [ text title ]
+          ]
 
-data TutorialsPageT = TutorialsPageT
-instance Themeable TutorialsPageT where
+data TutorialsT = TutorialsT
+instance Themeable TutorialsT where
   theme c _ = void $ do
     is c .> do
       minHeight     =: per 100
@@ -47,8 +93,8 @@ instance Themeable TutorialsPageT where
       paddingTop    =: ems 3
       paddingBottom =: ems 3
 
-data TutorialsContainerT = TutorialsContainerT
-instance Themeable TutorialsContainerT where
+data ContentT = ContentT
+instance Themeable ContentT where
   theme c _ = void $
     is c .> do
       width       =: per 100
@@ -57,14 +103,18 @@ instance Themeable TutorialsContainerT where
       marginRight =: auto
       padding     =: ems 1
 
-data TutorialsHeaderT = TutorialsHeaderT
-instance Themeable TutorialsHeaderT where
+data HeaderT = HeaderT
+instance Themeable HeaderT where
   theme c _ = void $ is c .> do
     fontSize =: ems 3
     color =: darkGray
 
-data TutorialsT = TutorialsT
-instance Themeable TutorialsT where
+data LoadingT = LoadingT
+instance Themeable LoadingT where
+  theme c _ = void $ is c $ return ()
+
+data SuccessT = SuccessT
+instance Themeable SuccessT where
   theme c _ = void $ is c $ return ()
 
 data TutorialT = TutorialT

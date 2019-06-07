@@ -1,40 +1,89 @@
-module Pages.Doc (docPage) where
+module Pages.Doc where
 
-import Pure hiding (Doc,content)
 import Pure.Data.CSS
-import Pure.Data.Txt as Txt
-import Pure.Router
-import Pure.Theme
+import Pure.Data.Styles
 
-import Containers.Doc
-import Shared.Colors
-import Shared.Components.Header
-import Shared.Styles
+import Colors
+import Context
+import Imports hiding (Doc)
+import Shared (Doc(..),DocMeta(..))
+import Themes
+import Utils
 
-import Scope hiding (has,none,transform)
+import Components.Header (viewHeader,headerOffset)
+import Components.Titler (titler)
 
-import Debug.Trace
+import Services.Client hiding (client)
+import Services.Route
+import Services.Storage
 
-docPage :: (DocScope, PageScope) => View
-docPage = withDoc $ \(pkg,ver) ->
-  Div <| Theme DocPageT . Theme PageT |>
-    [ header
-    , Div <| Theme DocContainerT |>
-      [ fetcher doc
-      ]
-    , titler ("Pure - " <> pkg <> "-v" <> ver)
-    ]
+data Env = Env Txt Txt
 
-doc Nothing =
-  Div <| Theme NoDocT |>
-    [ "Doc not found." ]
+data State = State (Maybe (Try Doc))
 
-doc (Just Doc { meta = DocMeta {..}, ..}) =
-  Div <| Theme MarkdownT . Theme DocT |>
-    (fmap captureLocalRefs content)
+newtype DocM a = DocM { runDocM :: Aspect (Ctx DocM) Env State a }
+mkAspect ''DocM
 
-data DocPageT = DocPageT
-instance Themeable DocPageT where
+viewDoc :: Ctx DocM -> Txt -> Txt -> View
+viewDoc c pkg ver = viewDocM doc c (Env pkg ver) (State Nothing)
+
+doc :: DocM View
+doc = do
+  Env pkg ver <- ask
+  State mtd <- get
+
+  request <- prepare0 $ do
+    GetDocResponse md <- proxyRequest $
+      GetDocRequest pkg ver
+    put $ State $ Just $ maybe Failed Done md
+
+  when (isNothing mtd) $ do
+    liftIO $ forkIO request 
+    put $ State (Just Trying)
+
+  page
+
+page :: DocM View
+page = do
+  Env pkg ver <- ask
+  State mtd <- get
+
+  c <- ctx >>= rebase
+
+  cnt <- maybe loading (try loading failed success) mtd
+
+  pure $
+    Div <| Theme PageT . Theme DocT |>
+        [ viewHeader (ffmap liftIO c)
+        , Div <| Theme ContentT |> 
+          [ cnt ]
+        , titler [i|Pure - #{pkg}-#{ver}|]
+        ]
+
+loading :: DocM View
+loading = do
+  Env pkg ver <- ask
+  pure $
+    Div <| Theme LoadingT |>
+      [ [i|Loading #{pkg}-#{ver}|] ]
+
+failed :: DocM View
+failed = do
+  Env pkg ver <- ask
+  pure $
+    Div <| Theme FailedT |>
+      [ [i|Could not find documentation for #{pkg}-#{ver}|] ]
+
+success :: Doc -> DocM View
+success Doc { meta = DocMeta {..}, .. } = 
+  pure $
+    Div <| Theme MarkdownT . Theme SuccessT |>
+      (fmap captureLocalRefs content)
+
+--------------------------------------------------------------------------------
+
+data DocT = DocT
+instance Themeable DocT where
   theme c _ = void $ do
     is c .> do
       minHeight     =: per 100
@@ -44,8 +93,8 @@ instance Themeable DocPageT where
       paddingTop    =: ems 3
       paddingBottom =: ems 3
 
-data DocContainerT = DocContainerT
-instance Themeable DocContainerT where
+data ContentT = ContentT
+instance Themeable ContentT where
   theme c _ = void $ do
     is c $ do
       headerOffset
@@ -59,10 +108,10 @@ data LoadingT = LoadingT
 instance Themeable LoadingT where
   theme c _ = void $ is c $ return ()
 
-data NoDocT = NoDocT
-instance Themeable NoDocT where
+data FailedT = FailedT
+instance Themeable FailedT where
   theme c _ = void $ is c $ return ()
 
-data DocT = DocT
-instance Themeable DocT where
+data SuccessT = SuccessT
+instance Themeable SuccessT where
   theme c _ = void $ is c $ return ()

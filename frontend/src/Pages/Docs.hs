@@ -1,46 +1,89 @@
-{-# LANGUAGE QuasiQuotes #-}
-module Pages.Docs (docsPage) where
+module Pages.Docs where
 
-import Pure hiding (Transform)
 import Pure.Data.CSS
-import Pure.Data.Txt as Txt
-import Pure.Data.Txt.Interpolate
-import Pure.Router
-import Pure.Theme
+import Pure.Data.Styles
 
-import Containers.Docs
-import Shared.Colors
-import Shared.Components.Header
-import Shared.Styles
+import Colors
+import Context
+import Imports
+import Shared (DocMeta(..))
+import Themes
 
-import Scope hiding (has,none,transform)
+import Components.Header (viewHeader)
+import Components.Titler (titler)
 
-docsPage :: PageScope => View
-docsPage =
-  Div <| Theme DocsPageT . Theme PageT |>
-    [ header
-    , Div <| Theme DocsContainerT |>
-      [ H1 <| Theme DocsHeaderT |>
-        [ "Documentation - WIP" ]
-      , fetcher docMetas
+import Services.Client hiding (client)
+import Services.Route
+import Services.Storage
+
+data Env = Env
+
+data State = State (Maybe [DocMeta])
+
+newtype DocsM a = DocsM { runDocsM :: Aspect (Ctx DocsM) Env State a }
+mkAspect ''DocsM
+
+viewDocs :: Ctx DocsM -> View
+viewDocs c = viewDocsM docs c Env (State Nothing)
+
+docs :: DocsM View
+docs = do
+  State mdms <- get
+
+  request <- prepare0 $ do
+    GetDocMetasResponse dms <- proxyRequest GetDocMetasRequest
+    put $ State $ Just dms
+
+  when (isNothing mdms) $ do
+    liftIO $ forkIO request
+    put $ State $ Just []
+
+  page
+
+page :: DocsM View
+page = do
+  State mdms <- get
+
+  c <- ctx >>= rebase
+
+  cnt <- maybe loading success mdms
+
+  pure $
+    Div <| Theme PageT . Theme DocsT |>
+      [ viewHeader (ffmap liftIO c)
+      , Div <| Theme ContentT |>
+        [ H1 <| Theme HeaderT |>
+          [ "Docs" ]
+        , cnt
+        ]
+      , titler [i|Pure - Docs|]
       ]
-    , titler "Pure - Documentation"
-    ]
 
-docMetas dms =
-  Div <| Theme DocMetasT |> (fmap docMeta dms)
+loading :: DocsM View
+loading = do
+  pure $
+    Div <| Theme LoadingT |>
+      [ [i|Loading Docs|] ]
 
-docMeta DocMeta {..} =
-  let
-    ref = [i|/doc/#{package}/#{version}|]
-  in
-    Div <| Theme DocMetaT . lref ref |>
-      [ Div <| Theme PackageT |> [ text package ]
-      , Div <| Theme VersionT |> [ text version ]
+success :: [DocMeta] -> DocsM View
+success dms =
+  pure $
+    Div <| Theme SuccessT |>
+      [ docMeta dm
+      | dm <- dms
       ]
+  where
+    docMeta DocMeta {..} =
+      let
+        ref = [i|/doc/#{package}/#{version}|]
+      in
+        Div <| Theme MetaT . lref ref |>
+          [ Div <| Theme PackageT |> [ text package ]
+          , Div <| Theme VersionT |> [ text version ]
+          ]
 
-data DocsPageT = DocsPageT
-instance Themeable DocsPageT where
+data DocsT = DocsT
+instance Themeable DocsT where
   theme c _ = void $ do
     is c .> do
       minHeight     =: per 100
@@ -50,8 +93,8 @@ instance Themeable DocsPageT where
       paddingTop    =: ems 3
       paddingBottom =: ems 3
 
-data DocsContainerT = DocsContainerT
-instance Themeable DocsContainerT where
+data ContentT = ContentT
+instance Themeable ContentT where
   theme c _ = void $
     is c .> do
       width       =: per 100
@@ -60,18 +103,22 @@ instance Themeable DocsContainerT where
       marginRight =: auto
       padding     =: ems 1
 
-data DocsHeaderT = DocsHeaderT
-instance Themeable DocsHeaderT where
+data HeaderT = HeaderT
+instance Themeable HeaderT where
   theme c _ = void $ is c .> do
     fontSize =: ems 3
     color =: darkGray
 
-data DocMetasT = DocMetasT
-instance Themeable DocMetasT where
+data LoadingT = LoadingT
+instance Themeable LoadingT where
   theme c _ = void $ is c $ return ()
 
-data DocMetaT = DocMetaT
-instance Themeable DocMetaT where
+data SuccessT = SuccessT
+instance Themeable SuccessT where
+  theme c _ = void $ is c $ return ()
+
+data MetaT = MetaT
+instance Themeable MetaT where
   theme c _ = void $ is c .> do
     cursor =: pointer
 

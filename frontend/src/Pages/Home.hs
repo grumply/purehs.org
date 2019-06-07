@@ -1,58 +1,68 @@
-module Pages.Home (homePage) where
+module Pages.Home where
 
-import Pure hiding (Transform)
-import Pure.Async
-import Pure.Cache
+import qualified Pure (left,content)
 import Pure.Data.CSS
+import Pure.Data.Styles
 import Pure.Data.SVG
 import Pure.Data.SVG.Properties
-import Pure.Router
-import Pure.Theme
 
-import Containers.Tutorial
-import Shared.Colors
-import Shared.Components.Header
-import Shared.Components.Logo
-import Shared.Styles
+import Colors
+import Context
+import Imports hiding (Transform)
+import Themes
 
-import Scope hiding (has,none,transform)
+import Services.Client
+import Services.Route
+import Services.Storage
 
-import Data.Maybe
+import Components.Header (viewHeaderTransparent,headerOffset)
+import Components.Logo (viewLogo)
+import Components.Titler (titler)
 
-data Home
+data Env = Env
 
-homePage :: PageScope => View
-homePage =
-  Div <| Theme PageT . Theme HomePageT |>
-    [ headerTransparent
-    , Div <| Theme HomeT |>
-      [ Div <| Theme IntroT |>
-        [ Div <| Theme HeroT |>
-          [ logo False False HeroLogoT
-          , H1 <| Theme SloganT |>
-            [ Span <||> [ "The web from a " ]
-            , Span <||> [ I <||> [ "different angle." ] ]
-            ]
-          , P <| Theme DescriptionT |>
-            [ "Pure is a unified development architecture for interactive systems"
-            , Br
-            , "that strives for performance, expressiveness, and asynchrony."
-            ]
-          , Div <| Theme CallToActionT |>
-            [ A <| lref "/tut/install" . Theme GetPureT |>
-              [ "Get Pure" ]
-            , A <| lref "/tut/introduction" . Theme StartTutorialT |>
-              [ "Start Tutorial" ]
+data State = State
+
+newtype HomeM a = HomeM { runHomeM :: Aspect (Ctx HomeM) Env State a }
+mkAspect ''HomeM
+
+viewHome :: Ctx HomeM -> View
+viewHome c = viewHomeM home c Env State
+
+home :: HomeM View
+home = do
+  c <- ctx >>= rebase
+  pure $
+    Div <| Theme PageT . Theme HomeT |>
+      [ viewHeaderTransparent (ffmap liftIO c)
+      , Div <| Theme ContentT |>
+        [ Div <| Theme IntroT |>
+          [ Div <| Theme HeroT |>
+            [ viewLogo False False HeroLogoT
+            , H1 <| Theme SloganT |>
+              [ Span <||> [ "The web from a " ]
+              , Span <||> [ I <||> [ "different angle." ] ]
+              ]
+            , P <| Theme DescriptionT |>
+              [ "Pure is a unified development architecture for interactive systems"
+              , Br
+              , "that strives for performance, expressiveness, and asynchrony."
+              ]
+            , Div <| Theme CallToActionT |>
+              [ A <| lref "/tut/install" . Theme GetPureT |>
+                [ "Get Pure" ]
+              , A <| lref "/tut/introduction" . Theme StartTutorialT |>
+                [ "Start Tutorial" ]
+              ]
             ]
           ]
+        , Div <| Theme GradientT
         ]
-      , Div <| Theme GradientT
+      , titler [i|Pure - Haskell Application Framework|]
       ]
-    , titler "Pure - Haskell Application Framework"
-    ]
 
-data HomePageT = HomePageT
-instance Themeable HomePageT where
+data HomeT = HomeT
+instance Themeable HomeT where
   theme c _ = void $ do
     is c .> do
       height          =: per 100
@@ -109,8 +119,8 @@ instance Themeable GradientT where
         paddingTop    =: ems 3
         paddingBottom =: ems 3
 
-data HomeT = HomeT
-instance Themeable HomeT where
+data ContentT = ContentT
+instance Themeable ContentT where
   theme c _ = void $ do
 
     is c .> do

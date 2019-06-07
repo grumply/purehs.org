@@ -1,25 +1,44 @@
-module Shared.Components.Header where
+module Components.Header where
 
-import Pure hiding (left,right)
-import qualified Pure
+import qualified Pure (left,right)
 import Pure.Data.CSS
 import Pure.Data.SVG
 import Pure.Data.SVG.Properties
-import Pure.Router
-import Pure.Theme
 
-import Shared.Colors
-import Shared.Components.GitHubLogo
-import Shared.Components.Logo
-import Shared.Components.Nav
+import Colors
+import Context
+import Imports hiding (left,right)
 
-import Scope hiding (has,none)
+import Services.Client hiding (client)
+import Services.Route
+import Services.Storage
 
-header :: PageScope => View
-header = Header <| Theme HeaderT |> [ bar ]
+import Components.GitHubLogo (viewGitHubLink)
+import Components.Logo (viewLogo)
+import Components.Nav (viewNav)
 
-headerTransparent :: PageScope => View
-headerTransparent = Header <| Theme HeaderTransparentT |> [ barMinusLogo ]
+data Env = Env Bool
+
+data State = State
+
+newtype HeaderM a = HeaderM { runHeaderM :: Aspect (Ctx HeaderM) Env State a }
+mkAspect ''HeaderM
+
+viewHeader :: Ctx HeaderM -> View
+viewHeader c = viewHeaderM header c (Env False) State
+
+viewHeaderTransparent :: Ctx HeaderM -> View
+viewHeaderTransparent c = viewHeaderM header c (Env True) State
+
+header :: HeaderM View
+header = do
+  Env transparent <- ask
+  let t = if transparent then Theme HeaderTransparentT else Theme HeaderT
+  b <- if transparent then barMinusLogo else bar
+  pure $
+    Header <| t |> 
+      [ b
+      ]
 
 data HeaderT = HeaderT
 instance Themeable HeaderT where
@@ -42,18 +61,35 @@ instance Themeable HeaderTransparentT where
       zIndex          =: int 100
       width           =: per 100
 
-bar_ :: PageScope => Bool -> View
-bar_ b =
-  Div <| Theme BarT |>
-    [ if b then left else Null
-    , right
-    ]
+bar_ :: Bool -> HeaderM View
+bar_ b = do
+  l <- if b then left else pure Null
+  r <- right
+  pure $
+    Div <| Theme BarT |>
+      [ l , r ]
 
-bar :: PageScope => View
+bar :: HeaderM View
 bar = bar_ True
 
-barMinusLogo :: PageScope => View
+barMinusLogo :: HeaderM View
 barMinusLogo = bar_ False
+
+left :: HeaderM View
+left = do
+  pure $
+    Div <| Theme LeftT |>
+      [ viewLogo False True HeaderLogoT ]
+
+
+right :: HeaderM View
+right = do
+  c <- ctx >>= rebase
+  pure $
+    Div <| Theme RightT |>
+      [ viewNav (ffmap liftIO c)
+      , viewGitHubLink "https://github.com/grumply/pure" HeaderGitHubLinkT
+      ]
 
 data BarT = BarT
 instance Themeable BarT where
@@ -88,10 +124,6 @@ headerOffset = do
     atMedia "(max-width: 48em)" .> do
       marginTop =: pxs 50
 
-left =
-  Div <| Theme LeftT |>
-    [ logo False True HeaderLogoT ]
-
 data LeftT = LeftT
 instance Themeable LeftT where
   theme c _ = void $ do
@@ -108,13 +140,6 @@ instance Themeable HeaderLogoT where
 
       atMedia "(max-width: 48em)" .> do
         width  =: pxs 85
-
-right :: PageScope => View
-right =
-  Div <| Theme RightT |>
-    [ nav
-    , gitHubLink "https://github.com/grumply/pure" HeaderGitHubLinkT
-    ]
 
 data RightT = RightT
 instance Themeable RightT where

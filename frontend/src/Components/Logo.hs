@@ -1,17 +1,13 @@
-module Shared.Components.Logo where
+module Components.Logo where
 
-import Pure
 import Pure.Data.CSS
 import Pure.Data.SVG as SVG
 import Pure.Data.SVG.Properties as SVG
-import Pure.Router
-import Pure.Theme
 
-import Shared.Colors
+import Colors
+import Imports
 
-import Scope hiding (has)
-
-logo simple linked theme =
+viewLogo simple linked theme =
   let svg True  = simpleLogo
       svg False = regularLogo
   in

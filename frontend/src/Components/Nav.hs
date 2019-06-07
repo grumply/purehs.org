@@ -1,27 +1,40 @@
-module Shared.Components.Nav where
+module Components.Nav where
 
-import Pure
 import Pure.Data.CSS
 import Pure.Data.SVG
 import Pure.Data.SVG.Properties
-import Pure.Router
-import Pure.Theme
 
-import Shared.Colors
+import Colors
+import Context
+import Imports
 
-import Scope hiding (none,has)
+import Services.Client hiding (client)
+import Services.Route
+import Services.Storage
 
-nav :: PageScope => View
-nav = withRoute $ \rt ->
-  Nav <| Theme NavT |>
-    [ navLink (Just x == (toPageType rt)) l t
-    | (x,l,t) <-
-      [ (BlogPage,"/blog","Blog")
-      , (DocsPage,"/docs","Docs")
-      , (ExamplesPage,"/examples","Examples")
-      , (TutsPage,"/tuts","Tutorials")
+data Env = Env
+
+data State = State
+
+newtype NavM a = NavM { runNavM :: Aspect (Ctx NavM) Env State a }
+mkAspect ''NavM
+
+viewNav :: Ctx NavM -> View
+viewNav c = viewNavM nav c Env State
+
+nav :: NavM View
+nav = do
+  rt <- getRoute
+  pure $
+    Nav <| Theme NavT |>
+      [ navLink (active rt) l t
+      | (active,l,t) <-
+        [ (isBlogRoute,"/blog","Blog")
+        , (isDocsRoute,"/docs","Docs")
+        , (isExamplesRoute,"/examples","Examples")
+        , (isTutorialsRoute,"/tuts","Tutorials")
+        ]
       ]
-    ]
 
 data NavT = NavT
 instance Themeable NavT where
@@ -34,14 +47,14 @@ instance Themeable NavT where
         justifyContent =: flexEnd
 
 navLink active link text =
-  A <| lref link . Theme NavLinkT |>
+  A <| lref link . Theme LinkT |>
     [ text
     , if active then Span else Null
       -- existence of span is a highlight
     ]
 
-data NavLinkT = NavLinkT
-instance Themeable NavLinkT where
+data LinkT = LinkT
+instance Themeable LinkT where
   theme c _ = void $ do
     is c $ do
       apply $ do
