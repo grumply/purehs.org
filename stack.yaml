@@ -1,0 +1,59 @@
+resolver: lts-12.12
+
+packages:
+- ./shared
+- ./backend
+
+extra-deps:
+- acid-state-0.14.3
+- pwstore-fast-2.4.4
+- wai-app-static-3.1.6.2
+- wai-extra-3.0.24.3
+- warp-3.2.25
+- http-types-0.12.2
+- wai-3.2.1.2
+- github: grumply/excelsior
+  commit: HEAD
+- github: grumply/pure
+  commit: HEAD
+- github: grumply/pure-capability
+  commit: HEAD
+- github: grumply/pure-json
+  commit: HEAD
+- github: grumply/pure-limiter
+  commit: HEAD
+- github: grumply/pure-queue
+  commit: HEAD
+- github: grumply/pure-render
+  commit: HEAD
+- github: grumply/pure-server
+  commit: HEAD
+- github: grumply/pure-tagsoup
+  commit: HEAD
+- github: grumply/pure-txt
+  commit: HEAD
+- github: grumply/pure-txt-interpolate
+  commit: HEAD
+- github: grumply/pure-txt-trie
+  commit: HEAD
+- github: grumply/pure-websocket
+  commit: HEAD
+- github: grumply/pure-core
+  commit: HEAD
+- github: grumply/pure-default
+  commit: HEAD
+- github: grumply/pure-dom
+  commit: HEAD
+- github: grumply/pure-events
+  commit: HEAD
+- github: grumply/pure-html
+  commit: HEAD
+- github: grumply/pure-lifted
+  commit: HEAD
+- github: grumply/pure-state
+  commit: HEAD
+- github: grumply/pure-styles
+  commit: HEAD
+- github: grumply/pure-time
+  commit: HEAD
+
