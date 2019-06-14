@@ -18,9 +18,8 @@ import Shared (host,port)
 import Control.Concurrent
 
 main = do
-  forkIO $ staticHTML5Server "./dist/site/exe:frontend/"
-  -- purehsorg host port
-  purehsorg "127.0.0.1" port
+  -- forkIO $ staticHTML5Server "./dist/site/exe:frontend/"
+  purehsorg host port
 
 staticHTML5Server root = run 80 app -- (compressing app)
   where

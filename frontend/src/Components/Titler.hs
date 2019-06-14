@@ -1,7 +1,7 @@
 {-# LANGUAGE CPP #-}
 module Components.Titler where
 
-import Pure
+import Pure.Elm
 
 #ifdef __GHCJS__
 foreign import javascript unsafe

@@ -1,44 +1,50 @@
 module Components.Header where
 
-import qualified Pure (left,right)
 import Pure.Data.CSS
-import Pure.Data.SVG
-import Pure.Data.SVG.Properties
+import Pure.Elm hiding (left,right)
+import qualified Pure.Elm as Pure
+import Pure.Theme
 
 import Colors
-import Context
-import Imports hiding (left,right)
+import Components.Icons
+import Components.Nav
+import Types
 
-import Services.Client hiding (client)
-import Services.Route
-import Services.Storage
+import Control.Monad
 
-import Components.GitHubLogo (viewGitHubLink)
-import Components.Logo (viewLogo)
-import Components.Nav (viewNav)
+header :: Route -> Bool -> View
+header rt transparent =
+  let 
+    t = if transparent then Theme HeaderTransparentT else Theme HeaderT
+    b = if transparent then barMinusLogo else bar
+  in 
+    Header <| t |> [ b rt ]
 
-data Env = Env Bool
+bar_ :: Bool -> Route -> View
+bar_ b rt =
+  let 
+    l = if b then left else Null
+    r = right rt
+  in
+    Div <| Theme BarT |> [ l , r ]
 
-data State = State
+bar :: Route -> View
+bar = bar_ True
 
-newtype HeaderM a = HeaderM { runHeaderM :: Aspect (Ctx HeaderM) Env State a }
-mkAspect ''HeaderM
+barMinusLogo :: Route -> View
+barMinusLogo = bar_ False
 
-viewHeader :: Ctx HeaderM -> View
-viewHeader c = viewHeaderM header c (Env False) State
+left :: View
+left = 
+  Div <| Theme LeftT |>
+    [ logo False True HeaderLogoT ]
 
-viewHeaderTransparent :: Ctx HeaderM -> View
-viewHeaderTransparent c = viewHeaderM header c (Env True) State
-
-header :: HeaderM View
-header = do
-  Env transparent <- ask
-  let t = if transparent then Theme HeaderTransparentT else Theme HeaderT
-  b <- if transparent then barMinusLogo else bar
-  pure $
-    Header <| t |> 
-      [ b
-      ]
+right :: Route -> View
+right rt =
+  Div <| Theme RightT |>
+    [ nav rt
+    , gitHubLink "https://github.com/grumply/pure" HeaderGitHubLinkT
+    ]
 
 data HeaderT = HeaderT
 instance Themeable HeaderT where
@@ -60,36 +66,6 @@ instance Themeable HeaderTransparentT where
       Pure.left       =: zero
       zIndex          =: int 100
       width           =: per 100
-
-bar_ :: Bool -> HeaderM View
-bar_ b = do
-  l <- if b then left else pure Null
-  r <- right
-  pure $
-    Div <| Theme BarT |>
-      [ l , r ]
-
-bar :: HeaderM View
-bar = bar_ True
-
-barMinusLogo :: HeaderM View
-barMinusLogo = bar_ False
-
-left :: HeaderM View
-left = do
-  pure $
-    Div <| Theme LeftT |>
-      [ viewLogo False True HeaderLogoT ]
-
-
-right :: HeaderM View
-right = do
-  c <- ctx >>= rebase
-  pure $
-    Div <| Theme RightT |>
-      [ viewNav (ffmap liftIO c)
-      , viewGitHubLink "https://github.com/grumply/pure" HeaderGitHubLinkT
-      ]
 
 data BarT = BarT
 instance Themeable BarT where

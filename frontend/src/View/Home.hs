@@ -1,65 +1,48 @@
-module Pages.Home where
+module View.Home where
 
-import qualified Pure (left,content)
 import Pure.Data.CSS
-import Pure.Data.Styles
-import Pure.Data.SVG
-import Pure.Data.SVG.Properties
+import Pure.Elm
+import Pure.Theme
 
 import Colors
-import Context
-import Imports hiding (Transform)
 import Themes
+import Types
 
-import Services.Client
-import Services.Route
-import Services.Storage
-
-import Components.Header (viewHeaderTransparent,headerOffset)
-import Components.Logo (viewLogo)
+import Components.Header (header,headerOffset)
+import Components.Icons  (logo)
 import Components.Titler (titler)
 
-data Env = Env
+import Control.Monad
 
-data State = State
-
-newtype HomeM a = HomeM { runHomeM :: Aspect (Ctx HomeM) Env State a }
-mkAspect ''HomeM
-
-viewHome :: Ctx HomeM -> View
-viewHome c = viewHomeM home c Env State
-
-home :: HomeM View
-home = do
-  c <- ctx >>= rebase
-  pure $
-    Div <| Theme PageT . Theme HomeT |>
-      [ viewHeaderTransparent (ffmap liftIO c)
-      , Div <| Theme ContentT |>
-        [ Div <| Theme IntroT |>
-          [ Div <| Theme HeroT |>
-            [ viewLogo False False HeroLogoT
-            , H1 <| Theme SloganT |>
-              [ Span <||> [ "The web from a " ]
-              , Span <||> [ I <||> [ "different angle." ] ]
-              ]
-            , P <| Theme DescriptionT |>
-              [ "Pure is a unified development architecture for interactive systems"
-              , Br
-              , "that strives for performance, expressiveness, and asynchrony."
-              ]
-            , Div <| Theme CallToActionT |>
-              [ A <| lref "/tut/install" . Theme GetPureT |>
-                [ "Get Pure" ]
-              , A <| lref "/tut/introduction" . Theme StartTutorialT |>
-                [ "Start Tutorial" ]
-              ]
+home :: Elm Msg => Model -> View
+home model = 
+  Div <| Theme PageT . Theme HomeT |>
+    [ header (route model) True
+    , Div <| Theme ContentT |>
+      [ Div <| Theme IntroT |>
+        [ Div <| Theme HeroT |>
+          [ logo False False HeroLogoT
+          , H1 <| Theme SloganT |>
+            [ Span <||> [ "The web from a " ]
+            , Span <||> [ I <||> [ "different angle." ] ]
+            ]
+          , P <| Theme DescriptionT |>
+            [ "Pure is a unified server, web, and desktop application framework"
+            , Br
+            , "that strives for performance, expressiveness, and asynchrony."
+            ]
+          , Div <| Theme CallToActionT |>
+            [ A <| lref "/tut/install" . Theme GetPureT |>
+              [ "Get Pure" ]
+            , A <| lref "/tut/introduction" . Theme StartTutorialT |>
+              [ "Start Tutorial" ]
             ]
           ]
-        , Div <| Theme GradientT
         ]
-      , titler [i|Pure - Haskell Application Framework|]
+      , Div <| Theme GradientT
       ]
+    , titler "Pure - Haskell Application Framework"
+    ]
 
 data HomeT = HomeT
 instance Themeable HomeT where
@@ -91,7 +74,7 @@ instance Themeable GradientT where
       height          =: per 100
       width           =: per 100
       top             =: zero
-      Pure.left       =: zero
+      left            =: zero
       zIndex          =: neg (int 100)
       opacity         =: one
       background      =: linearGradient(gradient)
@@ -102,13 +85,13 @@ instance Themeable GradientT where
                      blueHighlight <<>> per 70 <&>>
                      lightGreen    <<>> per 95
 
-      Pure.content    =: "\"\""
+      content         =: "\"\""
       position        =: absolute
       display         =: block
       height          =: per 100
       width           =: per 100
       top             =: zero
-      Pure.left       =: zero
+      left            =: zero
       zIndex          =: neg (int 99)
       opacity         =: zero
       background      =: linearGradient(gradient)

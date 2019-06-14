@@ -1,8 +1,8 @@
+{-# LANGUAGE CPP #-}
 module Utils where
 
-import Pure
+import Pure.Elm
 import Pure.Data.Txt as Txt
-import Pure.Router
 
 import Data.Map as Map
 

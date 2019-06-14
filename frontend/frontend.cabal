@@ -18,26 +18,24 @@ cabal-version:       >=1.10
 
 executable frontend
   main-is:             Main.hs
-  other-modules:       Colors
-                       Context
-                       Imports
-                       Themes
-                       Utils
-                       Components.GitHubLogo
+  other-modules:       Client
+                       Colors
                        Components.Header
-                       Components.Logo
+                       Components.Icons
                        Components.Nav
                        Components.Titler
-                       Services.Client
-                       Services.Storage
-                       Pages.Doc
-                       Pages.Docs
-                       Pages.Examples
-                       Pages.Home
-                       Pages.Post
-                       Pages.Posts
-                       Pages.Tutorial
-                       Pages.Tutorials
+                       Router
+                       Startup
+                       Themes
+                       Types
+                       Update
+                       Utils
+                       View
+                       View.About
+                       View.Blog
+                       View.Docs
+                       View.Home
+                       View.Tutorials
   -- other-extensions:
   default-extensions:  TemplateHaskell
                        FunctionalDependencies
@@ -55,25 +53,17 @@ executable frontend
                        GADTs
                        RankNTypes
   build-depends:       base >=4.11 && <4.12,
-                       pure >= 0.7 && < 1,
-                       pure-capability >= 0.7 && <1,
                        pure-css >= 0.7 && <1,
-                       pure-json >= 0.7 && < 1,
-                       pure-localstorage >= 0.7 && < 1,
                        pure-lifted >= 0.7 && < 1,
-                       pure-router >= 0.7 && < 1,
                        pure-styles >= 0.7 && < 1,
                        pure-svg >= 0.7 && < 1,
                        pure-try >= 0.7 && < 1,
                        pure-txt >= 0.7 && < 1,
-                       pure-txt-interpolate >= 0.7 && < 1,
                        pure-theme >= 0.7 && < 1,
                        pure-websocket >= 0.7 && < 1,
                        shared == 0.1.*,
                        containers,
-                       lens,
-                       mtl,
-                       transformers
+                       pure-elm
   hs-source-dirs:      src
   ghc-options:         -O2 -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=30000000 -DGHCJS_BUSY_YIELD=1
   default-language:    Haskell2010

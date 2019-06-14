@@ -1,40 +1,32 @@
 module Components.Nav where
 
 import Pure.Data.CSS
-import Pure.Data.SVG
-import Pure.Data.SVG.Properties
+import Pure.Elm
+import Pure.Theme
 
 import Colors
-import Context
-import Imports
+import Types
 
-import Services.Client hiding (client)
-import Services.Route
-import Services.Storage
+import Control.Monad
 
-data Env = Env
-
-data State = State
-
-newtype NavM a = NavM { runNavM :: Aspect (Ctx NavM) Env State a }
-mkAspect ''NavM
-
-viewNav :: Ctx NavM -> View
-viewNav c = viewNavM nav c Env State
-
-nav :: NavM View
-nav = do
-  rt <- getRoute
-  pure $
-    Nav <| Theme NavT |>
-      [ navLink (active rt) l t
-      | (active,l,t) <-
-        [ (isBlogRoute,"/blog","Blog")
-        , (isDocsRoute,"/docs","Docs")
-        , (isExamplesRoute,"/examples","Examples")
-        , (isTutorialsRoute,"/tuts","Tutorials")
-        ]
+nav :: Route -> View
+nav rt = 
+  Nav <| Theme NavT |>
+    [ navLink (active rt) l t
+    | (active,l,t) <-
+      [ (isAboutRoute,"/about","About")
+      , (isBlogRoute,"/blog","Blog")
+      , (isDocsRoute,"/docs","Docs")
+      , (isTutorialsRoute,"/tuts","Tutorials")
       ]
+    ]
+
+navLink active link text =
+  A <| lref link . Theme LinkT |>
+    [ text
+    , if active then Span else Null
+      -- existence of span is a highlight
+    ]
 
 data NavT = NavT
 instance Themeable NavT where
@@ -45,13 +37,6 @@ instance Themeable NavT where
         flexDirection  =: row
         overflowX      =: auto
         justifyContent =: flexEnd
-
-navLink active link text =
-  A <| lref link . Theme LinkT |>
-    [ text
-    , if active then Span else Null
-      -- existence of span is a highlight
-    ]
 
 data LinkT = LinkT
 instance Themeable LinkT where

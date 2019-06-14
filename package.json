@@ -2,7 +2,6 @@
   "name": "name",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "watch": {
     "dev:frontend:exe": {
       "patterns": [
@@ -27,10 +26,14 @@
   },
   "scripts": {
     "dev:frontend": "npm run serve:frontend & { npm-watch dev:frontend:exe && killall -9 lite-server; }",
-    "dev:backend": "./run-ghc exe:backend backend & { npm-watch dev:backend:exe; }",
-    "serve:frontend": "(cd dist/site/exe:frontend/ && lite-server) &",
-    "dev:backend:exe": "./build-ghc exe:backend backend && { killall -9 backend || true; } && echo 'Starting backend' && ./run-ghc exe:backend backend",
-    "dev:frontend:exe": "./build-ghcjs exe:frontend"
+    "dev:backend": "npm-watch dev:backend:exe",
+    "serve:frontend": "(cd dist/site/ && lite-server) &",
+    "dev:backend:exe": "cabal new-build backend --project-file=cabal.project --builddir=dist/ghc/ && { killall -9 backend || true; } && echo 'Restarting backend' && npm run serve:backend",
+    "dev:frontend:exe": "cabal new-build exe:frontend --project-file=cabal-ghcjs.project --builddir=dist/ghcjs/ && { npm run remove-index || true; } && { npm run distribute || true; }",
+    "serve:backend": "./dist/ghc/build/*/ghc-8.4.4/*/x/backend/*/build/backend/backend",
+    "remove-index": "rm dist/ghcjs/build/*/ghcjs-8.4.0.1/*/x/*/build/frontend/frontend.jsexe/index.html",
+    "distribute": "cp dist/ghcjs/build/*/ghcjs-8.4.0.1/*/x/*/build/frontend/frontend.jsexe/* dist/site/",
+    "flush": "rm -r dist/ghcjs/build/*/ghcjs-8.4.0.1/*"
   },
   "author": "$author",
   "email": "$email",

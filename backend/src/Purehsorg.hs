@@ -3,6 +3,7 @@ module Purehsorg where
 import Pure hiding (ask,get)
 import Pure.Capability
 import Pure.Capability.TH
+import Pure.Data.Try
 import Pure.Server
 import Pure.WebSocket as WS
 import qualified Shared
@@ -18,7 +19,7 @@ import Control.Lens.Operators
 import Control.Lens.TH
 
 import Services.Docs as Docs
-import Services.Examples as Examples
+import Services.Pages as Pages
 import Services.Posts as Posts
 import Services.Tutorials as Tutorials
 import Context
@@ -52,7 +53,7 @@ app = do
   AppState loaded <- get
   unless loaded $ do
     loadDocs
-    loadExamples
+    loadPages
     loadPosts
     loadTutorials
   c <- ctx >>= rebase
@@ -61,7 +62,7 @@ app = do
       viewConn (ffmap liftIO c) ws
 
 viewConn :: Ctx ConnM -> WebSocket -> View
-viewConn ctx ws = viewConnM conn ctx (ConnEnv ws) (ConnState False)
+viewConn ctx ws = viewConnMStatic conn ctx (ConnEnv ws) (ConnState False)
 
 ip :: ConnM Txt
 ip = do
@@ -80,13 +81,32 @@ conn = do
   ConnState active <- get
   ref <- sref
   c <- ctx
+  cache <- buildCache
   unless active $ do
     liftIO $ do
+      notify Shared.clientApi ws Shared.setCache cache
       enact ws (impl c env ref)
       activate ws
     enacted #= True
   -- do something here?
   pure Null
+
+buildCache = 
+  Shared.Cache 
+    <$> getPostMetas 
+    <*> getDocMetas 
+    <*> getTutorialMetas 
+    <*> pure [] 
+    <*> pure [] 
+    <*> pure [] 
+    <*> getPages
+  where
+    getPages = do
+      mp <- lookupPage "about"
+      pure $
+        case mp of
+          Nothing -> []
+          Just p  -> [("about",Done p)]
 
 type Conn = SRef ConnState
 
@@ -110,10 +130,7 @@ impl ctx env conn = Impl Shared.api msgs reqs
            handleGetPost ctx env conn <:>
            handleGetTutorial ctx env conn <:>
            handleGetDoc ctx env conn <:>
-           handleGetPostMetas ctx env conn <:>
-           handleGetTutorialMetas ctx env conn <:>
-           handleGetDocMetas ctx env conn <:>
-           handleGetExamples ctx env conn <:>
+           handleGetPage ctx env conn <:>
            WS.none
 
 handleGetPost :: Ctx ConnM -> ConnEnv -> Conn -> RequestHandler Shared.GetPost
@@ -125,23 +142,13 @@ handleGetTutorial ctx env conn = respondWith $ runConn ctx env conn . Tutorials.
 handleGetDoc :: Ctx ConnM -> ConnEnv -> Conn -> RequestHandler Shared.GetDoc
 handleGetDoc ctx env conn = respondWith $ runConn ctx env conn . Docs.lookupDoc . uncurry Shared.DocMeta
 
-handleGetPostMetas :: Ctx ConnM -> ConnEnv -> Conn -> RequestHandler Shared.GetPostMetas
-handleGetPostMetas ctx env conn = respondWith $ const $ runConn ctx env conn Posts.getPostMetas
-
-handleGetTutorialMetas :: Ctx ConnM -> ConnEnv -> Conn -> RequestHandler Shared.GetTutorialMetas
-handleGetTutorialMetas ctx env conn = respondWith $ const $ runConn ctx env conn Tutorials.getTutorialMetas
-
-handleGetDocMetas :: Ctx ConnM -> ConnEnv -> Conn -> RequestHandler Shared.GetDocMetas
-handleGetDocMetas ctx env conn = respondWith $ const $ runConn ctx env conn Docs.getDocMetas
-
-handleGetExamples :: Ctx ConnM -> ConnEnv -> Conn -> RequestHandler Shared.GetExamples
-handleGetExamples ctx env conn = respondWith $ const $ runConn ctx env conn Examples.getExamples
+handleGetPage :: Ctx ConnM -> ConnEnv -> Conn -> RequestHandler Shared.GetPage
+handleGetPage ctx env conn = respondWith $ runConn ctx env conn . Pages.lookupPage
 
 handleReloadMarkdown :: Ctx ConnM -> ConnEnv -> Conn -> RequestHandler Shared.ReloadMarkdown
 handleReloadMarkdown ctx env conn = respondWith $ const $ runConn ctx env conn reload
   where
     reload = do
       loadDocs
-      loadExamples
       loadPosts
       loadTutorials

@@ -1,6 +1,6 @@
 module Themes where
 
-import Pure
+import Pure.Elm
 import Pure.Data.CSS
 import Pure.Theme
 
@@ -45,6 +45,10 @@ pageStyles = do
     margin =: zero
     height =: per 100
 
+  is "body" . child "div" .> do
+    width  =: per 100
+    height =: per 100
+
 data PageT = PageT
 instance Themeable PageT where
   theme c _ = void $ do
@@ -76,7 +80,7 @@ markdownStyles = do
       listStyle =: none
 
     has "h1" .> do
-      fontFamily =: "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace"
+      fontFamily =: "-apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', sans-serif;"
       fontSize   =: pxs 48
 
     has "h2" .> do
@@ -98,8 +102,12 @@ markdownStyles = do
         padding         =: pxs 16 <<>> pxs 0 <<>> pxs 16 <<>> pxs 16
         margin          =: pxs 20 <<>> pxs 0 <<>> pxs 20 <<>> pxs (-16)
 
-      atMedia "(max-width: 48em)" .> do
-        marginRight =: pxs (-16)
+      atMedia "(max-width: 48em)" $ do
+        apply $
+          marginRight =: pxs (-16)
+
+        has ".sourceCode" . has "pre" .> do
+          marginRight =: zero
 
       atMedia "(min-width: 48em)" .> do
         marginLeft  =: pxs 16
@@ -126,7 +134,7 @@ markdownStyles = do
       atMedia "(min-width: 48em)" .> do
         borderRadius     =: pxs 10
         marginLeft       =: pxs 16
-        marginRight      =: pxs 16
+        marginRight      =: pxs 0
 
     has "code" . is ".sourceCode" $ do
       apply $ do

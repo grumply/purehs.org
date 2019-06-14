@@ -1,6 +1,6 @@
 module Colors where
 
-import Pure
+import Pure.Elm
 
 fill :: Txt
 fill = "fill"
@@ -90,23 +90,4 @@ guide     = hsla(h,14,71,0.15)
 accent    = hsl(h,100,66)
 selection = hsl(220,13,10)
 
-
-{-
-pureGreen per = hsl(140,31,per)
-pureGray per = hsl(0,0,per)
-pureWhite per = hsl(54,12,per)
-purePeach per = hsl(29,59,per)
-pureRed per = hsl(6,68,per)
-
-baseGreen = pureGreen 70
-baseGray = pureGray 33
-baseWhite = pureWhite 96
-basePeach = purePeach 97
-baseRed = pureRed 95
-
-darkGreen = pureGreen 40
-mediumGreen = pureGreen 60
-lightGreen = pureGreen 80
-brightGreen = pureGreen 90
--}
 

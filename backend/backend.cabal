@@ -17,12 +17,12 @@ extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
 
 executable backend
-  ghc-options: -threaded -rtsopts -with-rtsopts=-T
+  ghc-options: -O2 -threaded -rtsopts -with-rtsopts=-T
   main-is:             Main.hs
   other-modules:       Context
                        Purehsorg
                        Services.Docs
-                       Services.Examples
+                       Services.Pages
                        Services.Posts
                        Services.Shared
                        Services.Tutorials
@@ -38,6 +38,7 @@ executable backend
                        pure-txt >= 0.7 && < 1,
                        pure-txt-interpolate >= 0.7 && <1,
                        pure-txt-trie >= 0.7 && < 1,
+                       pure-try >= 0.7 && <1,
                        pure-websocket >= 0.7 && < 1,
                        shared == 0.1.*,
                        bytestring,
