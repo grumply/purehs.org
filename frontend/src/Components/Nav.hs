@@ -4,7 +4,7 @@ import Pure.Data.CSS
 import Pure.Elm
 import Pure.Theme
 
-import Colors
+import Themes
 import Types
 
 import Control.Monad

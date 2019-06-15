@@ -1,4 +1,4 @@
-## CSS and Themeing
+# CSS and Themeing
 
 Pure supplies a [DSL](https://en.wikipedia.org/wiki/Domain-specific_language)
 for construction of CSS.

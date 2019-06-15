@@ -6,8 +6,6 @@ import Pure.Theme
 
 import Control.Monad
 
-import Colors
-
 import Prelude hiding (or)
 
 fontStyle = "font-style"
@@ -54,6 +52,16 @@ instance Themeable PageT where
   theme c _ = void $ do
     pageStyles
 
+data ContentfulT = ContentfulT
+instance Themeable ContentfulT where
+  theme c _ = void $ do
+    is c .> do
+      minHeight     =: per 100
+      display       =: flex
+      flexDirection =: column
+      background    =: baseWhite
+      paddingBottom =: ems 3
+
 markdownStyles = do
     apply $ do
       marginTop  =: pxs 16
@@ -80,8 +88,8 @@ markdownStyles = do
       listStyle =: none
 
     has "h1" .> do
-      fontFamily =: "-apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', sans-serif;"
-      fontSize   =: pxs 48
+      fontFamily  =: "-apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', sans-serif;"
+      fontSize    =: pxs 48
 
     has "h2" .> do
       fontSize   =: pxs 32
@@ -192,3 +200,156 @@ instance Themeable MarkdownT where
       fontSize =: ems 0.85
 
     markdownStyles
+
+data HeaderT = HeaderT
+instance Themeable HeaderT where
+  theme c _ = void $ do
+    is c $ do
+      apply $ do
+        paddingTop =: ems 0.5
+        textDecoration =: underline
+        fontSize =: pxs 60
+        color =: darkGray
+      atMedia "(max-width: 779px)" . is c .> do
+        fontSize =: pxs 40
+
+data MetaT = MetaT
+instance Themeable MetaT where
+  theme c _ = void $ is c .> do
+    cursor =: pointer
+
+data ContentT = ContentT
+instance Themeable ContentT where
+  theme c _ = void $
+    is c $ do
+      -- headerOffset
+      apply $ do
+        minHeight    =: per 100
+        width        =: per 100
+        maxWidth     =: pxs 1200
+        paddingLeft  =: ems 1
+        paddingRight =: ems 1
+        marginLeft   =: auto
+        marginRight  =: auto
+
+data TitleT = TitleT
+instance Themeable TitleT where
+  theme c _ = void $ do
+    is c .> do
+      fontSize =: ems 2
+
+data ArticleT = ArticleT
+instance Themeable ArticleT where
+  theme c _ = void $ do
+    is c .> do
+      minHeight     =: per 100
+      display       =: flex
+      flexDirection =: column
+      background    =: baseWhite
+      paddingTop    =: ems 1.5
+      paddingBottom =: ems 1.5
+
+data LoadingT = LoadingT
+instance Themeable LoadingT where
+  theme c _ = void $ is c $ return ()
+
+data FailedT = FailedT
+instance Themeable FailedT where
+  theme c _ = void $ is c $ return ()
+
+headerOffset = do
+    apply $ do
+      marginTop =: pxs 75
+
+    atMedia "(max-width: 48em)" .> do
+      marginTop =: pxs 50
+
+fill :: Txt
+fill = "fill"
+
+-- way too many colors
+
+-- pureBlue, pureLavender, pureWhite, pureGreen :: Double -> Txt
+pureBlue p = hsl(215,35.14,p)
+pureLavender p = hsl(250,49,p)
+pureWhite p = hsl(210,2,p)
+pureGreen p = hsl(139,68,p)
+
+-- darkBlue, baseBlue, lightBlue :: Txt
+darkBlue = pureBlue 20
+baseBlue = pureBlue 40
+lightBlue = pureBlue 90
+
+
+-- baseLavender, darkLavender, lightLavender :: Txt
+baseLavender = pureLavender 69
+darkLavender = pureLavender 49
+lightLavender = pureLavender 89
+deepLavender = pureLavender 14
+
+-- baseWhite, baseGray, lightGray, darkGray :: Txt
+baseWhite = pureWhite 99
+baseGray = pureWhite 70
+lightGray = pureWhite 90
+darkGray = pureWhite 20
+
+-- baseGreen, lightGreen, darkGreen :: Txt
+baseGreen = pureGreen 45
+lightGreen = pureGreen 65
+darkGreen = pureGreen 25
+
+-- blueHighlight :: Txt
+blueHighlight = rgb(58,173,175)
+
+-- -- pureGreen per = hsl(153,68,per)
+-- pureGreen per = hsl(140,26,per)
+-- pureGray per = hsl(0,0,per)
+-- pureWhite per = hsl(60,25,per)
+-- pureOrange, pureRed :: Double -> Txt
+pureOrange per = hsl(29,90,per)
+pureRed per = hsl(6,87,per)
+
+-- baseWhite = pureWhite 99.3
+-- baseOrange = pureOrange 68
+-- baseRed = pureRed 63
+
+-- darkGreen = pureGreen 40
+-- baseGreen = pureGreen 59
+-- lightGreen = pureGreen 80
+-- brightGreen = pureGreen 90
+
+-- baseGray = pureGray 33
+
+-- dark = hsl(218,15,15)
+
+-- Code highlighting
+
+-- h,s,l :: Int
+h         = 220 -- hue
+s         = 13 -- saturation
+l         = 18 -- brightness
+
+-- mono1, mono2, mono3 :: Txt
+mono1     = hsl(h,14,71)
+mono2     = hsl(h,09,55)
+mono3     = hsl(h,10,40)
+
+-- cyan_, blue_, purple_, green_, red1, red2, orange1, orange2 :: Txt
+cyan_     = hsl(187,47,55) -- hue1
+blue_     = hsl(207,82,66) -- hue2
+purple_   = hsl(286,60,67) -- hue3
+green_    = hsl( 95,38,62) -- hue4
+red1      = hsl(355,65,65) -- hue5
+red2      = hsl(  5,48,51) -- hue5-2
+orange1   = hsl( 29,54,61) -- hue6
+orange2   = hsl( 39,67,69) -- hue6-2
+
+-- fg, bg, gutter, guide, accent, selection :: Txt
+fg        = mono1
+bg        = black -- hsl(220,13,18)
+gutter    = hsl(h,14,45)
+guide     = hsla(h,14,71,0.15)
+accent    = hsl(h,100,66)
+selection = hsl(220,13,10)
+
+

@@ -18,19 +18,13 @@ cabal-version:       >=1.10
 
 executable frontend
   main-is:             Main.hs
-  other-modules:       Client
-                       Colors
-                       Components.Header
+  other-modules:       Components.Header
                        Components.Icons
                        Components.Nav
                        Components.Titler
-                       Router
-                       Startup
                        Themes
                        Types
-                       Update
                        Utils
-                       View
                        View.About
                        View.Blog
                        View.Docs

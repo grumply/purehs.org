@@ -4,11 +4,10 @@ import Pure.Data.CSS
 import Pure.Elm
 import Pure.Theme
 
-import Colors
-import Themes
+import Themes hiding (ContentT)
 import Types
 
-import Components.Header (header,headerOffset)
+import Components.Header (header)
 import Components.Icons  (logo)
 import Components.Titler (titler)
 
@@ -27,14 +26,12 @@ home model =
             , Span <||> [ I <||> [ "different angle." ] ]
             ]
           , P <| Theme DescriptionT |>
-            [ "Pure is a unified server, web, and desktop application framework"
-            , Br
-            , "that strives for performance, expressiveness, and asynchrony."
+            [ "Performance + Expressiveness + Asynchrony"
             ]
           , Div <| Theme CallToActionT |>
             [ A <| lref "/tut/install" . Theme GetPureT |>
               [ "Get Pure" ]
-            , A <| lref "/tut/introduction" . Theme StartTutorialT |>
+            , A <| lref "/tut/basics" . Theme StartTutorialT |>
               [ "Start Tutorial" ]
             ]
           ]
@@ -172,7 +169,7 @@ instance Themeable DescriptionT where
       display        =: "inline-flex"
       flex           =: one
       justifyContent =: center
-      fontSize       =: pxs 16
+      fontSize       =: pxs 24
       textShadow     =: pxs 1 <<>> pxs 1 <<>> hsla(215,35.14,40,0.5)
 
 buttonBoxShadow opacity vOff blur vOff' blur' =

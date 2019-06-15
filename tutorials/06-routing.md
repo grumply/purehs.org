@@ -1,4 +1,4 @@
-## Routing
+# Routing
 
 `pure-route` uses component state to enable multi-page applications via switching on
 the current route.

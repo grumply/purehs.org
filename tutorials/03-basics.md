@@ -1,4 +1,4 @@
-## Pure Basics
+# Pure Basics
 
 This pure tutorial assumes a basic knowledge of functional programming and types
 and a basic knowledge of core webpage technologies like html, css, and js.

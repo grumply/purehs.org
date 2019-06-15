@@ -62,7 +62,7 @@ app = do
       viewConn (ffmap liftIO c) ws
 
 viewConn :: Ctx ConnM -> WebSocket -> View
-viewConn ctx ws = viewConnMStatic conn ctx (ConnEnv ws) (ConnState False)
+viewConn ctx ws = viewConnM conn ctx (ConnEnv ws) (ConnState False)
 
 ip :: ConnM Txt
 ip = do

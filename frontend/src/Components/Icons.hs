@@ -8,7 +8,7 @@ import Pure.Data.SVG
 import Pure.Data.SVG.Properties
 import Pure.Theme
 
-import Colors
+import Themes
 
 gitHubLink link t =
   A <| Href link . Target "_blank" . Theme t |>

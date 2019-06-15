@@ -1,4 +1,4 @@
-## Components
+# Components
 
 What about dynamic views that react to user interaction?
 

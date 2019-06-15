@@ -1,4 +1,4 @@
-## Getting And Running Pure
+# Getting And Running Pure
 
 To get started, clone the project skeleton:
 

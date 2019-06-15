@@ -8,7 +8,8 @@ import Shared
 import Data.Map
 
 data Route
-  = HomeR
+  = NoR
+  | HomeR
   | AboutR
   | BlogR (Maybe Txt)
   | DocsR (Maybe (Txt,Txt))
@@ -19,7 +20,7 @@ data Model = Model
   , cache :: Cache
   }
 
-model = Model HomeR def
+model = Model NoR def
 
 data Msg
   = Route Route

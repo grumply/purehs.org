@@ -5,9 +5,9 @@ import Pure.Elm hiding (left,right)
 import qualified Pure.Elm as Pure
 import Pure.Theme
 
-import Colors
 import Components.Icons
 import Components.Nav
+import Themes
 import Types
 
 import Control.Monad
@@ -15,7 +15,7 @@ import Control.Monad
 header :: Route -> Bool -> View
 header rt transparent =
   let 
-    t = if transparent then Theme HeaderTransparentT else Theme HeaderT
+    t = if transparent then Theme HeaderTransparentT else Theme Components.Header.HeaderT
     b = if transparent then barMinusLogo else bar
   in 
     Header <| t |> [ b rt ]
@@ -47,7 +47,7 @@ right rt =
     ]
 
 data HeaderT = HeaderT
-instance Themeable HeaderT where
+instance Themeable Components.Header.HeaderT where
   theme c _ = void $ do
     is c .> do
       position        =: absolute
@@ -92,13 +92,6 @@ instance Themeable BarT where
 
       atMedia "(min-width: 1340px)" .> do
         maxWidth =: pxs 1260
-
-headerOffset = do
-    apply $ do
-      marginTop =: pxs 75
-
-    atMedia "(max-width: 48em)" .> do
-      marginTop =: pxs 50
 
 data LeftT = LeftT
 instance Themeable LeftT where
