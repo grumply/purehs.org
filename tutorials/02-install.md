@@ -35,4 +35,4 @@ In a different shell, build and run the backend server:
 $ ./ghc npm run dev:backend
 ```
 
-This server will warch `shared/` and `backend/` and rebuild and reload the server as necessary when files change.
+This server will watch `shared/` and `backend/` and rebuild and reload the server as necessary when files change.
