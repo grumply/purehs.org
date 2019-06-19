@@ -13,11 +13,8 @@ Pure uses a best-in-class rendering and reconciliation algorithm and can match
 or exceed the performance of top-tier web frameworks like React, Vue, and 
 Angular.
 
-If you're interested, take a look at the tutorials. If you're really interested,
-feel free to improve the tutorials to benefit others.
-
-[Tutorials](/tuts)
-[Install](/tuts/install)
+If you're interested, take a look at the [tutorials](/tuts). If you're really interested,
+feel free to [improve](https://github.com/grumply/purehs.org/pulls) the tutorials to benefit others.
 
 If you've got questions, check out the [discourse](http://discourse.purehs.org).
 

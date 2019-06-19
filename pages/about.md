@@ -8,9 +8,6 @@ applications based on web technologies.
 If you know Haskell, Elm, PureScript, or ReactJS, you'll be able to design
 applications with Pure.
 
-Pure offers basic view primitives like html, svg, and text nodes as well as
-advanced primitives for higher-order views like portals and components.
-
 ```haskell
 counter :: IO () -> IO () -> Int -> View
 counter decrement increment current =
@@ -20,6 +17,9 @@ counter decrement increment current =
     , Button <| OnClick (\_ -> increment) |> [ "+" ]
     ]
 ```
+
+Pure offers basic view primitives like html, svg, and text nodes as well as
+advanced primitives for higher-order views like portals and components.
 
 Pure leverages the power of Haskell's lazy evaluation to implement a fair and
 fast rendering engine. By intelligently performing as much work as possible
