@@ -3,6 +3,8 @@ module Main where
 
 import Pure.Data.Try
 import Pure.Elm
+import qualified Pure.Router as Router
+import Pure.Router (Router(..),Routing,dispatch,path)
 import Pure.WebSocket ((<:>))
 import qualified Pure.WebSocket as WS
 
@@ -22,72 +24,79 @@ import qualified Data.Map as Map
 
 import Control.Monad
 import Data.Foldable
+import Data.Traversable
 import System.IO.Unsafe
+
 
 {-# NOINLINE client #-}
 client = unsafePerformIO (WS.clientWS host port)
 
-main = inject body (run routed)
-  where
-    routed :: Routed Model Msg
-    routed = Routed router app
-
-    app :: App Model Msg
-    app = App startup model update view
-
-router :: Routing Msg ()
-router = do
- 
-  path "/blog/:slug" $ do
-    s <- "slug"
-    dispatch $ Route $ BlogR $ Just s
-
-  path "/doc/:pkg/:ver" $ do
-    p <- "pkg"
-    v <- "ver"
-    dispatch $ Route $ DocsR $ Just (p,v)
-
-  path "/tut/:slug" $ do
-    s <- "slug"
-    dispatch $ Route $ TutsR $ Just s
-
-  path "/blog" $ dispatch $ Route $ BlogR Nothing
-
-  path "/docs" $ dispatch $ Route $ DocsR Nothing
-
-  path "/tuts" $ dispatch $ Route $ TutsR Nothing
-
-  path "/about" $ dispatch $ Route AboutR
-
-  dispatch $ Route HomeR
-
-startup :: Elm Msg => IO ()
-startup = void $ WS.enact client impl 
+main = inject body (run (App model update view) Startup)
 
 impl = WS.Impl Shared.clientApi msgs reqs
   where
-    msgs = handleSetCache <:> WS.none
+    msgs = handleSetCache
+       <:> WS.none
+
     reqs = WS.none
 
-handleSetCache :: Elm Msg => WS.MessageHandler SetCache
 handleSetCache = WS.awaiting $ do
   c <- WS.acquire
   liftIO $ command (SetCache c)
 
+router :: Routing Route ()
+router = do
+ 
+  path "/blog/:slug" $ do
+    s <- "slug"
+    dispatch $ BlogR $ Just s
+
+  path "/doc/:pkg/:ver" $ do
+    p <- "pkg"
+    v <- "ver"
+    dispatch $ DocsR $ Just (p,v)
+
+  path "/tut/:slug" $ do
+    s <- "slug"
+    dispatch $ TutsR $ Just s
+
+  path "/blog" $ dispatch $ BlogR Nothing
+
+  path "/docs" $ dispatch $ DocsR Nothing
+
+  path "/tuts" $ dispatch $ TutsR Nothing
+
+  path "/about" $ dispatch AboutR
+
+  dispatch HomeR
+
 view :: Elm Msg => Model -> View
 view model =
-  case route model of
-    NoR     -> Null
-    HomeR   -> View.home model
-    AboutR  -> View.about model
-    BlogR _ -> View.blog model
-    DocsR _ -> View.docs model
-    TutsR _ -> View.tutorials model
+  Div <||>
+    [ case route model of
+        NoR     -> Null
+        HomeR   -> View.home model
+        AboutR  -> View.about model
+        BlogR _ -> View.blog model
+        DocsR _ -> View.docs model
+        TutsR _ -> View.tutorials model
+    , View (Router NoR (Router.route Main.router >=> inject))
+    ]
+  where
+    inject :: Maybe Route -> IO (Maybe Route)
+    inject mmsg = do
+      for_ mmsg (command . Route)
+      pure mmsg
 
 update :: Elm Msg => Msg -> Model -> IO Model
 update msg model = 
   let updCache model f = model { cache = f (cache model) } 
    in case msg of
+
+        Startup -> do
+          WS.enact client impl
+          pure model
+
         Route r ->
           let model' = model { route = r }
            in case r of

@@ -6,7 +6,7 @@ implementation of web servers and services, web clients, and modern desktop
 applications based on web technologies.
 
 If you know Haskell, Elm, PureScript, or ReactJS, you'll be able to design
-programs with Pure.
+programs and servers with Pure.
 
 Pure offers basic view primitives like html, svg, and text nodes as well as
 advanced primitives for higher-order views like portals and components.

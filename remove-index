@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-
-rm $DIR/dist/ghcjs/*/$1/build/*/ghcjs-8.4.0.1/*/x/*/build/*/*.jsexe/index.html

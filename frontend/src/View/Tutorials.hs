@@ -3,6 +3,7 @@ module View.Tutorials where
 import Pure.Data.CSS
 import Pure.Data.Try
 import Pure.Elm
+import Pure.Router (lref)
 import Pure.Theme
 
 import qualified Shared (Cache(..),Tutorial(..),TutorialMeta(..))

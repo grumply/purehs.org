@@ -23,7 +23,8 @@ data Model = Model
 model = Model NoR def
 
 data Msg
-  = Route Route
+  = Startup
+  | Route Route
   | SetCache Cache
   | LoadDoc Txt Txt
   | SetDoc Txt Txt (Maybe Doc)

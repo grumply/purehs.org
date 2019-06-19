@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-
-cabal new-build $1 --enable-benchmarks --project-file=$DIR/cabal.project --builddir=$DIR/dist/ghc/exe/$1/

@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-
-cabal new-build $1 --project-file=$DIR/cabal-ghcjs.project --builddir=$DIR/dist/ghcjs/exe/$1/ && { $DIR/remove-index $1 || true; } && { $DIR/distribute $1 || true; }

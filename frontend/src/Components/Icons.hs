@@ -6,6 +6,7 @@ import Pure.Elm
 import Pure.Data.CSS
 import Pure.Data.SVG
 import Pure.Data.SVG.Properties
+import Pure.Router (lref)
 import Pure.Theme
 
 import Themes

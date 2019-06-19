@@ -1,7 +1,3 @@
-[submodule "deps/pure-platform"]
-	path = deps/pure-platform
-	url = https://github.com/grumply/pure-platform.git
-	branch = master
 [submodule "deps/pure-tagsoup"]
 	path = deps/pure-tagsoup
 	url = git@github.com:grumply/pure-tagsoup

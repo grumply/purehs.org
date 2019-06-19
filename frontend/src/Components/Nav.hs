@@ -2,6 +2,7 @@ module Components.Nav where
 
 import Pure.Data.CSS
 import Pure.Elm
+import Pure.Router (lref)
 import Pure.Theme
 
 import Themes

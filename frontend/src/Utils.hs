@@ -2,6 +2,7 @@
 module Utils where
 
 import Pure.Elm
+import Pure.Router (lref)
 import Pure.Data.Txt as Txt
 
 import Data.Map as Map
