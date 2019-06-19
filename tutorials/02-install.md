@@ -21,3 +21,12 @@ $ ./ghc npm run dev:backend
 ```
 
 These development servers will watch source files for changes and recompile as necessary.
+
+## Tutorials
+
+For a quick start, check out the starter [tutorials](/tuts/basics).
+
+## Join the Community
+
+If you've got questions or want to help answer questions, check out the [discourse](discourse.purehs.org).
+

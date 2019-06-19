@@ -16,14 +16,12 @@ execution and reconciliation with a short synchronizing commit phase. Having
 been been tuned for performance, Pure can match the performance of first tier 
 web frameworks like React, Vue, and Angular.
 
-It's not all roses, though. Pure suffers from a lack of extensive documentation,
-long compile times for first-runs, and, most severely, a lack of community.
-
-There's a lot of work awaiting. If you're interested, take a look at the 
-tutorial. If you're really interested, feel free to improve the tutorial to 
-benefit others.
-
-Be excellent to each other!
+If you're interested, take a look at the tutorials. If you're really interested,
+feel free to improve the tutorials to benefit others.
 
 [Tutorials](/tuts)
 [Install](/tuts/install)
+
+If you've got questions or want to help answer questions, check out the [discourse](discourse.purehs.org).
+
+Be excellent to each other!
