@@ -1,4 +1,4 @@
-# Getting And Running Pure
+# Installation
 
 To get started, clone the project skeleton and install dependencies. 
 
@@ -8,7 +8,7 @@ $ cd myapp/
 $ ./ghcjs npm install
 ```
 
-Run a development web server serving frontend client. 
+Run a development web server serving the frontend client. 
 
 ```bash
 $ ./ghcjs npm run dev:frontend
@@ -20,4 +20,4 @@ In another shell, run the backend server.
 $ ./ghc npm run dev:backend
 ```
 
-These servers will watch source files for changes and recompile as necessary.
+These development servers will watch source files for changes and recompile as necessary.
