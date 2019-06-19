@@ -12,6 +12,8 @@ extra-deps:
 - warp-3.2.25
 - http-types-0.12.2
 - wai-3.2.1.2
+- github: grumply/pure-try
+  commit: HEAD
 - github: grumply/excelsior
   commit: HEAD
 - github: grumply/pure

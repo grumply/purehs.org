@@ -28,5 +28,5 @@ For a quick start, check out the starter [tutorials](/tuts/basics).
 
 ## Join the Community
 
-If you've got questions or want to help answer questions, check out the [discourse](discourse.purehs.org).
+If you've got questions or want to help answer questions, check out the [discourse](http://discourse.purehs.org).
 

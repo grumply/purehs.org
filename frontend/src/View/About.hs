@@ -10,6 +10,7 @@ import Components.Titler
 import Shared (Page(..),Cache(..))
 import Themes
 import Types
+import Utils
 
 import Control.Monad
 
@@ -33,7 +34,7 @@ page model =
 success :: Page -> View
 success pg = 
   Div <| Theme MarkdownT |> 
-    (Shared.content pg)
+    (fmap captureLocalRefs (Shared.content pg))
 
 loading :: View
 loading = 

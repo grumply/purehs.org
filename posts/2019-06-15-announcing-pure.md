@@ -22,6 +22,6 @@ feel free to improve the tutorials to benefit others.
 [Tutorials](/tuts)
 [Install](/tuts/install)
 
-If you've got questions or want to help answer questions, check out the [discourse](discourse.purehs.org).
+If you've got questions or want to help answer questions, check out the [discourse](http://discourse.purehs.org).
 
 Be excellent to each other!
