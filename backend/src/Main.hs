@@ -18,7 +18,7 @@ import Shared (host,port)
 import Control.Concurrent
 
 main = do
-  -- forkIO $ staticHTML5Server "./dist/site/exe:frontend/"
+  forkIO $ staticHTML5Server "./dist/site/exe:frontend/"
   purehsorg host port
 
 staticHTML5Server root = run 80 app -- (compressing app)
@@ -27,6 +27,7 @@ staticHTML5Server root = run 80 app -- (compressing app)
     app req send =
       case pathInfo req of
         ["main.js"] -> fileServer req send
+        ["favicon.ico"] -> fileServer req send
         _          -> let req' = req { pathInfo = ["index.html"] }
                       in fileServer req' send
 

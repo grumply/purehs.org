@@ -40,6 +40,7 @@ impl = WS.Impl Shared.clientApi msgs reqs
 
     reqs = WS.none
 
+handleSetCache :: Elm Msg => WS.MessageHandler SetCache
 handleSetCache = WS.awaiting $ do
   c <- WS.acquire
   liftIO $ command (SetCache c)

@@ -62,7 +62,7 @@ app = do
       viewConn (ffmap liftIO c) ws
 
 viewConn :: Ctx ConnM -> WebSocket -> View
-viewConn ctx ws = viewConnM conn ctx (ConnEnv ws) (ConnState False)
+viewConn ctx ws = viewConnMStatic conn ctx (ConnEnv ws) (ConnState False)
 
 ip :: ConnM Txt
 ip = do
@@ -96,9 +96,9 @@ buildCache =
     <$> getPostMetas 
     <*> getDocMetas 
     <*> getTutorialMetas 
+    <*> pure []
     <*> pure [] 
-    <*> pure [] 
-    <*> pure [] 
+    <*> getTutorials 
     <*> getPages
   where
     getPages = do
@@ -107,7 +107,14 @@ buildCache =
         case mp of
           Nothing -> []
           Just p  -> [("about",Done p)]
-
+    getTutorials = do
+      mt0 <- lookupTutorial "basics"
+      mt1 <- lookupTutorial "install"
+      pure $
+        [ (nm,Done t)
+        | (nm,Just t) <- [("basics",mt0),("install",mt1)]
+        ]
+          
 type Conn = SRef ConnState
 
 runConn :: Ctx ConnM -> ConnEnv -> Conn -> ConnM a -> IO a

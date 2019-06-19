@@ -94,4 +94,3 @@ clientApi = WS.api msgs reqs
     msgs = setCache <:>
            WS.none
     reqs = WS.none
-
