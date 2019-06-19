@@ -52,4 +52,4 @@ goodPrice dollars cents =
   green (price dollars cents)
 ```
 
-Next, check out the [Components tutorial](/tuts/components).
+Next, check out the [Components tutorial](/tut/components).

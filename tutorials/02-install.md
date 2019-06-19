@@ -24,7 +24,7 @@ These development servers will watch source files for changes and recompile as n
 
 ## Tutorials
 
-For a quick start, check out the starter [tutorials](/tuts/basics).
+For a quick start, check out the starter [tutorials](/tut/basics).
 
 ## Join the Community
 

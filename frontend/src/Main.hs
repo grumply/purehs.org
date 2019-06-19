@@ -63,9 +63,9 @@ router = do
 
   path "/blog" $ dispatch $ BlogR Nothing
 
-  path "/docs" $ dispatch $ DocsR Nothing
+  path "/doc" $ dispatch $ DocsR Nothing
 
-  path "/tuts" $ dispatch $ TutsR Nothing
+  path "/tut" $ dispatch $ TutsR Nothing
 
   path "/about" $ dispatch AboutR
 
