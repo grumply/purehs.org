@@ -20,17 +20,14 @@ counter decrement increment current =
 
 Pure offers basic view primitives like HTML, SVG, and text nodes as well as
 advanced primitives for portals, components, dynamically extensible views, and
-keyed nodes. 
-
-Haskell's functional nature combined with declarative views results in a 
-reactive experience without the mental overhead of reactive abstractions.
+keyed nodes.
 
 By relying on GHC/JS's mutable substrate for referrential equality and 
 intelligently performing as much work as possible outside of animation frames,
 Pure can perform nearly all of the work of building and diffing user interfaces
-using Haskell's green threads while still being responsive to user input. Thus
+using Haskell's green threads while still being responsive to user input. This
 gives Pure a fair and fast rendering engine with exceptional rendering and
-painting characteristics.
+painting characteristics. 
 
 By reappropriating the primitives developed for complex user interfaces, servers
 and services are implemented in exactly the same fashion as client applications,
