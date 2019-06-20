@@ -18,17 +18,21 @@ counter decrement increment current =
     ]
 ```
 
-Pure offers basic view primitives like html, svg, and text nodes as well as
-advanced primitives for higher-order views like portals and components.
+Pure offers basic view primitives like HTML, SVG, and text nodes as well as
+advanced primitives for portals, components, dynamically extensible views, and
+keyed nodes.
 
 Pure leverages the power of Haskell's lazy evaluation to implement a fair and
-fast rendering engine. By intelligently performing as much work as possible
-outside of animation frames, Pure can perform nearly all of the work of building
-and diffing user interfaces using Haskell's green threads while still being
-responsive to user input, for a scalable experience.
+fast rendering engine. By relying on GHC/JS's mutable substrate for referrential
+equality and intelligently performing as much work as possible outside of
+animation frames, Pure can perform nearly all of the work of building and
+diffing user interfaces using Haskell's green threads while still being
+responsive to user input, for a scalable user experience.
 
 By reappropriating the primitives developed for complex user interfaces, servers
 and services are implemented in exactly the same fashion as client applications,
 allowing for abstractions to be shared by client and server.
 
 If you're interested, take a look at the [Tutorials](/tuts).
+
+If you have questions, check out the [Discourse](http://discourse.purehs.org).
