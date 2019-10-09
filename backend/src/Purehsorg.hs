@@ -1,10 +1,11 @@
 module Purehsorg where
 
+import Server
+
 import Pure hiding (ask,get)
 import Pure.Capability
 import Pure.Capability.TH
 import Pure.Data.Try
-import Pure.Server
 import Pure.WebSocket as WS
 import qualified Shared
 

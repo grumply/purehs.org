@@ -12,12 +12,14 @@ import           Network.Wai.Handler.Warp
 -- import           Network.Wai.Middleware.Gzip
 import           System.Environment
 import           System.FilePath
+import           System.IO
 
 import Shared (host,port)
 
 import Control.Concurrent
 
 main = do
+  hSetBuffering stdout NoBuffering
   forkIO $ staticHTML5Server "./dist/site/exe:frontend/"
   purehsorg host port
 
