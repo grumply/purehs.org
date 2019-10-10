@@ -21,6 +21,7 @@ executable backend
   main-is:             Main.hs
   other-modules:       Context
                        Purehsorg
+                       Server
                        Services.Docs
                        Services.Pages
                        Services.Posts
