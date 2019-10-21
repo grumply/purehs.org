@@ -1,4 +1,0 @@
-[submodule "deps/semantic-ui-pure"]
-	path = deps/semantic-ui-pure
-	url = git@github.com:grumply/semantic-ui-pure.git
-	branch = master
