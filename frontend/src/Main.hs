@@ -1,7 +1,6 @@
 {-# LANGUAGE NoMonomorphismRestriction #-}
 module Main where
 
-import Pure.Data.JSON (logJSON)
 import Pure.Data.Try
 import Pure.Elm
 import qualified Pure.Router as Router
@@ -28,13 +27,6 @@ import Data.Foldable
 import Data.Traversable
 import System.IO.Unsafe
 
-{-# NOINLINE client #-}
-client = unsafePerformIO $ do
-  ws <- WS.websocket
-  WS.enact ws impl
-  WS.activate ws host port False
-  pure ws
-
 main = inject body (run (App [Startup] [] [] model update view) ())
 
 impl = WS.Impl Shared.clientApi msgs reqs
@@ -45,9 +37,7 @@ impl = WS.Impl Shared.clientApi msgs reqs
 handleSetCache :: Elm Msg => WS.MessageHandler SetCache
 handleSetCache = WS.awaiting $ do
   c <- WS.acquire
-  liftIO $ do
-    logJSON (lookup "about" (pages c))
-    command (SetCache c)
+  liftIO $ command (SetCache c)
 
 router :: Routing Route ()
 router = do
@@ -101,12 +91,18 @@ update msg _ mdl =
       setPost s tp  = updCache $ \c -> c { Cache.posts = asMap (Cache.posts c) (Map.insert s tp) }
    in case msg of
 
-        Startup -> client `seq` pure mdl
+        Startup -> do
+          ws <- WS.websocket
+          WS.enact ws impl
+          WS.activate ws host port False
+          pure mdl { client = Just ws }
 
         Route r | Cache {..} <- cache mdl -> let mdl' = mdl { route = r } in
           case r of
             BlogR Nothing -> do
-              let load pm = command (LoadPost (Post.slug pm))
+              let load pm | Nothing <- lookup (Post.slug pm) posts =
+                            command (LoadPost (Post.slug pm))
+                          | otherwise = pure ()
               traverse_ load postMetas
               pure mdl'
 
@@ -114,7 +110,9 @@ update msg _ mdl =
               update (LoadPost s) () mdl'
 
             DocsR Nothing -> do
-              let load dm = command (LoadDoc (Doc.package dm) (Doc.version dm))
+              let load dm | Nothing <- lookup (Doc.package dm,Doc.version dm) docs =
+                            command (LoadDoc (Doc.package dm) (Doc.version dm))
+                          | otherwise = pure ()
               traverse_ load docMetas
               pure mdl'
 
@@ -122,7 +120,9 @@ update msg _ mdl =
               update (LoadDoc p v) () mdl'
 
             TutsR Nothing -> do
-              let load tm = command (LoadTutorial (Tut.slug tm))
+              let load tm | Nothing <- lookup (Tut.slug tm) tutorials = 
+                            command (LoadTutorial (Tut.slug tm))
+                          | otherwise = pure ()
               traverse_ load tutMetas
               pure mdl'
 
@@ -135,22 +135,22 @@ update msg _ mdl =
         SetCache c ->
           pure mdl { cache = c }
 
-        LoadDoc p v -> do
-          WS.remote api client getDoc (p,v) (command . SetDoc p v)
+        LoadDoc p v | Just c <- client mdl -> do
+          WS.remote api c getDoc (p,v) (command . SetDoc p v)
           pure (setDoc p v Trying)
 
         SetDoc p v md ->
           pure (setDoc p v (maybe Failed Done md))
 
-        LoadPost s -> do
-          WS.remote api client getPost s (command . SetPost s)
+        LoadPost s | Just c <- client mdl -> do
+          WS.remote api c getPost s (command . SetPost s)
           pure (setPost s Trying)
 
         SetPost s mp ->
           pure (setPost s (maybe Failed Done mp))
 
-        LoadTutorial n -> do
-          WS.remote api client getTutorial n (command . SetTutorial n)
+        LoadTutorial n | Just c <- client mdl -> do
+          WS.remote api c getTutorial n (command . SetTutorial n)
           pure (setTut n Trying)
 
         SetTutorial n mt ->

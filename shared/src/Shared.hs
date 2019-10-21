@@ -16,7 +16,7 @@ import GHC.Generics
 
 import Data.Map as Map
 
-host = "192.168.1.9"
+host = "159.65.79.222"
 port = 8081
 
 asMap :: Ord k => [(k,v)] -> (Map k v -> Map k v) -> [(k,v)]

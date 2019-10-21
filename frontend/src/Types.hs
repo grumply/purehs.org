@@ -5,6 +5,8 @@ import Pure.Data.Default
 
 import Shared
 
+import Pure.WebSocket (WebSocket)
+
 data Route
   = NoR
   | HomeR
@@ -16,9 +18,10 @@ data Route
 data Model = Model
   { route :: Route
   , cache :: Cache
+  , client :: Maybe WebSocket
   }
 
-model = Model NoR def
+model = Model NoR def Nothing
 
 data Msg
   = Startup

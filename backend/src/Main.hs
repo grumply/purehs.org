@@ -28,6 +28,7 @@ staticHTML5Server root = run 80 app -- (compressing app)
     -- compressing = gzip def { gzipFiles = GzipCacheFolder "/cache" }
     app req send =
       case pathInfo req of
+        ["robots.txt"] -> fileServer req send
         ["main.js"] -> fileServer req send
         ["favicon.ico"] -> fileServer req send
         _          -> let req' = req { pathInfo = ["index.html"] }
