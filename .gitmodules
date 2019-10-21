@@ -1,7 +1,3 @@
-[submodule "deps/pure-tagsoup"]
-	path = deps/pure-tagsoup
-	url = git@github.com:grumply/pure-tagsoup
-	branch = master
 [submodule "deps/semantic-ui-pure"]
 	path = deps/semantic-ui-pure
 	url = git@github.com:grumply/semantic-ui-pure.git
