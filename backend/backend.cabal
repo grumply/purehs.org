@@ -17,54 +17,36 @@ extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
 
 executable backend
-  ghc-options: -O2 -threaded -rtsopts -with-rtsopts=-T
+  ghc-options: -O2 -threaded
   main-is:             Main.hs
-  other-modules:       Context
+  other-modules:       Data.Cached
                        Purehsorg
                        Server
-                       Services.Docs
-                       Services.Pages
-                       Services.Posts
-                       Services.Shared
-                       Services.Tutorials
+                       Services.Caches
+                       Services.Utils
   build-depends:       base >=4.11 && <4.12,
-                       excelsior >= 0.7 && < 1,
-                       pure >= 0.7 && < 1,
-                       pure-core >= 0.7 && <1,
-                       pure-capability,
-                       pure-default >= 0.7 && <1,
-                       pure-render >= 0.7 && < 1,
-                       pure-tagsoup >= 0.7 && < 1,
-                       pure-json >= 0.7 && < 1,
-                       pure-limiter >= 0.7 && < 1,
-                       pure-server >= 0.7 && < 1,
-                       pure-txt >= 0.7 && < 1,
-                       pure-txt-interpolate >= 0.7 && <1,
-                       pure-txt-trie >= 0.7 && < 1,
-                       pure-try >= 0.7 && <1,
-                       pure-websocket >= 0.7 && < 1,
-                       shared == 0.1.*,
+                       pure-elm,
+                       pure-render,
+                       pure-tagsoup,
+                       pure-json,
+                       pure-server,
+                       pure-time,
+                       pure-try,
+                       pure-txt,
+                       pure-websocket,
+                       shared,
                        bytestring,
-                       crypto-api,
                        directory,
-                       pureMD5,
-                       pwstore-fast,
-                       acid-state,
-                       ixset-typed,
-                       lens,
-                       lens-aeson,
-                       safecopy,
-                       containers,
-                       mtl,
-                       pandoc,
-                       network,
                        filepath,
-                       directory,
+                       containers,
+                       pandoc,
                        warp,
                        wai-app-static,
                        wai-extra,
                        wai,
-                       http-types
+                       http-types,
+                       pure-default,
+                       pure-core
   default-extensions:  BangPatterns
                        DeriveGeneric
                        ViewPatterns
@@ -82,5 +64,6 @@ executable backend
                        FlexibleInstances
                        GeneralizedNewtypeDeriving
                        TypeOperators
+                       LambdaCase
   hs-source-dirs:      src
   default-language:    Haskell2010

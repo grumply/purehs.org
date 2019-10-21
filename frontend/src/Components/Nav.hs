@@ -11,14 +11,14 @@ import Types
 import Control.Monad
 
 nav :: Route -> View
-nav rt = 
+nav rt =
   Nav <| Theme NavT |>
     [ navLink (active rt) l t
     | (active,l,t) <-
       [ (isAboutRoute,"/about","About")
       , (isBlogRoute,"/blog","Blog")
-      , (isDocsRoute,"/docs","Docs")
-      , (isTutorialsRoute,"/tuts","Tutorials")
+      , (isDocsRoute,"/doc","Docs")
+      , (isTutorialsRoute,"/tut","Tutorials")
       ]
     ]
 

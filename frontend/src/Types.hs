@@ -1,11 +1,9 @@
 module Types where
 
-import Pure.Elm hiding (Doc)
-import Pure.Data.Try
+import Pure.Data.Txt (Txt)
+import Pure.Data.Default
 
 import Shared
-
-import Data.Map
 
 data Route
   = NoR
@@ -15,7 +13,7 @@ data Route
   | DocsR (Maybe (Txt,Txt))
   | TutsR (Maybe Txt)
 
-data Model = Model 
+data Model = Model
   { route :: Route
   , cache :: Cache
   }

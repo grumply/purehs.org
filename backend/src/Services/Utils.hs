@@ -1,6 +1,6 @@
-module Services.Shared where
+module Services.Utils where
 
-import Pure (View())
+import Pure.Elm (View())
 import Pure.Data.Render
 import Pure.Data.Txt as Txt
 import Pure.TagSoup

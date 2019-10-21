@@ -1,6 +1,7 @@
 {-# LANGUAGE NoMonomorphismRestriction #-}
 module Main where
 
+import Pure.Data.JSON (logJSON)
 import Pure.Data.Try
 import Pure.Elm
 import qualified Pure.Router as Router
@@ -27,27 +28,30 @@ import Data.Foldable
 import Data.Traversable
 import System.IO.Unsafe
 
-
 {-# NOINLINE client #-}
-client = unsafePerformIO (WS.clientWS host port)
+client = unsafePerformIO $ do
+  ws <- WS.websocket
+  WS.enact ws impl
+  WS.activate ws host port False
+  pure ws
 
-main = inject body (run (App model update view) Startup)
+main = inject body (run (App [Startup] [] [] model update view) ())
 
 impl = WS.Impl Shared.clientApi msgs reqs
   where
-    msgs = handleSetCache
-       <:> WS.none
-
+    msgs = handleSetCache <:> WS.none
     reqs = WS.none
 
 handleSetCache :: Elm Msg => WS.MessageHandler SetCache
 handleSetCache = WS.awaiting $ do
   c <- WS.acquire
-  liftIO $ command (SetCache c)
+  liftIO $ do
+    logJSON (lookup "about" (pages c))
+    command (SetCache c)
 
 router :: Routing Route ()
 router = do
- 
+
   path "/blog/:slug" $ do
     s <- "slug"
     dispatch $ BlogR $ Just s
@@ -71,16 +75,16 @@ router = do
 
   dispatch HomeR
 
-view :: Elm Msg => Model -> View
-view model =
+view :: Elm Msg => () -> Model -> View
+view _ mdl =
   Div <||>
-    [ case route model of
+    [ case route mdl of
         NoR     -> Null
-        HomeR   -> View.home model
-        AboutR  -> View.about model
-        BlogR _ -> View.blog model
-        DocsR _ -> View.docs model
-        TutsR _ -> View.tutorials model
+        HomeR   -> View.home mdl
+        AboutR  -> View.about mdl
+        BlogR _ -> View.blog mdl
+        DocsR _ -> View.docs mdl
+        TutsR _ -> View.tutorials mdl
     , View (Router NoR (Router.route Main.router >=> inject))
     ]
   where
@@ -89,89 +93,69 @@ view model =
       for_ mmsg (command . Route)
       pure mmsg
 
-update :: Elm Msg => Msg -> Model -> IO Model
-update msg model = 
-  let updCache model f = model { cache = f (cache model) } 
+update :: Elm Msg => Msg -> () -> Model -> IO Model
+update msg _ mdl =
+  let updCache f = mdl { cache = f (cache mdl) }
+      setDoc p v td = updCache $ \c -> c { Cache.docs = asMap (Cache.docs c) (Map.insert (p,v) td) }
+      setTut s tt   = updCache $ \c -> c { Cache.tutorials = asMap (Cache.tutorials c) (Map.insert s tt) }
+      setPost s tp  = updCache $ \c -> c { Cache.posts = asMap (Cache.posts c) (Map.insert s tp) }
    in case msg of
 
-        Startup -> do
-          WS.enact client impl
-          pure model
+        Startup -> client `seq` pure mdl
 
-        Route r ->
-          let model' = model { route = r }
-           in case r of
-                BlogR Nothing -> do
-                  for_ (Cache.postMetas (cache model)) $ \pm ->
-                    case lookup (Post.slug pm) (Cache.posts (cache model)) of
-                      Just _ -> pure ()
-                      Nothing -> 
-                        WS.remote api client getPost (Post.slug pm) 
-                          (command . SetPost (Post.slug pm))
-                  pure model'
+        Route r | Cache {..} <- cache mdl -> let mdl' = mdl { route = r } in
+          case r of
+            BlogR Nothing -> do
+              let load pm = command (LoadPost (Post.slug pm))
+              traverse_ load postMetas
+              pure mdl'
 
-                BlogR (Just s) ->
-                  case lookup s (Cache.posts (cache model)) of
-                    Nothing -> update (LoadPost s) model'
-                    _       -> pure model'
+            BlogR (Just s) | Nothing <- lookup s posts ->
+              update (LoadPost s) () mdl'
 
-                DocsR Nothing -> do
-                  for_ (Cache.docMetas (cache model)) $ \dm ->
-                    case lookup (package dm,version dm) (Cache.docs (cache model)) of
-                      Just _ -> pure ()
-                      Nothing ->
-                        WS.remote api client getDoc (package dm,version dm)
-                          (command . SetDoc (package dm) (version dm))
-                  pure model'
+            DocsR Nothing -> do
+              let load dm = command (LoadDoc (Doc.package dm) (Doc.version dm))
+              traverse_ load docMetas
+              pure mdl'
 
-                DocsR (Just (p,v)) ->
-                  case lookup (p,v) (Cache.docs (cache model)) of
-                    Nothing -> update (LoadDoc p v) model'
-                    _       -> pure model'
+            DocsR (Just (p,v)) | Nothing <- lookup (p,v) docs ->
+              update (LoadDoc p v) () mdl'
 
-                TutsR Nothing -> do
-                  for_ (Cache.tutMetas (cache model)) $ \tm ->
-                    case lookup (Tut.slug tm) (Cache.tutorials (cache model)) of
-                      Just _ -> pure ()
-                      Nothing ->
-                        WS.remote api client getTutorial (Tut.slug tm)
-                          (command . SetTutorial (Tut.slug tm))
-                  pure model'
+            TutsR Nothing -> do
+              let load tm = command (LoadTutorial (Tut.slug tm))
+              traverse_ load tutMetas
+              pure mdl'
 
-                TutsR (Just s) ->
-                  case lookup s (Cache.tutorials (cache model)) of
-                    Nothing -> update (LoadTutorial s) model'
-                    _       -> pure model'
-                _ -> pure model'
+            TutsR (Just s) | Nothing <- lookup s tutorials ->
+              update (LoadTutorial s) () mdl'
 
-        SetCache c -> 
-          pure model { cache = c }
+            _ ->
+              pure mdl'
+
+        SetCache c ->
+          pure mdl { cache = c }
 
         LoadDoc p v -> do
           WS.remote api client getDoc (p,v) (command . SetDoc p v)
-          pure $ updCache model $ \cache -> 
-            cache { Cache.docs = asMap (Cache.docs cache) (Map.insert (p,v) Trying) }
+          pure (setDoc p v Trying)
 
         SetDoc p v md ->
-          pure $ updCache model $ \cache -> 
-            cache { Cache.docs = asMap (Cache.docs cache) (Map.insert (p,v) (maybe Failed Done md)) }
+          pure (setDoc p v (maybe Failed Done md))
 
         LoadPost s -> do
           WS.remote api client getPost s (command . SetPost s)
-          pure $ updCache model $ \cache ->
-            cache { Cache.posts = asMap (Cache.posts cache) (Map.insert s Trying) }
+          pure (setPost s Trying)
 
         SetPost s mp ->
-          pure $ updCache model $ \cache ->
-            cache { Cache.posts = asMap (Cache.posts cache) (Map.insert s (maybe Failed Done mp)) }
+          pure (setPost s (maybe Failed Done mp))
 
         LoadTutorial n -> do
           WS.remote api client getTutorial n (command . SetTutorial n)
-          pure $ updCache model $ \cache ->
-            cache { Cache.tutorials = asMap (Cache.tutorials cache) (Map.insert n Trying) }
+          pure (setTut n Trying)
 
-        SetTutorial n mt -> do
-          pure $ updCache model $ \cache ->
-            cache { Cache.tutorials = asMap (Cache.tutorials cache) (Map.insert n (maybe Failed Done mt)) }
+        SetTutorial n mt ->
+          pure (setTut n (maybe Failed Done mt))
 
+        _ ->
+          pure mdl
 

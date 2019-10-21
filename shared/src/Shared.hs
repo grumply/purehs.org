@@ -1,4 +1,8 @@
-{-# LANGUAGE DeriveGeneric, NoMonomorphismRestriction, TemplateHaskell, FlexibleContexts, PolyKinds, DataKinds, MultiParamTypeClasses, PartialTypeSignatures, DeriveDataTypeable, DuplicateRecordFields #-}
+{-# LANGUAGE DeriveGeneric, NoMonomorphismRestriction,
+  TemplateHaskell, FlexibleContexts, PolyKinds,
+  DataKinds, MultiParamTypeClasses, PartialTypeSignatures,
+  DeriveDataTypeable, DuplicateRecordFields
+  #-}
 module Shared where
 
 import Pure hiding (Doc)
@@ -12,7 +16,7 @@ import GHC.Generics
 
 import Data.Map as Map
 
-host = "159.65.79.222"
+host = "192.168.1.9"
 port = 8081
 
 asMap :: Ord k => [(k,v)] -> (Map k v -> Map k v) -> [(k,v)]
@@ -71,7 +75,6 @@ data Cache = Cache
   , pages     :: [(Txt,Try Page)]
   } deriving (Generic,ToJSON,FromJSON,Default)
 
-mkRequest "ReloadMarkdown" [t|() -> ()|]
 mkRequest "GetPost" [t|Txt -> Maybe Post|]
 mkRequest "GetTutorial" [t|Txt -> Maybe Tutorial|]
 mkRequest "GetDoc" [t|(Txt,Txt) -> Maybe Doc|]
@@ -80,17 +83,11 @@ mkRequest "GetPage" [t|Txt -> Maybe Page|]
 api = WS.api msgs reqs
   where
     msgs = WS.none
-    reqs = reloadMarkdown <:>
-           getPost <:>
-           getTutorial <:>
-           getDoc <:>
-           getPage <:>
-           WS.none
+    reqs = getPost <:> getTutorial <:> getDoc <:> getPage <:> WS.none
 
 mkMessage "SetCache" [t|Cache|]
 
 clientApi = WS.api msgs reqs
   where
-    msgs = setCache <:>
-           WS.none
+    msgs = setCache <:> WS.none
     reqs = WS.none

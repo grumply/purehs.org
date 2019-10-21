@@ -46,16 +46,19 @@ executable frontend
                        TypeFamilies
                        GADTs
                        RankNTypes
+                       DeriveGeneric
   build-depends:       base >=4.11 && <4.12,
-                       pure-css >= 0.7 && <1,
-                       pure-lifted >= 0.7 && < 1,
-                       pure-router >= 0.7 && < 1,
-                       pure-styles >= 0.7 && < 1,
-                       pure-svg >= 0.7 && < 1,
-                       pure-try >= 0.7 && < 1,
-                       pure-txt >= 0.7 && < 1,
-                       pure-theme >= 0.7 && < 1,
-                       pure-websocket >= 0.7 && < 1,
+                       pure-css,
+                       pure-default,
+                       pure-json,
+                       pure-lifted,
+                       pure-router,
+                       pure-styles,
+                       pure-svg,
+                       pure-try,
+                       pure-txt,
+                       pure-theme,
+                       pure-websocket,
                        shared == 0.1.*,
                        containers,
                        pure-elm
