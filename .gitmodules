@@ -6,7 +6,3 @@
 	path = deps/semantic-ui-pure
 	url = git@github.com:grumply/semantic-ui-pure.git
 	branch = master
-[submodule "deps/pure-normalize"]
-	path = deps/pure-normalize
-	url = git@github.com:grumply/pure-normalize.git
-	branch = master
