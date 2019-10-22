@@ -1,33 +1,44 @@
 # Installation
 
+**Average installation time: 10 minutes _(mostly pre-built binary downloads)_**
+
 To get started, follow the instructions at [purehs.cachix.org](https://purehs.cachix.org).
 
-Next, clone the project skeleton and install dependencies. 
+Next, clone the project skeleton. 
 
 ```bash
 git clone --depth=1 https://github.com/grumply/pure-project-skeleton myapp/
 cd myapp/
 rm -rf ./.git
+```
+
+Prepare the frontend development server using a nix shell `./ghcjs` with `npm`.
+
+```bash
 ./ghcjs npm install
 ```
 
-Run a development web server serving the frontend client. 
+Run a development web server inside a nix shell serving the frontend client locally at [localhost:8080](localhost:8080) with a control panel at [localhost:3000](localhost:3000). 
 
 ```bash
 ./ghcjs npm run dev:frontend
 ```
 
-In another shell, run the backend server.
+In a separate shell, run the backend websocket server.
 
 ```bash
 ./ghc npm run dev:backend
 ```
 
-These development servers will watch source files for changes and recompile as necessary.
+These development servers will watch source files for changes and recompile as necessary. When the frontend changes, the frontend development server will reload any connected browser pages.
 
 ## IDE
 
-The `pure-project-skeleton` includes a simple wrapper for easy VS Code + Haskell IDE Engine (hie) integration.
+**Average installation time: 8 minutes _(mostly pre-built binary downloads)_**
+
+The `pure-project-skeleton` includes a simple wrapper for easy [VS Code](https://code.visualstudio.com) + [Haskell IDE Engine (hie)](https://github.com/haskell/haskell-ide-engine) integration to provide type signatures, completions, and other goodies.
+
+Install the haskell-language-server VS Code plugin from [visualstudio.com](https://marketplace.visualstudio.com/items?itemName=alanz.vscode-hie-server) and ignore the build requirements.
 
 Enable the all-hies cachix cache:
 
@@ -35,9 +46,7 @@ Enable the all-hies cachix cache:
 cachix use all-hies
 ```
 
-Install the ghc 8.4.4 hie to match pure-platform's ghc version:
-
-> This installation is sytem-wide and needs be performed only once.
+Install a system-wide `hie` for `ghc-8.4.4`:
 
 ```bash
 nix-env -iA selection --arg selector 'p: { inherit (p) ghc844; }' -f https://github.com/infinisil/all-hies/tarball/master
