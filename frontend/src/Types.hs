@@ -21,7 +21,7 @@ data Model = Model
   , client :: Maybe WebSocket
   }
 
-model = Model NoR def Nothing
+model = Model NoR mempty Nothing
 
 data Msg
   = Startup

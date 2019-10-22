@@ -1,6 +1,7 @@
 {-# LANGUAGE NoMonomorphismRestriction #-}
 module Main where
 
+import Pure.Data.JSON (logJSON)
 import Pure.Data.Try
 import Pure.Elm
 import qualified Pure.Router as Router
@@ -120,7 +121,7 @@ update msg _ mdl =
               update (LoadDoc p v) () mdl'
 
             TutsR Nothing -> do
-              let load tm | Nothing <- lookup (Tut.slug tm) tutorials = 
+              let load tm | Nothing <- lookup (Tut.slug tm) tutorials =
                             command (LoadTutorial (Tut.slug tm))
                           | otherwise = pure ()
               traverse_ load tutMetas
@@ -133,7 +134,7 @@ update msg _ mdl =
               pure mdl'
 
         SetCache c ->
-          pure mdl { cache = c }
+          pure mdl { cache = c <> cache mdl }
 
         LoadDoc p v | Just c <- client mdl -> do
           WS.remote api c getDoc (p,v) (command . SetDoc p v)

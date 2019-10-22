@@ -24,6 +24,7 @@ import qualified Data.ByteString.Lazy as BS
 import qualified Data.Map as Map
 import Data.Map (Map)
 
+import Data.Ord (Down(..))
 import Data.List as List
 import System.IO.Unsafe
 
@@ -59,7 +60,7 @@ posts = unsafePerformIO $ forkCache (Minutes 10 0) $ do
         slug = Txt.replace "_" "-" slug_
         title = Txt.toTitle . Txt.replace "_" "-"  . Txt.replace "-" " " $ slug_
     in Post.Post Post.PostMeta {..}
-  pure (List.reverse $ sortOn Post.meta ps)
+  pure $ sortOn (Data.Ord.Down . Post.meta) ps
 
 {-# NOINLINE rawPost #-}
 rawPost :: Cached (Map Txt BS.ByteString)
