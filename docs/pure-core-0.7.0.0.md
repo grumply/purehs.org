@@ -8,10 +8,10 @@ These types and methods are used to implement higher-level abstractions that eas
 
 Two modules are exported:
 
-  * [`Pure.Data.View`](#Pure-Data-View)
-  * [`Pure.Data.View.Patterns`](#Pure-Data-View-Patterns)
+  * [Pure.Data.View](#pure.data.view)
+  * [Pure.Data.View.Patterns](#pure.data.view.patterns)
 
-## `Pure.Data.View`
+## Pure.Data.View
 
 ### `data Target`
 
@@ -117,7 +117,7 @@ These fields have no meaning without an implementation. [pure-dom](/doc/pure-dom
 
 * `unmounted` is run immediately before a component has been invalidated and will no longer receive updates. The unmounting itself will happen subsequent to the invalidation and in an animation frame and possibly an idle callback.
 
-> Note that [pure-dom](/doc/pure-dom/0.7.0.0) may not render every intermediate view, but all intermediate states are seen during updates. See [Alan Kay on assignment](https://softwareengineering.stackexchange.com/questions/81197/what-did-alan-kay-mean-by-assignment-in-the-early-history-of-smalltalk) for a theoretical understanding of the problems that the two-phase update/render loop solves.
+> Note that [pure-dom](/doc/pure-dom/0.7.0.0) may not render every intermediate view, but all intermediate states are seen during updates. See [Alan Kay on assignment](https://softwareengineering.stackexchange.com/questions/81197/what-did-alan-kay-mean-by-assignment-in-the-early-history-of-smalltalk) for a theoretical understanding of the problems that the two-phase update/render loop solves. While components allow for direct assignment, abstractions like [pure-elm](/doc/pure-elm/0.7.0.0) build upon the component abstraction to remediate this issue by allowing the stateful context to optionally react to received messages.
 
 
 There exists a [Default](/doc/pure-default/0.7.0.0) instance for `Comp`.
@@ -398,7 +398,6 @@ modifyM :: Ref props state -> (props -> state -> IO (state,IO ())) -> IO Bool
 >
 > Nested calls to `modifyM` are guaranteed not to run in the same component update cycle.
 >
-> [pure-dom](/doc/pure-dom/0.7.0.0) may not render every intermediate view, but all intermediate states are seen during updates. See [Alan Kay on assignment](https://softwareengineering.stackexchange.com/questions/81197/what-did-alan-kay-mean-by-assignment-in-the-early-history-of-smalltalk) for a theoretical understanding of the problems that the two-phase update/render loop solves.
 
 ### `modifyM_`
 
@@ -428,7 +427,7 @@ The `getHost` method is an internal method for extracting the mounting context o
 getHost :: View -> Maybe Node
 ```
 
-## `Pure.Data.View.Patterns`
+## Pure.Data.View.Patterns
 
 `Pure.Data.View.Patterns` exports patterns, classes, and combinators for `View` construction.
 
@@ -514,6 +513,7 @@ myView = Input <| Attribute "id" "myView"
 Apply the modification on the right before calling `toView`. If the argument on the left is a `View`, it is equivalent to calling `id`. If it is an instance of `Pure`, it is equivalent to wrapping with the `View` pattern.
 
 ```haskell
+Div <| Class "green" . Id "green-div"
 ```
 
 ### `pattern |>`
