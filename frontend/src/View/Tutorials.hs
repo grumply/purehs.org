@@ -14,6 +14,7 @@ import Utils
 import Components.Header (header)
 import Components.Icons  (logo)
 import Components.Titler (titler)
+import Components.With
 
 import Control.Monad
 
@@ -54,15 +55,16 @@ tutorial s model =
     [ case lookup s (Shared.tutorials (cache model)) of
         Just (Done t) -> success t
         Just Failed   -> failed
-        _             -> loading
+        Just Trying   -> loading
+        Nothing       -> with (publish (LoadTutorial s)) loading
     ]
 
-failed = 
-  Div <| Theme FailedT |> 
+failed =
+  Div <| Theme FailedT |>
     [ "Could not find tutorial" ]
 
 success t =
-  Div <| Theme MarkdownT |> 
+  Div <| Theme MarkdownT |>
     (fmap captureLocalRefs (Shared.content t))
 
 loading =

@@ -14,6 +14,7 @@ import Utils
 import Components.Header (header)
 import Components.Icons  (logo)
 import Components.Titler (titler)
+import Components.With
 
 import Control.Monad
 
@@ -54,8 +55,9 @@ doc p v model =
   Div <| Theme ArticleT |>
     [ case lookup (p,v) (Shared.docs (cache model)) of
         Just (Done d) -> success d
+        Just Trying   -> loading
         Just Failed   -> failed
-        _             -> loading
+        Nothing       -> with (publish (LoadDoc p v)) loading
     ]
 
 failed =

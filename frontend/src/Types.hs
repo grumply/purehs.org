@@ -31,6 +31,8 @@ data Msg
   | SetDoc Txt Txt (Maybe Doc)
   | LoadPost Txt
   | SetPost Txt (Maybe Post)
+  | LoadPage Txt
+  | SetPage Txt (Maybe Page)
   | LoadTutorial Txt
   | SetTutorial Txt (Maybe Tutorial)
 

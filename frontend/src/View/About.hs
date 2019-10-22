@@ -7,6 +7,7 @@ import Pure.Theme
 
 import Components.Header
 import Components.Titler
+import Components.With
 import Shared (Page(..),Cache(..))
 import Themes
 import Types
@@ -28,15 +29,17 @@ page model =
   Div <| Theme ArticleT |>
     [ case lookup "about" (pages (cache model)) of
         Just (Done pg) -> success pg
-        _              -> loading
+        Just Trying    -> loading
+        Just Failed    -> "Not Found."
+        Nothing        -> with (publish (LoadPage "about")) loading
     ]
 
 success :: Page -> View
-success pg = 
-  Div <| Theme MarkdownT |> 
+success pg =
+  Div <| Theme MarkdownT |>
     (fmap captureLocalRefs (Shared.content pg))
 
 loading :: View
-loading = 
+loading =
   Div <| Theme LoadingT |>
     [ "Loading Page" ]

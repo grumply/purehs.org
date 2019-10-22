@@ -14,13 +14,14 @@ import Utils
 import Components.Header (header)
 import Components.Icons  (logo)
 import Components.Titler (titler)
+import Components.With
 
 import Control.Monad
 
 blog :: Model -> View
 blog model =
   Div <| Theme PageT . Theme ContentfulT |>
-    [ header (route model) False 
+    [ header (route model) False
     , Div <| Theme ContentT |>
         [ case route model of
             BlogR Nothing  -> listing model
@@ -31,13 +32,13 @@ blog model =
           BlogR (Just s) -> "Pure - " <> s
           _              -> "Pure - Blog"
     ]
-          
-listing model = 
+
+listing model =
   Div <| Theme ArticleT |>
     ( H1 <| Theme HeaderT |>
       [ "Blog" ]
-    : [ postMeta pm 
-      | pm <- Shared.postMetas (cache model) 
+    : [ postMeta pm
+      | pm <- Shared.postMetas (cache model)
       ]
     )
 
@@ -55,15 +56,16 @@ post s model =
     [ case lookup s (Shared.posts (cache model)) of
         Just (Done p) -> success p
         Just Failed   -> failed
-        _             -> loading
+        Just Trying   -> loading
+        Nothing       -> with (publish (LoadPost s)) loading
     ]
 
-failed = 
-  Div <| Theme FailedT |> 
+failed =
+  Div <| Theme FailedT |>
     [ "Could not find post" ]
 
 success p =
-  Div <| Theme MarkdownT |> 
+  Div <| Theme MarkdownT |>
     (fmap captureLocalRefs (Shared.content p))
 
 loading =

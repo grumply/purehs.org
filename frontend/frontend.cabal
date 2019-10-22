@@ -22,6 +22,7 @@ executable frontend
                        Components.Icons
                        Components.Nav
                        Components.Titler
+                       Components.With
                        Themes
                        Types
                        Utils

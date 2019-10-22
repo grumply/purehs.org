@@ -90,12 +90,14 @@ update msg _ mdl =
       setDoc p v td = updCache $ \c -> c { Cache.docs = asMap (Cache.docs c) (Map.insert (p,v) td) }
       setTut s tt   = updCache $ \c -> c { Cache.tutorials = asMap (Cache.tutorials c) (Map.insert s tt) }
       setPost s tp  = updCache $ \c -> c { Cache.posts = asMap (Cache.posts c) (Map.insert s tp) }
+      setPage p tp  = updCache $ \c -> c { Cache.pages = asMap (Cache.pages c) (Map.insert p tp) }
    in case msg of
 
         Startup -> do
           ws <- WS.websocket
           WS.enact ws impl
           WS.activate ws host port False
+          subscribe
           pure mdl { client = Just ws }
 
         Route r | Cache {..} <- cache mdl -> let mdl' = mdl { route = r } in
@@ -149,6 +151,13 @@ update msg _ mdl =
 
         SetPost s mp ->
           pure (setPost s (maybe Failed Done mp))
+
+        LoadPage p | Just c <- client mdl -> do
+          WS.remote api c getPage p (command . SetPage p)
+          pure (setPage p Trying)
+
+        SetPage p mp ->
+          pure (setPage p (maybe Failed Done mp))
 
         LoadTutorial n | Just c <- client mdl -> do
           WS.remote api c getTutorial n (command . SetTutorial n)
