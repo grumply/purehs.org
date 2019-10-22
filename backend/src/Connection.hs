@@ -30,21 +30,18 @@ update msg ws mdl =
     Startup -> do
       enact ws impl
       activate ws
+      c <- cached rawCache
+      sendRaw ws (buildEncodedDispatchByteString (messageHeader setCache) c)
       pure mdl
 
 impl = Impl Shared.api msgs reqs
   where
     msgs = WS.none
-    reqs = handleGetCache <:>
-           handleGetPost <:>
+    reqs = handleGetPost <:>
            handleGetTutorial <:>
            handleGetDoc <:>
            handleGetPage <:>
            WS.none
-
-handleGetCache :: RequestHandler Shared.GetCache
-handleGetCache = respondWithRaw $ \_ ->
-  cached rawCache
 
 handleGetPost :: RequestHandler Shared.GetPost
 handleGetPost = respondWithRaw $ \k -> do

@@ -20,7 +20,7 @@ import Control.Concurrent
 
 main = do
   hSetBuffering stdout NoBuffering
-  forkIO $ staticHTML5Server "./dist/site/exe:frontend/"
+  forkIO $ staticHTML5Server "./dist/site/"
   purehsorg host port
 
 staticHTML5Server root = run 80 app -- (compressing app)

@@ -6,7 +6,7 @@ import Pure.Data.Try
 import Pure.Elm
 import qualified Pure.Router as Router
 import Pure.Router (Router(..),Routing,dispatch,path)
-import Pure.WebSocket ((<:>),remote,clientWS)
+import Pure.WebSocket ((<:>))
 import qualified Pure.WebSocket as WS
 
 import Shared
@@ -29,6 +29,16 @@ import Data.Traversable
 import System.IO.Unsafe
 
 main = inject body (run (App [Startup] [] [] model update view) ())
+
+impl = WS.Impl Shared.clientApi msgs reqs
+  where
+    msgs = handleSetCache <:> WS.none
+    reqs = WS.none
+
+handleSetCache :: Elm Msg => WS.MessageHandler SetCache
+handleSetCache = WS.awaiting $ do
+  c <- WS.acquire
+  liftIO $ command (SetCache c)
 
 router :: Routing Route ()
 router = do
@@ -83,8 +93,9 @@ update msg _ mdl =
    in case msg of
 
         Startup -> do
-          ws <- clientWS host port
-          remote api ws getCache () (command . SetCache)
+          ws <- WS.websocket
+          WS.enact ws impl
+          WS.activate ws host port False
           pure mdl { client = Just ws }
 
         Route r | Cache {..} <- cache mdl -> let mdl' = mdl { route = r } in
