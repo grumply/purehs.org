@@ -36,7 +36,6 @@ load sub parse = do
       pure $ parse (Txt.replace "^" " " fn) (parseContent $ toTxt cnt)
 
 pattern Dash before after <- (Txt.breakOn "-" -> (before,safeTail -> after))
-infixl 9 `Dash`
 
 safeTail t = if Txt.null t then t else Txt.tail t
 

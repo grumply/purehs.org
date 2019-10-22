@@ -98,6 +98,7 @@ instance Semigroup Cache where
 instance Monoid Cache where
   mempty = Cache [] [] [] [] [] [] []
 
+mkRequest "GetCache" [t|() -> Cache|]
 mkRequest "GetPost" [t|Txt -> Maybe Post|]
 mkRequest "GetTutorial" [t|Txt -> Maybe Tutorial|]
 mkRequest "GetDoc" [t|(Txt,Txt) -> Maybe Doc|]
@@ -106,11 +107,4 @@ mkRequest "GetPage" [t|Txt -> Maybe Page|]
 api = WS.api msgs reqs
   where
     msgs = WS.none
-    reqs = getPost <:> getTutorial <:> getDoc <:> getPage <:> WS.none
-
-mkMessage "SetCache" [t|Cache|]
-
-clientApi = WS.api msgs reqs
-  where
-    msgs = setCache <:> WS.none
-    reqs = WS.none
+    reqs = getCache <:> getPost <:> getTutorial <:> getDoc <:> getPage <:> WS.none
