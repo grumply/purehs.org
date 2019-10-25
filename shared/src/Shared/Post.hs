@@ -5,9 +5,10 @@ import Pure.Data.Render ()
 import Pure.Data.Txt (Txt)
 import Pure.Data.View (View)
 
+import Data.Function (on)
 import GHC.Generics (Generic)
 
-data PostMeta = PostMeta
+data Meta = Meta
   { year  :: {-# UNPACK #-}!Txt
   , month :: {-# UNPACK #-}!Txt
   , day   :: {-# UNPACK #-}!Txt
@@ -16,7 +17,12 @@ data PostMeta = PostMeta
   } deriving (Eq,Ord,Generic,ToJSON,FromJSON)
 
 data Post = Post
-  { meta    :: {-# UNPACK #-}!PostMeta
+  { meta    :: {-# UNPACK #-}!Meta
   , content :: ![View]
   } deriving (Generic,ToJSON,FromJSON)
 
+instance Eq Post where
+  (==) = (==) `on` meta
+
+instance Ord Post where
+  compare = compare `on` meta

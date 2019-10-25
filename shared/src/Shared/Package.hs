@@ -8,13 +8,17 @@ import Pure.Data.View (View)
 import Data.Function (on)
 import GHC.Generics (Generic)
 
+data Meta = Meta
+  { package :: {-# UNPACK #-}!Txt
+  } deriving (Eq,Ord,Generic,ToJSON,FromJSON)
+
 data Package = Package
-  { package  :: {-# UNPACK #-}!Txt
+  { meta  :: {-# UNPACK #-}!Meta
   , content  :: ![View]
   } deriving (Generic,ToJSON,FromJSON)
 
 instance Eq Package where
-  (==) = (==) `on` package
+  (==) = (==) `on` meta
 
 instance Ord Package where
-  compare = compare `on` package
+  compare = compare `on` meta
