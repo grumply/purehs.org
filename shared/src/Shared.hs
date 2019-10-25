@@ -14,8 +14,7 @@ import qualified Pure.WebSocket as WS (api)
 import Data.Map as Map (Map,toList,fromList,union)
 import Data.Set as Set (Set,toList,fromList,union)
 
--- host = "159.65.79.222"
-host = "192.168.1.9"
+host = "159.65.79.222"
 port = 8081
 
 asMap :: Ord k => [(k,v)] -> (Map k v -> Map k v) -> [(k,v)]
@@ -30,14 +29,8 @@ mkRequest "GetDoc"      [t|(Txt,Txt) -> Maybe Doc     |]
 mkRequest "GetPage"     [t|Txt       -> Maybe Page    |]
 mkRequest "GetPackage"  [t|Txt       -> Maybe Package |]
 
-api = WS.api msgs reqs
-  where
-    msgs = none
-    reqs = getPost <:> getTutorial <:> getDoc <:> getPage <:> none
+api = WS.api none (getPost <:> getTutorial <:> getDoc <:> getPage <:> none)
 
 mkMessage "SetCache" [t|Cache|]
 
-clientApi = WS.api msgs reqs
-  where
-    msgs = setCache <:> none
-    reqs = none
+clientApi = WS.api (setCache <:> none) none
