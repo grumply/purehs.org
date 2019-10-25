@@ -27,7 +27,7 @@ listMarkdownFiles cd = List.filter validMarkdown <$> getDirectoryContents cd
 
 load :: FilePath -> (Txt -> [View] -> a) -> IO [a]
 load sub parse = do
-  cd <- getCurrentDirectory
+  cd <- (</> "static") <$> getCurrentDirectory
   fs <- listMarkdownFiles (cd </> sub)
   traverse (read cd) fs
   where
