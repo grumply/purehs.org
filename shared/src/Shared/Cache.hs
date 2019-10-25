@@ -1,10 +1,10 @@
 module Shared.Cache where
 
-import Shared.Doc (Doc,DocMeta)
-import Shared.Package (Package)
-import Shared.Page (Page,PageMeta)
-import Shared.Post (Post,PostMeta)
-import Shared.Tutorial (Tutorial,TutorialMeta)
+import Shared.Doc as Doc (Doc,Meta)
+import Shared.Package as Pkg (Package,Meta)
+import Shared.Page as Page (Page,Meta)
+import Shared.Post as Post (Post,Meta)
+import Shared.Tutorial as Tut (Tutorial,Meta)
 import Shared.Utils (unionAsSet,unionAsMap)
 
 import Pure.Data.JSON (ToJSON,FromJSON)
@@ -19,10 +19,10 @@ import Data.Semigroup (Semigroup(..))
 import GHC.Generics (Generic)
 
 data Cache = Cache
-  { packages  :: ![Package]
-  , postMetas :: ![PostMeta]
-  , docMetas  :: ![DocMeta]
-  , tutMetas  :: ![TutorialMeta]
+  { packages  :: ![Pkg.Meta]
+  , postMetas :: ![Post.Meta]
+  , docMetas  :: ![Doc.Meta]
+  , tutMetas  :: ![Tut.Meta]
   , posts     :: ![(Txt,Try Post)]
   , docs      :: ![((Txt,Txt),Try Doc)]
   , tutorials :: ![(Txt,Try Tutorial)]
