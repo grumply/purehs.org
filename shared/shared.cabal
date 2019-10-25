@@ -18,30 +18,28 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:     Shared
-  -- other-modules:
-  -- other-extensions:
-  default-extensions:  TypeFamilies,
-                       DeriveGeneric,
+                       Shared.Cache
+                       Shared.Doc
+                       Shared.Package
+                       Shared.Page
+                       Shared.Post
+                       Shared.Tutorial
+  default-extensions:  DeriveGeneric,
                        DeriveAnyClass,
                        OverloadedStrings,
-                       StandaloneDeriving,
-                       DuplicateRecordFields,
-                       FlexibleInstances,
-                       TypeApplications,
+                       TemplateHaskell,
+                       MultiParamTypeClasses,
                        ScopedTypeVariables,
-                       InstanceSigs,
-                       RecordWildCards
-
+                       TypeFamilies
   build-depends:       base >=4.11 && <4.12,
                        bytestring,
                        containers,
                        hashable,
-                       pure,
+                       pure-core,
                        pure-json,
-                       pure-render,
                        pure-try,
+                       pure-txt,
+                       pure-render,
                        pure-websocket
-
-
   hs-source-dirs:      src
   default-language:    Haskell2010
