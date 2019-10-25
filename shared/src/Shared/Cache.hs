@@ -5,6 +5,7 @@ import Shared.Package (Package)
 import Shared.Page (Page,PageMeta)
 import Shared.Post (Post,PostMeta)
 import Shared.Tutorial (Tutorial,TutorialMeta)
+import Shared.Utils (unionAsSet,unionAsMap)
 
 import Pure.Data.JSON (ToJSON,FromJSON)
 import Pure.Data.Try (Try)
@@ -32,9 +33,9 @@ instance Semigroup Cache where
   (<>) l r =
     let
       s :: forall a. Ord a => (Cache -> [a]) -> [a]
-      s f = Set.toList $ Set.union (Set.fromList (f l)) (Set.fromList (f r))
+      s f = unionAsSet (f l) (f r)
       m :: forall a b. Ord a => (Cache -> [(a,b)]) -> [(a,b)]
-      m f = Map.toList $ Map.union (Map.fromList (f l)) (Map.fromList (f r))
+      m f = unionAsMap (f l) (f r)
     in
       Cache (s packages) (s postMetas) (s docMetas) (s tutMetas) (m posts) (m docs) (m tutorials) (m pages)
 

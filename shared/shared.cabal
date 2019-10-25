@@ -24,6 +24,7 @@ library
                        Shared.Page
                        Shared.Post
                        Shared.Tutorial
+                       Shared.Utils
   default-extensions:  DeriveGeneric,
                        DeriveAnyClass,
                        OverloadedStrings,
