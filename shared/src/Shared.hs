@@ -25,7 +25,7 @@ mkRequest "GetDoc"      [t|(Txt,Txt) -> Maybe Doc     |]
 mkRequest "GetPage"     [t|Txt       -> Maybe Page    |]
 mkRequest "GetPackage"  [t|Txt       -> Maybe Package |]
 
-api = WS.api none (getPost <:> getTutorial <:> getDoc <:> getPage <:> none)
+api = WS.api none (getPost <:> getTutorial <:> getDoc <:> getPage <:> getPackage <:> none)
 
 mkMessage "SetCache" [t|Cache|]
 

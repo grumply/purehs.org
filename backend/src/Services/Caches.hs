@@ -3,17 +3,12 @@ module Services.Caches where
 import Data.Cached
 import Services.Utils
 
-import Shared
-  (Tutorial(Tutorial),TutorialMeta(TutorialMeta)
-  ,Doc(Doc),DocMeta(DocMeta)
-  ,Page(Page),PageMeta(PageMeta)
-  ,Post(Post),PostMeta(PostMeta)
-  )
-import qualified Shared as Tut (Tutorial(..),TutorialMeta(..))
-import qualified Shared as Doc (Doc(..),DocMeta(..))
-import qualified Shared as Page (Page(..),PageMeta(..))
-import qualified Shared as Post (Post(..),PostMeta(..))
-import qualified Shared as Cache (Cache(Cache))
+import qualified Shared.Tutorial as Tutorial
+import qualified Shared.Doc as Doc
+import qualified Shared.Page as Page
+import qualified Shared.Post as Post
+import qualified Shared.Package as Package
+import qualified Shared.Cache as Cache
 
 import Pure.Data.JSON (encodeBS)
 import Pure.Data.Time
@@ -28,13 +23,31 @@ import Data.Ord (Down(..))
 import Data.List as List
 import System.IO.Unsafe
 
+{-# NOINLINE packages #-}
+packages :: Cached [Package.Package]
+packages = unsafePerformIO $ forkCache (Minutes 10 0) $ do
+  ps <- load "packages" $ \package -> Package.Package Package.Meta {..}
+  pure (sort ps)
+
+{-# NOINLINE rawPackage #-}
+rawPackage :: Cached (Map Txt BS.ByteString)
+rawPackage = unsafePerformIO $ forkCache (Minutes 10 0) $ do
+  ps <- cached packages
+  pure $ Map.fromList
+    [ (k,encodeBS p)
+    | p <- ps
+    , let
+        pm = Package.meta p
+        k = Package.package pm
+    ]
+
 {-# NOINLINE docs #-}
-docs :: Cached [Doc]
+docs :: Cached [Doc.Doc]
 docs = unsafePerformIO $ forkCache (Minutes 10 0) $ do
   ds <- load "docs" $ \fn ->
     let (Txt.reverse -> version) `Dash` (Txt.reverse -> package) = Txt.reverse fn
-    in Doc.Doc Doc.DocMeta {..}
-  pure (sortOn Doc.meta ds)
+    in Doc.Doc Doc.Meta {..}
+  pure (sort ds)
 
 {-# NOINLINE rawDoc #-}
 rawDoc :: Cached (Map (Txt,Txt) BS.ByteString)
@@ -53,14 +66,14 @@ rawDocMetas :: Cached BS.ByteString
 rawDocMetas = unsafePerformIO $ forkCache (Minutes 10 0) ((encodeBS . fmap Doc.meta) <$> cached docs)
 
 {-# NOINLINE posts #-}
-posts :: Cached [Post]
+posts :: Cached [Post.Post]
 posts = unsafePerformIO $ forkCache (Minutes 10 0) $ do
   ps <- load "posts" $ \fn ->
     let year `Dash` month `Dash` day `Dash` slug_ = fn
         slug = Txt.replace "_" "-" slug_
         title = Txt.toTitle . Txt.replace "_" "-"  . Txt.replace "-" " " $ slug_
-    in Post.Post Post.PostMeta {..}
-  pure $ sortOn (Data.Ord.Down . Post.meta) ps
+    in Post.Post Post.Meta {..}
+  pure $ sortOn Data.Ord.Down ps
 
 {-# NOINLINE rawPost #-}
 rawPost :: Cached (Map Txt BS.ByteString)
@@ -79,13 +92,13 @@ rawPostMetas :: Cached BS.ByteString
 rawPostMetas = unsafePerformIO $ forkCache (Minutes 10 0) ((encodeBS . fmap Post.meta) <$> cached posts)
 
 {-# NOINLINE tutorials #-}
-tutorials :: Cached [Tutorial]
+tutorials :: Cached [Tutorial.Tutorial]
 tutorials = unsafePerformIO $ forkCache (Minutes 10 0) $ do
   ts <- load "tutorials" $ \fn ->
     let number `Dash` slug = fn
         title = Txt.toTitle slug
-    in Tut.Tutorial Tut.TutorialMeta {..}
-  pure (sortOn Tut.meta ts)
+    in Tutorial.Tutorial Tutorial.Meta {..}
+  pure (sort ts)
 
 {-# NOINLINE rawTutorial #-}
 rawTutorial :: Cached (Map Txt BS.ByteString)
@@ -95,19 +108,19 @@ rawTutorial = unsafePerformIO $ forkCache (Minutes 10 0) $ do
     [ (k,encodeBS t)
     | t <- ts
     , let
-        tm = Tut.meta t
-        k = Tut.slug tm
+        tm = Tutorial.meta t
+        k = Tutorial.slug tm
     ]
 
 {-# NOINLINE rawTutorialMetas #-}
 rawTutorialMetas :: Cached BS.ByteString
-rawTutorialMetas = unsafePerformIO $ forkCache (Minutes 10 0) ((encodeBS . fmap Tut.meta) <$> cached tutorials)
+rawTutorialMetas = unsafePerformIO $ forkCache (Minutes 10 0) ((encodeBS . fmap Tutorial.meta) <$> cached tutorials)
 
 {-# NOINLINE pages #-}
-pages :: Cached [Page]
+pages :: Cached [Page.Page]
 pages = unsafePerformIO $ forkCache (Minutes 10 0) $ do
-  ps <- load "pages" $ \fn -> Page (PageMeta fn)
-  pure (sortOn Page.meta ps)
+  ps <- load "pages" $ \fn -> Page.Page (Page.Meta fn)
+  pure (sort ps)
 
 {-# NOINLINE rawPage #-}
 rawPage :: Cached (Map Txt BS.ByteString)
@@ -124,15 +137,17 @@ rawPage = unsafePerformIO $ forkCache (Minutes 10 0) $ do
 {-# NOINLINE rawCache #-}
 rawCache :: Cached BS.ByteString
 rawCache = unsafePerformIO $ forkCache (Minutes 10 0) $ do
+  pkgs <- cached packages
   ps <- cached posts
   ds <- cached docs
   ts <- cached tutorials
   pgs <- cached pages
   pure $ encodeBS $
     Cache.Cache
+      (Package.meta <$> pkgs)
       (Post.meta <$> ps)
       (Doc.meta <$> ds)
-      (Tut.meta <$> ts)
+      (Tutorial.meta <$> ts)
       []
       []
       []

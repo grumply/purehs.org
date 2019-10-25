@@ -41,6 +41,7 @@ impl = Impl Shared.api msgs reqs
            handleGetTutorial <:>
            handleGetDoc <:>
            handleGetPage <:>
+           handleGetPackage <:>
            WS.none
 
 handleGetPost :: RequestHandler Shared.GetPost
@@ -61,4 +62,9 @@ handleGetDoc = respondWithRaw $ \k -> do
 handleGetPage :: RequestHandler Shared.GetPage
 handleGetPage = respondWithRaw $ \k -> do
   rps <- cached rawPage
+  pure $ fromMaybe "null" (Map.lookup k rps)
+
+handleGetPackage :: RequestHandler Shared.GetPackage
+handleGetPackage = respondWithRaw $ \k -> do
+  rps <- cached rawPackage
   pure $ fromMaybe "null" (Map.lookup k rps)
