@@ -15,6 +15,8 @@ import Data.Map as Map (Map,toList,fromList,union)
 import Data.Set as Set (Set,toList,fromList,union)
 
 host = "159.65.79.222"
+host :: String
+port :: Int
 port = 8081
 
 mkRequest "GetPost"     [t|Txt       -> Maybe Post    |]
