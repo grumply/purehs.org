@@ -9,8 +9,15 @@ import Data.Function (on)
 import GHC.Generics (Generic)
 
 data Meta = Meta
-  { package :: {-# UNPACK #-}!Txt
-  } deriving (Eq,Ord,Generic,ToJSON,FromJSON)
+  { package  :: {-# UNPACK #-}!Txt
+  , synopsis :: {-# UNPACK #-}![View]
+  } deriving (Generic,ToJSON,FromJSON)
+
+instance Eq Meta where
+  (==) = (==) `on` package
+
+instance Ord Meta where
+  compare = compare `on` package
 
 data Package = Package
   { meta  :: {-# UNPACK #-}!Meta

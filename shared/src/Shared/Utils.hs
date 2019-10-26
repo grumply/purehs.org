@@ -14,3 +14,6 @@ unionAsSet l r = Set.toList $ Set.union (Set.fromList l) (Set.fromList r)
 
 unionAsMap :: Ord a => [(a,b)] -> [(a,b)] -> [(a,b)]
 unionAsMap l r = Map.toList $ Map.union (Map.fromList l) (Map.fromList r)
+
+breakMany :: (a -> Bool) -> [a] -> ([a],[[a]])
+breakMany f = foldr (\x (xs,xxs) -> if f x then ([],(x:xs):xxs) else (x:xs,xxs)) ([],[])

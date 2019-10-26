@@ -15,7 +15,7 @@ import Components.Titler (titler)
 import Control.Monad
 
 home :: Elm Msg => Model -> View
-home model = 
+home model =
   Div <| Theme PageT . Theme HomeT |>
     [ header (route model) True
     , Div <| Theme ContentT |>
@@ -23,8 +23,7 @@ home model =
         [ Div <| Theme HeroT |>
           [ logo False False HeroLogoT
           , H1 <| Theme SloganT |>
-            [ Span <||> [ "The web from a " ]
-            , Span <||> [ I <||> [ "different angle." ] ]
+            [ "Dynamic Hierarchical Contexts"
             ]
           , P <| Theme DescriptionT |>
             [ "Performance + Expressiveness + Asynchrony"
@@ -39,7 +38,7 @@ home model =
         ]
       , Div <| Theme GradientT
       ]
-    , titler "Pure - Haskell Application Framework"
+    , titler "Pure - Dynamic Hierarchical Context"
     ]
 
 data HomeT = HomeT
@@ -50,8 +49,8 @@ instance Themeable HomeT where
 
     atMedia "(max-height: 500px)" $
       is c .> do
-        paddingTop    =: ems 3
-        paddingBottom =: ems 3
+        paddingTop    =: pxs 48
+        paddingBottom =: pxs 48
 
 data GradientT = GradientT
 instance Themeable GradientT where
@@ -97,8 +96,8 @@ instance Themeable GradientT where
 
     atMedia "(max-height: 500px)" $
       is c .> do
-        paddingTop    =: ems 3
-        paddingBottom =: ems 3
+        paddingTop    =: pxs 48
+        paddingBottom =: pxs 48
 
 data ContentT = ContentT
 instance Themeable ContentT where
@@ -147,8 +146,8 @@ data SloganT = SloganT
 instance Themeable SloganT where
   theme c _ = void $ do
     is c .> do
-      marginTop      =: ems 0.5
-      marginBottom   =: ems 0.25
+      marginTop      =: pxs 8
+      marginBottom   =: pxs 4
       display        =: flex
       flex           =: one
       flexWrap       =: wrap
@@ -160,8 +159,12 @@ instance Themeable SloganT where
 
     is c . has "span" .> do
       display        =: flex
-      marginLeft     =: ems 0.25
+      marginLeft     =: pxs 4
       justifyContent =: center
+
+    atMedia "(max-width: 48em)" $
+      is c .> do
+        fontSize =: pxs 30
 
 data DescriptionT = DescriptionT
 instance Themeable DescriptionT where
@@ -172,6 +175,10 @@ instance Themeable DescriptionT where
       justifyContent =: center
       fontSize       =: pxs 24
       textShadow     =: pxs 1 <<>> pxs 1 <<>> hsla(215,35.14,40,0.5)
+
+    atMedia "(max-width: 48em)" $
+      is c .> do
+        fontSize =: pxs 22
 
 buttonBoxShadow opacity vOff blur vOff' blur' =
        zero <<>> pxs vOff  <<>> pxs blur  <<>> darkLavender
@@ -199,7 +206,8 @@ instance Themeable CallToActionT where
       display          =: flex
       flexDirection    =: row
       justifyContent   =: center
-      marginTop        =: ems 1
+      marginTop        =: pxs 8
+      marginBottom     =: pxs 8
 
     is c . has "a" .> do
       display          =: inlineBlock

@@ -8,7 +8,8 @@ import Pure.Theme
 import Components.Header
 import Components.Titler
 import Components.With
-import Shared (Page(..),Cache(..))
+import Shared.Cache as Cache (Cache(pages))
+import Shared.Page as Page (Page(content))
 import Themes
 import Types
 import Utils
@@ -27,7 +28,7 @@ about model =
 page :: Model -> View
 page model =
   Div <| Theme ArticleT |>
-    [ case lookup "about" (pages (cache model)) of
+    [ case lookup "about" (Cache.pages (cache model)) of
         Just (Done pg) -> success pg
         Just Trying    -> loading
         Just Failed    -> "Not Found."
@@ -37,7 +38,7 @@ page model =
 success :: Page -> View
 success pg =
   Div <| Theme MarkdownT |>
-    (fmap captureLocalRefs (Shared.content pg))
+    (fmap captureLocalRefs (Page.content pg))
 
 loading :: View
 loading =

@@ -14,6 +14,7 @@ import Pure.Data.JSON (encodeBS)
 import Pure.Data.Time
 import Pure.Data.Try as Try
 import Pure.Data.Txt as Txt
+import Pure.Elm (pattern H1)
 
 import qualified Data.ByteString.Lazy as BS
 import qualified Data.Map as Map
@@ -23,15 +24,22 @@ import Data.Ord (Down(..))
 import Data.List as List
 import System.IO.Unsafe
 
+epoch = Seconds 1
+
 {-# NOINLINE packages #-}
 packages :: Cached [Package.Package]
-packages = unsafePerformIO $ forkCache (Minutes 10 0) $ do
-  ps <- load "packages" $ \package -> Package.Package Package.Meta {..}
+packages = unsafePerformIO $ forkCache epoch $ do
+  ps <- load "packages" $ \package md ->
+    let (synopsis,content) = List.break h1 md
+        h1 H1 = True
+        h1 _ = False
+        meta = Package.Meta {..}
+     in Package.Package {..}
   pure (sort ps)
 
 {-# NOINLINE rawPackage #-}
 rawPackage :: Cached (Map Txt BS.ByteString)
-rawPackage = unsafePerformIO $ forkCache (Minutes 10 0) $ do
+rawPackage = unsafePerformIO $ forkCache epoch $ do
   ps <- cached packages
   pure $ Map.fromList
     [ (k,encodeBS p)
@@ -43,7 +51,7 @@ rawPackage = unsafePerformIO $ forkCache (Minutes 10 0) $ do
 
 {-# NOINLINE docs #-}
 docs :: Cached [Doc.Doc]
-docs = unsafePerformIO $ forkCache (Minutes 10 0) $ do
+docs = unsafePerformIO $ forkCache epoch $ do
   ds <- load "docs" $ \fn ->
     let (Txt.reverse -> version) `Dash` (Txt.reverse -> package) = Txt.reverse fn
     in Doc.Doc Doc.Meta {..}
@@ -51,7 +59,7 @@ docs = unsafePerformIO $ forkCache (Minutes 10 0) $ do
 
 {-# NOINLINE rawDoc #-}
 rawDoc :: Cached (Map (Txt,Txt) BS.ByteString)
-rawDoc = unsafePerformIO $ forkCache (Minutes 10 0) $ do
+rawDoc = unsafePerformIO $ forkCache epoch $ do
   ds <- cached docs
   pure $ Map.fromList
     [ (k,encodeBS d)
@@ -63,13 +71,13 @@ rawDoc = unsafePerformIO $ forkCache (Minutes 10 0) $ do
 
 {-# NOINLINE rawDocMetas #-}
 rawDocMetas :: Cached BS.ByteString
-rawDocMetas = unsafePerformIO $ forkCache (Minutes 10 0) ((encodeBS . fmap Doc.meta) <$> cached docs)
+rawDocMetas = unsafePerformIO $ forkCache epoch ((encodeBS . fmap Doc.meta) <$> cached docs)
 
 {-# NOINLINE posts #-}
 posts :: Cached [Post.Post]
-posts = unsafePerformIO $ forkCache (Minutes 10 0) $ do
+posts = unsafePerformIO $ forkCache epoch $ do
   ps <- load "posts" $ \fn ->
-    let year `Dash` month `Dash` day `Dash` slug_ = fn
+    let year `Dash` (month `Dash` (day `Dash` slug_)) = fn
         slug = Txt.replace "_" "-" slug_
         title = Txt.toTitle . Txt.replace "_" "-"  . Txt.replace "-" " " $ slug_
     in Post.Post Post.Meta {..}
@@ -77,7 +85,7 @@ posts = unsafePerformIO $ forkCache (Minutes 10 0) $ do
 
 {-# NOINLINE rawPost #-}
 rawPost :: Cached (Map Txt BS.ByteString)
-rawPost = unsafePerformIO $ forkCache (Minutes 10 0) $ do
+rawPost = unsafePerformIO $ forkCache epoch $ do
   ps <- cached posts
   pure $ Map.fromList
     [ (k,encodeBS p)
@@ -89,11 +97,11 @@ rawPost = unsafePerformIO $ forkCache (Minutes 10 0) $ do
 
 {-# NOINLINE rawPostMetas #-}
 rawPostMetas :: Cached BS.ByteString
-rawPostMetas = unsafePerformIO $ forkCache (Minutes 10 0) ((encodeBS . fmap Post.meta) <$> cached posts)
+rawPostMetas = unsafePerformIO $ forkCache epoch ((encodeBS . fmap Post.meta) <$> cached posts)
 
 {-# NOINLINE tutorials #-}
 tutorials :: Cached [Tutorial.Tutorial]
-tutorials = unsafePerformIO $ forkCache (Minutes 10 0) $ do
+tutorials = unsafePerformIO $ forkCache epoch $ do
   ts <- load "tutorials" $ \fn ->
     let number `Dash` slug = fn
         title = Txt.toTitle slug
@@ -102,7 +110,7 @@ tutorials = unsafePerformIO $ forkCache (Minutes 10 0) $ do
 
 {-# NOINLINE rawTutorial #-}
 rawTutorial :: Cached (Map Txt BS.ByteString)
-rawTutorial = unsafePerformIO $ forkCache (Minutes 10 0) $ do
+rawTutorial = unsafePerformIO $ forkCache epoch $ do
   ts <- cached tutorials
   pure $ Map.fromList
     [ (k,encodeBS t)
@@ -114,17 +122,17 @@ rawTutorial = unsafePerformIO $ forkCache (Minutes 10 0) $ do
 
 {-# NOINLINE rawTutorialMetas #-}
 rawTutorialMetas :: Cached BS.ByteString
-rawTutorialMetas = unsafePerformIO $ forkCache (Minutes 10 0) ((encodeBS . fmap Tutorial.meta) <$> cached tutorials)
+rawTutorialMetas = unsafePerformIO $ forkCache epoch ((encodeBS . fmap Tutorial.meta) <$> cached tutorials)
 
 {-# NOINLINE pages #-}
 pages :: Cached [Page.Page]
-pages = unsafePerformIO $ forkCache (Minutes 10 0) $ do
+pages = unsafePerformIO $ forkCache epoch $ do
   ps <- load "pages" $ \fn -> Page.Page (Page.Meta fn)
   pure (sort ps)
 
 {-# NOINLINE rawPage #-}
 rawPage :: Cached (Map Txt BS.ByteString)
-rawPage = unsafePerformIO $ forkCache (Minutes 10 0) $ do
+rawPage = unsafePerformIO $ forkCache epoch $ do
   ps <- cached pages
   pure $ Map.fromList
     [ (k,encodeBS p)
@@ -136,7 +144,7 @@ rawPage = unsafePerformIO $ forkCache (Minutes 10 0) $ do
 
 {-# NOINLINE rawCache #-}
 rawCache :: Cached BS.ByteString
-rawCache = unsafePerformIO $ forkCache (Minutes 10 0) $ do
+rawCache = unsafePerformIO $ forkCache epoch $ do
   pkgs <- cached packages
   ps <- cached posts
   ds <- cached docs
@@ -148,6 +156,7 @@ rawCache = unsafePerformIO $ forkCache (Minutes 10 0) $ do
       (Post.meta <$> ps)
       (Doc.meta <$> ds)
       (Tutorial.meta <$> ts)
+      []
       []
       []
       []

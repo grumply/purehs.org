@@ -19,14 +19,15 @@ import Data.Semigroup (Semigroup(..))
 import GHC.Generics (Generic)
 
 data Cache = Cache
-  { packages  :: ![Pkg.Meta]
-  , postMetas :: ![Post.Meta]
-  , docMetas  :: ![Doc.Meta]
-  , tutMetas  :: ![Tut.Meta]
-  , posts     :: ![(Txt,Try Post)]
-  , docs      :: ![((Txt,Txt),Try Doc)]
-  , tutorials :: ![(Txt,Try Tutorial)]
-  , pages     :: ![(Txt,Try Page)]
+  { packageMetas :: ![Pkg.Meta]
+  , postMetas    :: ![Post.Meta]
+  , docMetas     :: ![Doc.Meta]
+  , tutMetas     :: ![Tut.Meta]
+  , packages     :: ![(Txt,Try Package)]
+  , posts        :: ![(Txt,Try Post)]
+  , docs         :: ![((Txt,Txt),Try Doc)]
+  , tutorials    :: ![(Txt,Try Tutorial)]
+  , pages        :: ![(Txt,Try Page)]
   } deriving (Generic,ToJSON,FromJSON)
 
 instance Semigroup Cache where
@@ -37,8 +38,9 @@ instance Semigroup Cache where
       m :: forall a b. Ord a => (Cache -> [(a,b)]) -> [(a,b)]
       m f = unionAsMap (f l) (f r)
     in
-      Cache (s packages) (s postMetas) (s docMetas) (s tutMetas) (m posts) (m docs) (m tutorials) (m pages)
+      Cache (s packageMetas) (s postMetas) (s docMetas) (s tutMetas)
+            (m packages)     (m posts)     (m docs)     (m tutorials) (m pages)
 
 instance Monoid Cache where
-  mempty = Cache [] [] [] [] [] [] [] []
+  mempty = Cache [] [] [] [] [] [] [] [] []
 

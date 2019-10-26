@@ -1,10 +1,10 @@
-module Themes where
+module Themes (module Themes, module Export, pattern Theme, Themeable(..)) where
 
 import Pure.Elm
-import Pure.Data.CSS
+import Pure.Data.CSS as Export
 import Pure.Theme
 
-import Control.Monad
+import Control.Monad as Export
 
 import Prelude hiding (or)
 
@@ -63,9 +63,6 @@ instance Themeable ContentfulT where
       paddingBottom =: ems 3
 
 markdownStyles = do
-    apply $ do
-      marginTop  =: pxs 16
-
     has "p" .> do
       lineHeight =: ems 1.7
       fontSize   =: pxs 18
@@ -90,6 +87,7 @@ markdownStyles = do
     has "h1" .> do
       fontFamily  =: "-apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', sans-serif;"
       fontSize    =: pxs 48
+      margin      =: zero
 
     has "h2" .> do
       fontSize   =: pxs 32
@@ -119,6 +117,7 @@ markdownStyles = do
 
       atMedia "(min-width: 48em)" .> do
         marginLeft  =: pxs 16
+        marginRight =: pxs 16
 
       has "h2" .> do
         margin =: pxs 8
@@ -142,7 +141,7 @@ markdownStyles = do
       atMedia "(min-width: 48em)" .> do
         borderRadius     =: pxs 10
         marginLeft       =: pxs 16
-        marginRight      =: pxs 0
+        marginRight      =: pxs 16
 
     has "code" . is ".sourceCode" $ do
       apply $ do
@@ -192,6 +191,8 @@ markdownStyles = do
 data MarkdownT = MarkdownT
 instance Themeable MarkdownT where
   theme c _ = void $ is c $ do
+    id .> do
+      width =: per 100
 
     atMedia "(max-width: 480px)" .> do
       fontSize =: ems 0.45
@@ -206,7 +207,6 @@ instance Themeable HeaderT where
   theme c _ = void $ do
     is c $ do
       apply $ do
-        paddingTop =: ems 0.5
         textDecoration =: underline
         fontSize =: pxs 60
         color =: darkGray
@@ -231,6 +231,7 @@ instance Themeable ContentT where
         paddingRight =: ems 1
         marginLeft   =: auto
         marginRight  =: auto
+        marginTop     =: pxs 64
 
 data TitleT = TitleT
 instance Themeable TitleT where
@@ -242,12 +243,11 @@ data ArticleT = ArticleT
 instance Themeable ArticleT where
   theme c _ = void $ do
     is c .> do
+      position      =: relative
       minHeight     =: per 100
       display       =: flex
       flexDirection =: column
       background    =: baseWhite
-      paddingTop    =: ems 1.5
-      paddingBottom =: ems 1.5
 
 data LoadingT = LoadingT
 instance Themeable LoadingT where
@@ -286,6 +286,7 @@ deepLavender = pureLavender 14
 baseWhite = pureWhite 99
 baseGray = pureWhite 70
 lightGray = pureWhite 90
+mediumGray = pureWhite 45
 darkGray = pureWhite 20
 
 baseGreen = pureGreen 45
@@ -316,4 +317,15 @@ orange2 = hsl( 39,67,69) -- hue6-2
 
 selection = hsl(220,13,10)
 
+data DocT = DocT
+instance Themeable DocT where
+  theme c _ = void $
+    is c $ do
+      id .> do
+        minHeight     =: per 100
+        display       =: flex
+        flexDirection =: rowReverse
+        background    =: baseWhite
 
+      atMedia "(max-width: 48em)" .> do
+        flexDirection =: column

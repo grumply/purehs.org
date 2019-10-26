@@ -1,19 +1,6 @@
 {-# LANGUAGE NoMonomorphismRestriction #-}
 module Main where
 
-import Pure.Data.JSON (logJSON)
-import Pure.Data.Try
-import Pure.Elm
-import qualified Pure.Router as Router
-import Pure.Router (Router(..),Routing,dispatch,path)
-import Pure.WebSocket ((<:>))
-import qualified Pure.WebSocket as WS
-
-import Shared
-import qualified Shared as Tut (Tutorial(..),TutorialMeta(..))
-import qualified Shared as Doc (Doc(..),DocMeta(..))
-import qualified Shared as Post (Post(..),PostMeta(..))
-import qualified Shared as Cache (Cache(..))
 import Types
 import qualified View.About as View
 import qualified View.Blog as View
@@ -21,8 +8,27 @@ import qualified View.Docs as View
 import qualified View.Home as View
 import qualified View.Tutorials as View
 
+import Shared
+import qualified Shared.Tutorial as Tut (Tutorial(..),Meta(..))
+import qualified Shared.Doc as Doc (Doc(..),Meta(..))
+import qualified Shared.Package as Package (Package(..),Meta(..))
+import qualified Shared.Page as Page (Page(..),Meta(..))
+import qualified Shared.Post as Post (Post(..),Meta(..))
+import qualified Shared.Cache as Cache (Cache(..))
+import Shared.Utils (asMap)
+
+import Pure.Data.JSON (logJSON,encode)
+import Pure.Data.Try
+import Pure.Data.URI (decodeURI)
+import Pure.Elm
+import qualified Pure.Router as Router
+import Pure.Router (Router(..),Routing,dispatch,path)
+import Pure.WebSocket ((<:>))
+import qualified Pure.WebSocket as WS
+
 import qualified Data.Map as Map
 
+import Control.Applicative
 import Control.Monad
 import Data.Foldable
 import Data.Traversable
@@ -41,41 +47,54 @@ handleSetCache = WS.awaiting $ do
   liftIO $ command (SetCache c)
 
 router :: Routing Route ()
-router = do
+router = about >> blog >> docs >> tutorials >> dispatch HomeR
+  where
+    about =
+      path "/about" $
+        dispatch AboutR
 
-  path "/blog/:slug" $ do
-    s <- "slug"
-    dispatch $ BlogR $ Just s
+    blog =
+      path "/blog" $ do
+        path "/:slug" $ do
+          s <- "slug"
+          dispatch $ PostR s
+        dispatch BlogR
 
-  path "/doc/:pkg/:ver" $ do
-    p <- "pkg"
-    v <- "ver"
-    dispatch $ DocsR $ Just (p,v)
+    tutorials =
+      path "/tut" $ do
+        path "/:slug" $ do
+          s <- "slug"
+          dispatch $ TutorialR s
+        dispatch TutorialsR
 
-  path "/tut/:slug" $ do
-    s <- "slug"
-    dispatch $ TutsR $ Just s
-
-  path "/blog" $ dispatch $ BlogR Nothing
-
-  path "/doc" $ dispatch $ DocsR Nothing
-
-  path "/tut" $ dispatch $ TutsR Nothing
-
-  path "/about" $ dispatch AboutR
-
-  dispatch HomeR
+    docs =
+      path "/doc" $ do
+        path "/:pkg" $ do
+          p <- "pkg"
+          path "/:ver" $ do
+            v <- "ver"
+            path "/:mdl" $ do
+              m <- "mdl"
+              path "/:ent" $ do
+                e <- "ent"
+                dispatch $ EntityR p v m (decodeURI e)
+              dispatch $ ModuleR p v m
+            dispatch $ VersionR p v
+          dispatch $ PackageR p
+        dispatch DocsR
 
 view :: Elm Msg => () -> Model -> View
 view _ mdl =
   Div <||>
     [ case route mdl of
-        NoR     -> Null
-        HomeR   -> View.home mdl
-        AboutR  -> View.about mdl
-        BlogR _ -> View.blog mdl
-        DocsR _ -> View.docs mdl
-        TutsR _ -> View.tutorials mdl
+        NoR         -> Null
+        HomeR       -> View.home mdl
+        AboutR      -> View.about mdl
+        BlogR       -> View.blog mdl
+        PostR _     -> View.blog mdl
+        TutorialR _ -> View.tutorials mdl
+        TutorialsR  -> View.tutorials mdl
+        _           -> View.docs mdl
     , View (Router NoR (Router.route Main.router >=> inject))
     ]
   where
@@ -85,12 +104,14 @@ view _ mdl =
       pure mmsg
 
 update :: Elm Msg => Msg -> () -> Model -> IO Model
-update msg _ mdl =
+update msg _ mdl | Cache.Cache {..} <- cache mdl = do
+  logJSON (msg,mdl)
   let updCache f = mdl { cache = f (cache mdl) }
       setDoc p v td = updCache $ \c -> c { Cache.docs = asMap (Cache.docs c) (Map.insert (p,v) td) }
       setTut s tt   = updCache $ \c -> c { Cache.tutorials = asMap (Cache.tutorials c) (Map.insert s tt) }
       setPost s tp  = updCache $ \c -> c { Cache.posts = asMap (Cache.posts c) (Map.insert s tp) }
       setPage p tp  = updCache $ \c -> c { Cache.pages = asMap (Cache.pages c) (Map.insert p tp) }
+      setPackage p tp = updCache $ \c -> c { Cache.packages = asMap (Cache.packages c) (Map.insert p tp) }
    in case msg of
 
         Startup -> do
@@ -100,36 +121,12 @@ update msg _ mdl =
           subscribe
           pure mdl { client = Just ws }
 
-        Route r | Cache {..} <- cache mdl -> let mdl' = mdl { route = r } in
+        Route r -> let mdl' = mdl { route = r } in
           case r of
-            BlogR Nothing -> do
-              let load pm | Nothing <- lookup (Post.slug pm) posts =
-                            command (LoadPost (Post.slug pm))
-                          | otherwise = pure ()
-              traverse_ load postMetas
-              pure mdl'
-
-            BlogR (Just s) | Nothing <- lookup s posts ->
+            PostR s | Nothing <- lookup s posts ->
               update (LoadPost s) () mdl'
 
-            DocsR Nothing -> do
-              let load dm | Nothing <- lookup (Doc.package dm,Doc.version dm) docs =
-                            command (LoadDoc (Doc.package dm) (Doc.version dm))
-                          | otherwise = pure ()
-              traverse_ load docMetas
-              pure mdl'
-
-            DocsR (Just (p,v)) | Nothing <- lookup (p,v) docs ->
-              update (LoadDoc p v) () mdl'
-
-            TutsR Nothing -> do
-              let load tm | Nothing <- lookup (Tut.slug tm) tutorials =
-                            command (LoadTutorial (Tut.slug tm))
-                          | otherwise = pure ()
-              traverse_ load tutMetas
-              pure mdl'
-
-            TutsR (Just s) | Nothing <- lookup s tutorials ->
+            TutorialR s | Nothing <- lookup s tutorials ->
               update (LoadTutorial s) () mdl'
 
             _ ->
@@ -138,28 +135,41 @@ update msg _ mdl =
         SetCache c ->
           pure mdl { cache = c <> cache mdl }
 
-        LoadDoc p v | Just c <- client mdl -> do
+        LoadDoc p v | Nothing <- lookup (p,v) (Cache.docs (cache mdl))
+                    , Just c <- client mdl -> do
           WS.remote api c getDoc (p,v) (command . SetDoc p v)
           pure (setDoc p v Trying)
 
         SetDoc p v md ->
           pure (setDoc p v (maybe Failed Done md))
 
-        LoadPost s | Just c <- client mdl -> do
+
+        LoadPackage p | Nothing <- lookup p (Cache.packages (cache mdl))
+                      , Just c <- client mdl -> do
+          WS.remote api c getPackage p (command . SetPackage p)
+          pure (setPackage p Trying)
+
+        SetPackage p mp ->
+          pure (setPackage p (maybe Failed Done mp))
+
+        LoadPost s | Nothing <- lookup s (Cache.posts (cache mdl))
+                   , Just c <- client mdl -> do
           WS.remote api c getPost s (command . SetPost s)
           pure (setPost s Trying)
 
         SetPost s mp ->
           pure (setPost s (maybe Failed Done mp))
 
-        LoadPage p | Just c <- client mdl -> do
+        LoadPage p | Nothing <- lookup p (Cache.pages (cache mdl))
+                   , Just c <- client mdl -> do
           WS.remote api c getPage p (command . SetPage p)
           pure (setPage p Trying)
 
         SetPage p mp ->
           pure (setPage p (maybe Failed Done mp))
 
-        LoadTutorial n | Just c <- client mdl -> do
+        LoadTutorial n | Nothing <- lookup n (Cache.tutorials (cache mdl))
+                       , Just c <- client mdl -> do
           WS.remote api c getTutorial n (command . SetTutorial n)
           pure (setTut n Trying)
 
@@ -168,4 +178,3 @@ update msg _ mdl =
 
         _ ->
           pure mdl
-

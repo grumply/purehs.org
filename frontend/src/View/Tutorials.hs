@@ -6,7 +6,8 @@ import Pure.Elm
 import Pure.Router (lref)
 import Pure.Theme
 
-import qualified Shared (Cache(..),Tutorial(..),TutorialMeta(..))
+import Shared.Cache as Cache (Cache(tutMetas,tutorials))
+import Shared.Tutorial as Tutorial (Tutorial(content),Meta(..))
 import Themes
 import Types
 import Utils
@@ -24,13 +25,13 @@ tutorials model =
     [ header (route model) False
     , Div <| Theme ContentT |>
       [ case route model of
-          TutsR Nothing  -> listing model
-          TutsR (Just t) -> tutorial t model
+          TutorialsR  -> listing model
+          TutorialR t -> tutorial t model
       ]
     , titler $
         case route model of
-          TutsR (Just t) -> "Pure - " <> t
-          _ -> "Pure - Tutorials"
+          TutorialR t -> "Pure - " <> t -- ! FIXME: this is a slug, not a title
+          _           -> "Pure - Tutorials"
     ]
 
 listing model =
@@ -38,11 +39,11 @@ listing model =
     ( H1 <| Theme HeaderT |>
       [ "Tutorials" ]
     : [ tutorialMeta tm
-      | tm <- Shared.tutMetas (cache model)
+      | tm <- Cache.tutMetas (cache model)
       ]
     )
 
-tutorialMeta Shared.TutorialMeta {..} =
+tutorialMeta Tutorial.Meta {..} =
   let
     ref = "/tut/" <> slug
   in
@@ -52,7 +53,7 @@ tutorialMeta Shared.TutorialMeta {..} =
 
 tutorial s model =
   Div <| Theme ArticleT |>
-    [ case lookup s (Shared.tutorials (cache model)) of
+    [ case lookup s (Cache.tutorials (cache model)) of
         Just (Done t) -> success t
         Just Failed   -> failed
         Just Trying   -> loading
@@ -65,7 +66,7 @@ failed =
 
 success t =
   Div <| Theme MarkdownT |>
-    (fmap captureLocalRefs (Shared.content t))
+    (fmap captureLocalRefs (Tutorial.content t))
 
 loading =
   Div <| Theme LoadingT |>

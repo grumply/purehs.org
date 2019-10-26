@@ -1,9 +1,12 @@
 module Shared.Doc where
 
+import Shared.Utils (breakMany)
+
 import Pure.Data.JSON (ToJSON,FromJSON)
 import Pure.Data.Render ()
 import Pure.Data.Txt (Txt)
 import Pure.Data.View (View)
+import Pure.Elm (pattern H2)
 
 import Data.Function (on)
 import GHC.Generics (Generic)
@@ -23,3 +26,11 @@ instance Eq Doc where
 
 instance Ord Doc where
   compare = compare `on` meta
+
+breakDoc :: Doc -> ([View],[[View]])
+breakDoc d =
+  let
+    h2 H2 = True
+    h2 _ = False
+   in
+    breakMany h2 (content d)

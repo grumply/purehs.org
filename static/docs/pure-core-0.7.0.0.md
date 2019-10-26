@@ -1,15 +1,10 @@
 # pure-core
 
-> NOTE: This is an internal package implementing core types, methods, and patterns. This is not the best place to learn how to develop with Pure. Consider starting with [purehs.org/tut/basics](/tut/basics).
+> NOTE: This is an internal package implementing core types, methods, and patterns. This is not the best place to learn how to develop with Pure. Consider starting with the [Basics Tutorial](/tut/basics).
 
 This package implements low-level types and methods for constructing and manipulating dependent and hierarchical computational contexts. When implementing user interfaces, the dependent evaluation is of nested and hierarchical views with shared state and environment. When implementing servers and services, the dependent evaluation is of computational contexts with shared state and environment.
 
 These types and methods are used to implement higher-level abstractions that ease server, service, and interface implementation. See, for example, [pure-html](/doc/pure-html/0.7.0.0), [pure-svg](/doc/pure-svg/0.7.0.0), and [pure-events](/doc/pure-html/0.7.0.0).
-
-Two modules are exported:
-
-  * [Pure.Data.View](#pure.data.view)
-  * [Pure.Data.View.Patterns](#pure.data.view.patterns)
 
 ## Pure.Data.View
 
@@ -70,7 +65,7 @@ instance Monoid Features where
   ...
 ```
 
-### `data Comp props state`
+### `data Comp`
 
 The `Comp` data type represents stateful contexts with a suite of lifecycle methods for carefully controlling evaluation. This type is similar to the `ReactJS` `Component` class.
 
@@ -146,7 +141,7 @@ This instance requires instantiation of `construct`.
 myComponent = def { construct = ... }
 ```
 
-### `data ComponentPatch props state`
+### `data ComponentPatch`
 
 The `ComponentPatch` is a data type used by [pure-dom](/doc/pure-dom/0.7.0.0) to represent updates to a component that are generated implicitly from `props` changing, or from a call to `modify` a component's state, or from a component being unmounted.
 

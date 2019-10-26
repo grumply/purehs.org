@@ -31,12 +31,14 @@ library
                        TemplateHaskell,
                        MultiParamTypeClasses,
                        ScopedTypeVariables,
-                       TypeFamilies
-  build-depends:       base >=4.11 && <4.12,
+                       TypeFamilies,
+                       PatternSynonyms
+  build-depends:       base,
                        bytestring,
                        containers,
                        hashable,
                        pure-core,
+                       pure-elm,
                        pure-json,
                        pure-try,
                        pure-txt,

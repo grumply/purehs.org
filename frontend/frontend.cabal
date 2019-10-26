@@ -29,6 +29,13 @@ executable frontend
                        View.About
                        View.Blog
                        View.Docs
+                       View.Docs.Breadcrumbs
+                       View.Docs.Entity
+                       View.Docs.Module
+                       View.Docs.Package
+                       View.Docs.Packages
+                       View.Docs.Searcher
+                       View.Docs.Version
                        View.Home
                        View.Tutorials
   -- other-extensions:
@@ -48,6 +55,9 @@ executable frontend
                        GADTs
                        RankNTypes
                        DeriveGeneric
+                       MultiWayIf
+                       PatternSynonyms
+                       ViewPatterns
   build-depends:       base >=4.11 && <4.12,
                        pure-css,
                        pure-default,
@@ -58,7 +68,9 @@ executable frontend
                        pure-svg,
                        pure-try,
                        pure-txt,
+                       pure-txt-search,
                        pure-theme,
+                       pure-uri,
                        pure-websocket,
                        shared == 0.1.*,
                        containers,

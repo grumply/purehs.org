@@ -6,7 +6,8 @@ import Pure.Elm
 import Pure.Router (lref)
 import Pure.Theme
 
-import qualified Shared (Cache(..),Post(..),PostMeta(..))
+import Shared.Cache as Cache (Cache(posts,postMetas))
+import Shared.Post as Post (Post(content),Meta(..))
 import Themes
 import Types
 import Utils
@@ -24,13 +25,13 @@ blog model =
     [ header (route model) False
     , Div <| Theme ContentT |>
         [ case route model of
-            BlogR Nothing  -> listing model
-            BlogR (Just s) -> post s model
+            BlogR   -> listing model
+            PostR s -> post s model
         ]
     , titler $
         case route model of
-          BlogR (Just s) -> "Pure - " <> s
-          _              -> "Pure - Blog"
+          PostR s -> "Pure - " <> s
+          _       -> "Pure - Blog"
     ]
 
 listing model =
@@ -38,11 +39,11 @@ listing model =
     ( H1 <| Theme HeaderT |>
       [ "Blog" ]
     : [ postMeta pm
-      | pm <- Shared.postMetas (cache model)
+      | pm <- Cache.postMetas (cache model)
       ]
     )
 
-postMeta Shared.PostMeta {..} =
+postMeta Post.Meta {..} =
   let
     ref = "/blog/" <> slug
   in
@@ -53,7 +54,7 @@ postMeta Shared.PostMeta {..} =
 
 post s model =
   Div <| Theme ArticleT |>
-    [ case lookup s (Shared.posts (cache model)) of
+    [ case lookup s (Cache.posts (cache model)) of
         Just (Done p) -> success p
         Just Failed   -> failed
         Just Trying   -> loading
@@ -66,7 +67,7 @@ failed =
 
 success p =
   Div <| Theme MarkdownT |>
-    (fmap captureLocalRefs (Shared.content p))
+    (fmap captureLocalRefs (Post.content p))
 
 loading =
   Div <| Theme LoadingT |>
