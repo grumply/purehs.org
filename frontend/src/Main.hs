@@ -17,7 +17,6 @@ import qualified Shared.Post as Post (Post(..),Meta(..))
 import qualified Shared.Cache as Cache (Cache(..))
 import Shared.Utils (asMap)
 
-import Pure.Data.JSON (logJSON,encode)
 import Pure.Data.Try
 import Pure.Data.URI (decodeURI)
 import Pure.Elm
@@ -105,7 +104,6 @@ view _ mdl =
 
 update :: Elm Msg => Msg -> () -> Model -> IO Model
 update msg _ mdl | Cache.Cache {..} <- cache mdl = do
-  logJSON (msg,mdl)
   let updCache f = mdl { cache = f (cache mdl) }
       setDoc p v td = updCache $ \c -> c { Cache.docs = asMap (Cache.docs c) (Map.insert (p,v) td) }
       setTut s tt   = updCache $ \c -> c { Cache.tutorials = asMap (Cache.tutorials c) (Map.insert s tt) }

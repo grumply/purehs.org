@@ -1,7 +1,6 @@
 module View.Docs where
 
 import Pure.Elm
-import Pure.Data.JSON (logJSON)
 
 import Themes
 import Types
@@ -22,8 +21,7 @@ docs :: Model -> View
 docs mdl = run (App [Load] [Load] [] () update view) mdl
 
 update :: DocsMsg -> Model -> () -> IO ()
-update _ model _ = do
-  logJSON ("update" :: Txt ,model)
+update _ model _ =
   case route model of
     -- * `LoadDoc p v` is idempotent, so published LoadDoc messages can be freely duplicated at little cost
     PackageR p       -> publish (LoadPackage p)
