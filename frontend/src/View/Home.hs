@@ -137,10 +137,7 @@ instance Themeable HeroLogoT where
     is c $ do
       apply $ do
         margin =: auto
-        width  =: per 60
-
-      atMedia "(max-width: 48em)" .> do
-        width  =: per 80
+        width  =: "80vmin"
 
 data SloganT = SloganT
 instance Themeable SloganT where
