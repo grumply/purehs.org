@@ -14,8 +14,9 @@ import qualified Pure.WebSocket as WS (api)
 import Data.Map as Map (Map,toList,fromList,union)
 import Data.Set as Set (Set,toList,fromList,union)
 
-host = "159.65.79.222"
 host :: String
+host = "159.65.79.222"
+
 port :: Int
 port = 8081
 
