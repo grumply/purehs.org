@@ -137,7 +137,7 @@ instance Themeable HeroLogoT where
     is c $ do
       apply $ do
         margin =: auto
-        width  =: "80vmin"
+        width  =: "90vmin"
 
 data SloganT = SloganT
 instance Themeable SloganT where
