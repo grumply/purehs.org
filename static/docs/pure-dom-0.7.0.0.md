@@ -2,9 +2,9 @@
 
 This package implements core functionality for view injection and reconciliation.
 
-You probably don't need to include this package as a dependency of your project, as it is exported from the meta-packages [pure](/docs/pure) and [pure-elm](/docs/pure-elm).
+You probably don't need to include this package as a dependency of your project, as it is exported from the meta-packages [pure](/doc/pure) and [pure-elm](/doc/pure-elm).
 
-To construct a web server, see [pure-server](/docs/pure-server).
+To construct a web server, see [pure-server](/doc/pure-server).
 
 ## Pure.DOM
 
@@ -24,5 +24,5 @@ You will use `inject` in every Pure application.
 main = inject body "Hello, World!"
 ```
 
-See [pure-server](/docs/pure-server) for running a websocket-based server.
+See [pure-server](/doc/pure-server) for running a websocket-based server.
 

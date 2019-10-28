@@ -2,7 +2,7 @@
 
 This package implements a class for representing and comparing for low-information or failure values.
 
-This library should eventually merge with [pure-default](/docs/pure-default) to avoid aliasing of `Default` and `Cond` values.
+This library should eventually merge with [pure-default](/doc/pure-default) to avoid aliasing of `Default` and `Cond` values.
 
 One of the key differences between `Default` and `Cond`, and the reason for the split between the two, is that `Cond` is incapable of comparing non-representational types, like `a -> b` or `IO a`. `Cond` works on deconstructable values, while `Default` works with deconstructable values and functions.
 
@@ -197,7 +197,7 @@ instance Cond Value where
 #endif
 ```
 
-There is an instance for `View` from [pure-core](/docs/pure-core).
+There is an instance for `View` from [pure-core](/doc/pure-core).
 
 ```haskell
 instance Cond View where
@@ -251,7 +251,7 @@ may = maybe nil
 
 ### \#
 
-The `#` operator combines `Cond` and `Default` from [pure-default](/docs/pure-default).
+The `#` operator combines `Cond` and `Default` from [pure-default](/doc/pure-default).
 
 ```haskell
 infixr 6 #

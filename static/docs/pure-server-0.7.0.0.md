@@ -8,11 +8,11 @@ The basic idea is to mimic frontend development on the backend. To this end, the
 
 It is possible to nest servers within each other for complex state-dependent service initializations. Therefore, it is best to think of Pure applications, both frontend and backend, as trees of dependent contexts enriched and extended with views.
 
-As a default, and because the persistence enriches interaction, server-client communication is performed via [pure-websocket](/doc/pure-websocket/0.7.0.0).
+As a default, and because the persistence enriches interaction, server-client communication is performed via [pure-websocket](/doc/pure-websocket).
 
 ### Server
 
-The core `Server` type admits a `Pure` instance. Thus, to run a server, you must inject it via [pure-dom](/doc/pure-dom/0.7.0.0).
+The core `Server` type admits a `Pure` instance. Thus, to run a server, you must inject it via [pure-dom](/doc/pure-dom).
 
 Here's a common server pattern that acts as a good starting point for application implementation. Note that this could be a web server or a web service, the `connection` is just an active websocket connection.
 
