@@ -1,18 +1,18 @@
 # Pure Basics
 
-Pure's core type is `View`, an abstraction over the browser's DOM.
+Pure's core type is `View`, a type for declaratively representing nested contexts. The browser's DOM is one such context.
 
 ```haskell
 pattern Div :: View
 ```
 
-To evaluate a `View`, it must be injected.
+To evaluate a `View`, it must be injected. In a browser, we might inject into the body of a page.
 
 ```haskell
 main = inject body Div
 ```
 
-Attributes and properties are applied as functional transformations of views.
+Attributes and properties are applied as functional transformations.
 
 ```haskell
 root :: View
@@ -23,9 +23,9 @@ Views are nestable.
 
 ```haskell
 logo :: View
-logo = 
-  Div <| Class "logo" |> 
-    [ Img <| Src "/images/logo.png" 
+logo =
+  Div <| Class "logo" |>
+    [ Img <| Src "/images/logo.png"
     ]
 ```
 
@@ -33,22 +33,22 @@ There is special support for raw text.
 
 ```haskell
 price :: Dollars -> Cents -> View
-price dollars cents = 
+price dollars cents =
   Span <||>
     [ "$", text dollars, ".", text cents ]
 ```
 
-Pure `View`s are first class and can be passed around and transformed.
+`View`s are first class and can be passed around and transformed.
 
 ```haskell
 colorize :: Txt -> View -> View
 colorize color v = v <| Color color
 
 green :: View -> View
-green = colorize "green" 
+green = colorize "green"
 
 goodPrice :: Dollars -> Cents -> View
-goodPrice dollars cents = 
+goodPrice dollars cents =
   green (price dollars cents)
 ```
 
@@ -59,3 +59,5 @@ isSpan :: View -> Bool
 isSpan Span = True
 isSpan _ = False
 ```
+
+See [Components](/tut/components) to learn about state management and reactive contexts in Pure.
