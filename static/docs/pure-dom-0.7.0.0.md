@@ -10,7 +10,7 @@ To construct a web server, see [pure-server](/doc/pure-server).
 
 `inject` runs a `View` in a given context.
 
-### `inject`
+### inject
 
 ```haskell
 inject :: IsNode n => n -> View -> IO ()

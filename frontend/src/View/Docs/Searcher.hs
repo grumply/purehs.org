@@ -31,7 +31,7 @@ searcher p v ms = run (App [] [] [] Nothing update view) (p,v,fmap entries ms)
     entries (Children [ TextView _ m ] H2 : es) = (m,List.foldr extract [] es)
       where
         extract :: View -> [Entity] -> [Entity]
-        extract (Children [Children [TextView _ i] Code] H3) es =
+        extract (Children [TextView _ i] H3) es =
           if | Txt.isPrefixOf "data"  i -> (DataType i) : es
              | Txt.isPrefixOf "type"  i -> (DataType i) : es
              | Txt.isPrefixOf "class" i -> (Class i) : es

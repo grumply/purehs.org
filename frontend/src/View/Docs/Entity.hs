@@ -43,7 +43,7 @@ lookupEntity ent mdl
   | otherwise = Nothing
   where
 
-    match (Children [Children [ TextView _ e ] Code] H3) | e == ent = True
+    match (Children [TextView _ e] H3) | e == ent = True
     match _ = False
 
     h3 H3 = True

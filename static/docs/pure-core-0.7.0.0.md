@@ -8,7 +8,7 @@ These types and methods are used to implement higher-level abstractions that eas
 
 ## Pure.Data.View
 
-### `data Target`
+### data Target
 
 The `Target` data type is used to tag event listeners with their binding destination. Listeners may be bound to the local target element, the global window, or the global document.
 
@@ -20,7 +20,7 @@ data Target
   deriving Eq
 ```
 
-### `data Listener`
+### data Listener
 The `Listener` data type represents an event listener for use with javascript interfaces.
 
 > NOTE: `Options` and `Evt` are defined in [pure-lifted](/doc/pure-lifted/0.7.0.0).
@@ -36,7 +36,7 @@ data Listener =
     }
 ```
 
-### `data Lifecycle`
+### data Lifecycle
 
 The `Lifecycle` data type represents low-level access to context during, or immediately following, `View` construction. This type is often necessary for constructing complex user interfaces.
 
@@ -46,7 +46,7 @@ data Lifecycle =
     { withHost :: Node -> IO () }
 ```
 
-### `data Features`
+### data Features
 
 The `Features` data type holds the styles, classes, attributes, properties, listeners and lifecycle methods that should be applied to a view.
 
@@ -65,7 +65,7 @@ instance Monoid Features where
   ...
 ```
 
-### `data Comp`
+### data Comp
 
 The `Comp` data type represents stateful contexts with a suite of lifecycle methods for carefully controlling evaluation. This type is similar to the `ReactJS` `Component` class.
 
@@ -141,7 +141,7 @@ This instance requires instantiation of `construct`.
 myComponent = def { construct = ... }
 ```
 
-### `data ComponentPatch`
+### data ComponentPatch
 
 The `ComponentPatch` is a data type used by [pure-dom](/doc/pure-dom/0.7.0.0) to represent updates to a component that are generated implicitly from `props` changing, or from a call to `modify` a component's state, or from a component being unmounted.
 
@@ -152,7 +152,7 @@ data ComponentPatch props state
   | UpdateState (props -> state -> IO (state,IO ()))
 ```
 
-### `data Ref props state`
+### data Ref
 
 The `Ref` data type is a reference to a component's evaluation context. Access to a `Ref` allows the reference holder to view the referenced component's properties with `ask`, the state with `get`, or to send a state update with `modify`.
 
@@ -167,7 +167,7 @@ data Ref props state
       }
 ```
 
-### `data TypeWitness a`
+### data TypeWitness
 
 The `TypeWitness` type holds a `Fingerprint` from `GHC.Fingerprint` to improve the performance of diffing components. The type variable to `TypeWitness` is a phantom type.
 
@@ -175,7 +175,7 @@ The `TypeWitness` type holds a `Fingerprint` from `GHC.Fingerprint` to improve t
 data TypeWitness a = TypeWitness Fingerprint
 ```
 
-### `witness`
+### witness
 
 The `witness` function generates a `TypeWitness` for an arbitrary `Typeable a`.
 
@@ -183,7 +183,7 @@ The `witness` function generates a `TypeWitness` for an arbitrary `Typeable a`.
 witness :: forall a. Typeable a => TypeWitness a
 ```
 
-### `sameTypeWitness`
+### sameTypeWitness
 
 The `sameTypeWitness` function compares two arbitrarily typed `TypeWitness` instances for equality that is tuned for fast diffing.
 
@@ -191,7 +191,7 @@ The `sameTypeWitness` function compares two arbitrarily typed `TypeWitness` inst
 sameTypeWitness :: TypeWitness a -> TypeWitness b -> Bool
 ```
 
-### `data View`
+### data View
 
 The `View` data type is the core unified hierarchical type that Pure uses to implement interfaces, servers, services and computational contexts.
 
@@ -311,7 +311,7 @@ instance FromTxt View where
   fromTxt = TextView Nothing
 ```
 
-### `class Pure`
+### class Pure
 
 The `Pure` class enriches data with a standard rendering method.
 
@@ -322,7 +322,7 @@ class Pure a where
 
 Any type may be rendered via an arbitrary functional evaluation, but `Pure` enables promotion of a functional evaluation to a standardization. Thus, the `Pure` class can help to encourage the implementation of data-oriented views and interfaces.
 
-### `pattern View`
+### pattern View
 
 The `View` pattern will construct or match a `View` for any type implementing the `Pure` class.
 
@@ -330,7 +330,7 @@ The `View` pattern will construct or match a `View` for any type implementing th
 pattern View :: Pure a => a -> View
 ```
 
-### `get`
+### get
 
 `get` gets the current state of a component from a reference to a component.
 
@@ -338,7 +338,7 @@ pattern View :: Pure a => a -> View
 get :: Ref props state -> IO state
 ```
 
-### `ask`
+### ask
 
 `ask` views the current properties of a component from a reference to a component.
 
@@ -346,7 +346,7 @@ get :: Ref props state -> IO state
 ask :: Ref props state -> IO props
 ```
 
-### `look`
+### look
 
 `look` allows for introspection of a component's rendered view. This method is extremely unsafe and use of it is likely evidence that the application should be restructured.
 
@@ -354,7 +354,7 @@ ask :: Ref props state -> IO props
 look :: Ref props state -> IO View
 ```
 
-### `modify`
+### modify
 
 `modify` enqueues a pure update to a component's state. The callback passed to `modify` will be run in the component's next update cycle. `modify` returns `True` if there are no other component updates pending.
 
@@ -364,11 +364,11 @@ modify :: Ref props state -> (props -> state -> state) -> IO Bool
 
 > NOTE: Updates are batched together. As a result, the state returned by any one `modify` might never be rendered.
 
-### `modify_`
+### modify_
 
 `modify_` is the same as `modify`, above, but ignores the returned `Bool`.
 
-### `modifyM`
+### modifyM
 
 `modifyM` is a more general versions of `modify` that allows you to effectfully modify the state of a component as well as return a callback that is run after the state has been updated. `modifyM` returns `True` if there are no other component updates pending.
 
@@ -394,11 +394,11 @@ modifyM :: Ref props state -> (props -> state -> IO (state,IO ())) -> IO Bool
 > Nested calls to `modifyM` are guaranteed not to run in the same component update cycle.
 >
 
-### `modifyM_`
+### modifyM_
 
 `modifyM_` is the same as `modifyM`, above, but ignores the returned `Bool`.
 
-### `setProps`
+### setProps
 
 `setProps` is an internal method of injecting a properties update into a component. Use of this method is likely evidence that the application should be restructured or reconsidered. If `True`, the returned `Bool` indicates that other updates are already pending.
 
@@ -406,7 +406,7 @@ modifyM :: Ref props state -> (props -> state -> IO (state,IO ())) -> IO Bool
 setProps :: Ref props state -> props -> IO Bool
 ```
 
-### `queueComponentUpdate`
+### queueComponentUpdate
 
 The `queueComonentUpdate` method is used internally by [pure-dom](/doc/pure-dom/0.7.0.0) to send a state update method to a component for integration.
 
@@ -414,7 +414,7 @@ The `queueComonentUpdate` method is used internally by [pure-dom](/doc/pure-dom/
 queueComponentUpdate :: Ref props state -> ComponentPatch props state -> IO Bool
 ```
 
-### `getHost`
+### getHost
 
 The `getHost` method is an internal method for extracting the mounting context of a node. This method is unsafe.
 
@@ -426,7 +426,7 @@ getHost :: View -> Maybe Node
 
 `Pure.Data.View.Patterns` exports patterns, classes, and combinators for `View` construction.
 
-### `pattern Component`
+### pattern Component
 
 A view pattern for construction of components.
 
@@ -442,7 +442,7 @@ user = Component $ \self ->
     }
 ```
 
-### `pattern Null`
+### pattern Null
 
 A null view pattern for conditonal rendering of views.
 
@@ -452,7 +452,7 @@ activeUser Nothing = Null
 activeUser (Just u) = {...}
 ```
 
-### `pattern Raw`
+### pattern Raw
 
 A pattern for unsafe construction of an HTML view from a text value.
 
@@ -462,7 +462,7 @@ A pattern for unsafe construction of an HTML view from a text value.
 rawH1 = Raw "<h1>Raw H1</h1>"
 ```
 
-### `pattern Keyed`
+### pattern Keyed
 
 A pattern for creating a keyed variant of an `HTML` view or an `SVG` view. Use `(|#>)` or `(<||#>)` to add keyed children to a keyed view.
 
@@ -471,7 +471,7 @@ keyedDiv :: View
 keyedDiv = Keyed Div
 ```
 
-### `pattern Class`
+### pattern Class
 
 A pattern for adding a class to a view. Note that empty class strings are filtered out during rendering.
 
@@ -479,7 +479,7 @@ A pattern for adding a class to a view. Note that empty class strings are filter
 myView = Div <| Class "someClass"
 ```
 
-### `pattern Style`
+### pattern Style
 
 A pattern for adding a style to a view.
 
@@ -487,7 +487,7 @@ A pattern for adding a style to a view.
 myView = Div <| Style "width" "100%"
 ```
 
-### `pattern Property`
+### pattern Property
 
 A pattern for adding a property to a view.
 
@@ -495,7 +495,7 @@ A pattern for adding a property to a view.
 myView val = Input <| Property "value" val
 ```
 
-### `pattern Attribute`
+### pattern Attribute
 
 A pattern for adding an attribtue to a view.
 
@@ -503,7 +503,7 @@ A pattern for adding an attribtue to a view.
 myView = Input <| Attribute "id" "myView"
 ```
 
-### `pattern <|`
+### pattern <|
 
 Apply the modification on the right before calling `toView`. If the argument on the left is a `View`, it is equivalent to calling `id`. If it is an instance of `Pure`, it is equivalent to wrapping with the `View` pattern.
 
@@ -511,7 +511,7 @@ Apply the modification on the right before calling `toView`. If the argument on 
 Div <| Class "green" . Id "green-div"
 ```
 
-### `pattern |>`
+### pattern |>
 
 Specify children after applying properties.
 
@@ -522,7 +522,7 @@ Div <| Class "greeting" |>
   ]
 ```
 
-### `pattern <||>`
+### pattern <||>
 
 Specify children without applying any attributes, properties, listeners, or lifecycle methods.
 
@@ -533,7 +533,7 @@ Div <||>
   ]
 ```
 
-### `pattern |#>`
+### pattern |#>
 
 Specify keyed children after applying attributs, properties, listeners, or lifecycle methods. Must be paired with `Keyed` or used with views supporting `HasKeyedChildren`.
 
@@ -545,7 +545,7 @@ users us =
     ]
 ```
 
-### `pattern <||#>`
+### pattern <||#>
 
 Specify keyed children without applying attributes, properties, listeners, or lifecycle methods. Must be paired with `Keyed` or used on views supporting `HasKeyedChildren`.
 
@@ -557,7 +557,7 @@ users us =
     ]
 ```
 
-### `text`
+### text
 
 Inject a textual value into a `View`.
 
@@ -565,7 +565,7 @@ Inject a textual value into a `View`.
 text :: IsTxt a => a -> View
 ```
 
-### `txt`
+### txt
 
 A specialized version of `text` for `Txt`.
 
