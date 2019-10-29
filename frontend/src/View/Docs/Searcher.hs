@@ -78,7 +78,7 @@ results p v rs
               , Div <||> fmap (entity p v m) gs
               ]
         | (m,es) <- rs
-        , let gs = List.concat $ List.groupBy ((==) `on` toConstr) es
+        , let gs = List.sortBy (compare `on` (show . toConstr)) es
         ]
 
 entity :: Txt -> Txt -> Txt -> Entity -> View
