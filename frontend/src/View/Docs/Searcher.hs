@@ -48,7 +48,8 @@ view :: Elm Txt => (Txt,Txt,[(Txt,[Entity])]) -> Maybe [(Txt,[Entity])] -> View
 view (p,v,es) mdl =
   Div <| Theme SearcherColumnT |>
     [ Div <| Theme SearcherT |>
-      [ Input <| OnInput (withInput command) . Placeholder "Search"
+      [ H2 <||> [ "Search Modules" ]
+      , Input <| OnInput (withInput command) . Placeholder "Search"
       , case mdl of
           Nothing -> results p v (fmap (fmap (const [])) es)
           Just rs -> results p v rs
@@ -56,30 +57,19 @@ view (p,v,es) mdl =
     ]
 
 results :: Txt -> Txt -> [(Txt,[Entity])] -> View
-results p v rs
-    | List.all (List.null . snd) rs =
-      Div <||>
-        [ Div <| Theme EntryT . Theme ModuleT |>
-          [ A <| lref ("/doc/" <> p <> "/" <> v <> "/" <> m) |>
-            [ fromTxt m ]
-          ]
-        | m <- fmap fst rs
-        ]
-    | otherwise =
-      Div <||>
-        [ if List.null es then
+results p v rs =
+  Div <||>
+    [ Div <| Theme EntryT . Theme ModuleT |>
+        [ A <| lref ("/doc/" <> p <> "/" <> v <> "/" <> m) |>
+          [ fromTxt m ]
+        , if List.null es then
             Null
           else
-            Div <||>
-              [ Div <| Theme EntryT . Theme ModuleT |>
-                [ A <| lref ("/doc/" <> p <> "/" <> v <> "/" <> m) |>
-                  [ fromTxt m ]
-                ]
-              , Div <||> fmap (entity p v m) gs
-              ]
-        | (m,es) <- rs
-        , let gs = List.sortBy (compare `on` (show . toConstr)) es
+            Div <||> fmap (entity p v m) gs
         ]
+    | (m,es) <- rs
+    , let gs = List.sortBy (compare `on` (show . toConstr)) es
+    ]
 
 entity :: Txt -> Txt -> Txt -> Entity -> View
 entity p v m (DataType d) =
@@ -163,9 +153,16 @@ instance Themeable SearcherT where
 
 data ModuleT = ModuleT
 instance Themeable ModuleT where
-  theme c _ = do
-    is c . child "a" .> important (marginLeft =: zero)
-    entry c darkGray
+  theme c _ = void $
+    is c $ do
+      id .>
+        marginTop =: pxs 8
+      child "a" $ do
+        id .> do
+          important (marginLeft =: zero)
+          color =: darkGray
+        is ":visited" .>
+          color =: darkGray
 
 data DataT = DataT
 instance Themeable DataT where
