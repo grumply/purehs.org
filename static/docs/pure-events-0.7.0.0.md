@@ -1885,7 +1885,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern Alt
 
-`Alt` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `⎇ ` or `<Alt>`.
+`Alt` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `<Alt>`.
 
 
 ```haskell
@@ -1909,7 +1909,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern CapsLock
 
-`CapsLock` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `⇪` or `<CapsLock>`.
+`CapsLock` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `<CapsLock>`.
 
 
 ```haskell
@@ -1921,7 +1921,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern Control
 
-`Control` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `⎈` or `✲` or `<Control>`.
+`Control` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `<Control>`.
 
 
 ```haskell
@@ -1967,7 +1967,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern OS
 
-`OS` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `⌘` or `◆` or `❖` or `<Meta>`.
+`OS` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `<Meta>`.
 
 ```haskell
 input = Input <| OnKeyDown handle
@@ -1978,7 +1978,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern NumLock
 
-`NumLock` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `⇭` or `<NumLock>`.
+`NumLock` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `<NumLock>`.
 
 ```haskell
 input = Input <| OnKeyDown handle
@@ -1989,7 +1989,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern ScrollLock
 
-`ScrollLock` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `⤓` or `<ScrollLock>`.
+`ScrollLock` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `<ScrollLock>`.
 
 
 ```haskell
@@ -2001,7 +2001,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern Shift
 
-`Shift` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `⇧` or `<Shift>`.
+`Shift` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `<Shift>`.
 
 ```haskell
 input = Input <| OnKeyDown handle
@@ -2023,7 +2023,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern Enter
 
-`Enter` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `↵` or `<Enter>`.
+`Enter` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `<Enter>`.
 
 ```haskell
 input = Input <| OnKeyDown handle
@@ -2045,7 +2045,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern Tab
 
-`Tab` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `↹` or `<Tab>`.
+`Tab` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `<Tab>`.
 
 ```haskell
 input = Input <| OnKeyDown handle
@@ -2056,7 +2056,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern ArrowDown
 
-`ArrowDown` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `↓` or `<ArrowDown>`.
+`ArrowDown` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `<ArrowDown>`.
 
 ```haskell
 input = Input <| OnKeyDown handle
@@ -2067,7 +2067,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern ArrowLeft
 
-`ArrowLeft` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `←` or `<ArrowLeft>`.
+`ArrowLeft` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `<ArrowLeft>`.
 
 ```haskell
 input = Input <| OnKeyDown handle
@@ -2078,7 +2078,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern ArrowRight
 
-`ArrowRight` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `→` or `<ArrowRight>`.
+`ArrowRight` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `<ArrowRight>`.
 
 ```haskell
 input = Input <| OnKeyDown handle
@@ -2089,7 +2089,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern ArrowUp
 
-`ArrowUp` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `↑` or `<ArrowUp>`.
+`ArrowUp` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `<ArrowUp>`.
 
 ```haskell
 input = Input <| OnKeyDown handle
@@ -2100,7 +2100,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern End
 
-`End` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `⇲` or `<End>`.
+`End` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `<End>`.
 
 
 ```haskell
@@ -2112,7 +2112,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern Home
 
-`Home` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `⇱` or `<Home>`.
+`Home` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `<Home>`.
 
 
 ```haskell
@@ -2124,7 +2124,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern PageDown
 
-`PageDown` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `PgDn` or `<PageDown>`.
+`PageDown` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `PgDn`/`<PageDown>`.
 
 
 ```haskell
@@ -2136,7 +2136,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern PageUp
 
-`PageUp` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `PgUp` or `<PageUp>`.
+`PageUp` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `PgUp`/`<PageUp>`.
 
 
 ```haskell
@@ -2236,7 +2236,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern Insert
 
-`Insert` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `⎀` or `<Insert>`.
+`Insert` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `<Insert>`.
 
 ```haskell
 input = Input <| OnKeyDown handle
@@ -2269,7 +2269,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern Undo
 
-`Undo` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `⎌` or `<Undo>`.
+`Undo` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `<Undo>`.
 
 ```haskell
 input = Input <| OnKeyDown handle
@@ -2335,7 +2335,7 @@ input = Input <| OnKeyDown handle
 
 ### pattern Escape
 
-`Escape` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `⎋` or `<escape>`.
+`Escape` is a pattern to match on a [key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) of `<escape>`.
 
 ```haskell
 input = Input <| OnKeyDown handle
