@@ -95,7 +95,7 @@ markdownStyles = do
     has "h3" .> do
       fontSize   =: pxs 28
       paddingTop =: ems 1
-      borderTop  =: lightGray
+      borderTop  =: solid <<>> pxs 1 <<>> lightGray
 
     has "p" . has "code" .> do
       fontFamily       =: "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace"
