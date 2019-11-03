@@ -12,7 +12,7 @@ import Pure.Theme
 import Themes
 
 gitHubLink link t =
-  A <| Href link . Target "_blank" . Theme t . Rel "noopener" . Attribute "title" "GitHub" |>
+  A <| Href link . Attribute "target" "_blank" . Theme t . Rel "noopener" . Attribute "title" "GitHub" |>
     [ gitHubLogo ]
 
 gitHubLogo =
