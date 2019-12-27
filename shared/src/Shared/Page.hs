@@ -1,3 +1,4 @@
+{-# language DeriveAnyClass #-}
 module Shared.Page where
 
 import Pure.Data.JSON (ToJSON,FromJSON)

@@ -1,3 +1,4 @@
+{-# language DeriveAnyClass #-}
 module Shared.Cache where
 
 import Shared.Doc as Doc (Doc,Meta)

@@ -1,0 +1,90 @@
+name: backend
+version: 0.1.0.0
+synopsis: purehs.org backend
+
+category: Web
+
+license: BSD3
+
+author: Sean Hickman
+
+github: grumply/purehs.org
+
+ghc-options: -Wall -fno-warn-unused-do-bind
+
+default-extensions:
+  - AutoDeriveTypeable
+  - BangPatterns
+  - ConstraintKinds
+  - DataKinds
+  - DefaultSignatures
+  - DeriveDataTypeable
+  - DeriveFoldable
+  - DeriveFunctor
+  - DeriveGeneric
+  - DeriveTraversable
+  - DoAndIfThenElse
+  - EmptyCase
+  - EmptyDataDecls
+  - ExistentialQuantification
+  - FlexibleContexts
+  - FlexibleInstances
+  - FunctionalDependencies
+  - GADTs
+  - GeneralizedNewtypeDeriving
+  - ImplicitParams
+  - InstanceSigs
+  - KindSignatures
+  - LambdaCase
+  - MultiParamTypeClasses
+  - MultiWayIf
+  - NamedFieldPuns
+  - OverloadedStrings
+  - PartialTypeSignatures
+  - PatternGuards
+  - PatternSynonyms
+  - PolyKinds
+  - Rank2Types
+  - RankNTypes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TupleSections
+  - TypeApplications
+  - TypeFamilies
+  - TypeFamilyDependencies
+  - TypeOperators
+  - TypeSynonymInstances
+  - ViewPatterns
+  - TemplateHaskell
+
+dependencies:
+  - base
+  - bytestring
+  - containers
+  - directory
+  - filepath
+  - http-types
+  - pandoc
+  - pure-core
+  - pure-default
+  - pure-elm
+  - pure-json
+  - pure-render
+  - pure-server
+  - pure-tagsoup
+  - pure-time
+  - pure-try
+  - pure-txt
+  - pure-websocket
+  - wai
+  - wai-app-static
+  - wai-extra
+  - warp
+
+executables:
+  backend:
+    source-dirs:
+      - src
+      - ../shared/src
+    main: Main.hs

@@ -1,3 +1,4 @@
+{-# language DeriveAnyClass #-}
 module Shared.Doc where
 
 import Shared.Utils (breakMany)

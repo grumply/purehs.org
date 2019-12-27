@@ -2,11 +2,9 @@ module Purehsorg where
 
 import Connection
 
-import Pure.Elm (body,inject)
-import Pure.WebSocket as WS
-import Server (pattern Server)
+import Pure.Elm (body,inject,delay,pattern Minutes)
+import Pure.Server (pattern Server)
 
-import Control.Concurrent
 import Control.Monad
 import System.IO
 
@@ -16,5 +14,5 @@ purehsorg host port = do
   hSetBuffering stdout LineBuffering
   sleep
   where
-    sleep = forever (threadDelay (6 * 10 ^ 10))
+    sleep = forever (delay (Minutes 3 0))
 
