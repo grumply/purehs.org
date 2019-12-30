@@ -169,7 +169,7 @@ variances :: (Foldable f, Vary a) => f a -> Varied
 
 The `Covariance` data type stores the result of analyzing some aggregation of co-varying values.
 
-> The `Covariance` constructor isn't exported, and instead smart accessors are exported to prevent mis-use when sample size was 0. See [count](/doc/pure-variance/0.7.0.0/Pure.Covariance/count), [meanx](/doc/pure-variance/0.7.0.0/Pure.Covariance/meanx), [meany](/doc/pure-variance/0.7.0.0/Pure.Covariance/meany), [stdDev_x](/doc/pure-variance/0.7.0.0/Pure.Covariance/stdDev_x), [stdDev_y](/doc/pure-variance/0.7.0.0/Pure.Covariance/stdDev_y), [variance_x](/doc/pure-variance/0.7.0.0/Pure.Covariance/variance_x), [variance_y](/doc/pure-variance/0.7.0.0/Pure.Covariance/variance_y).
+> The `Covariance` constructor isn't exported, and instead smart accessors are exported to prevent mis-use when sample size was 0. See [count](/doc/pure-variance/0.7.0.0/Pure.Covariance/count), [meanx](/doc/pure-variance/0.7.0.0/Pure.Covariance/meanx), [meany](/doc/pure-variance/0.7.0.0/Pure.Covariance/meany), [stdDev_x](/doc/pure-variance/0.7.0.0/Pure.Covariance/stdDev_x), [stdDev_y](/doc/pure-variance/0.7.0.0/Pure.Covariance/stdDev_y), [variance_x](/doc/pure-variance/0.7.0.0/Pure.Covariance/variance_x), [variance_y](/doc/pure-variance/0.7.0.0/Pure.Covariance/variance_y), and [covariance](/doc/0.7.0.0/Pure.Covariance/covariance).
 
 ```haskell
 data Covariance = Covariance
