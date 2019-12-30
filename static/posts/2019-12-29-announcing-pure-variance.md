@@ -6,19 +6,19 @@
 > import Pure.Variance
 > import Pure.Covariance
 
-> points = [ (1,2), (2,3), (3,4), (4,5) ]
+> points = take 5 [ (x,x^2) | x <- [1..] ]
 
-> varies fst points
-Variance {vCount = 4.0, vMean = 2.5, vMean2 = 5.0, vMinimum = 1.0, vMaximum = 4.0}
+> variance (varies fst points)
+Just 2.5
 
-> varies snd points
-Variance {vCount = 4.0, vMean = 3.5, vMean2 = 5.0, vMinimum = 2.0, vMaximum = 5.0}
+> stdDev (varies snd points)
+Just 9.669539802906858
 
-> covaries fst snd points
-Covariance {cCount = 4.0, cMeanx = 2.5, cMeany = 3.5, cMeanx2 = 5.0, cMeany2 = 5.0, cC = 5.0}
+> covariance (covaries fst snd points)
+Just 15.0
 
-> populationCorrelation (covaries fst snd points)
-Just 0.9999999999999998
+> correlation (covaries fst snd points)
+Just 0.9811049102515929
 ```
 
 Since [varies](/doc/pure-variance/0.7.0.0/Pure.Variance/varies) and [covaries](/doc/pure-variance/0.7.0.0/Pure.Covariance/covaries) implement on-line algorithms, the [Variance](/doc/pure-variance/0.7.0.0/Pure.Variance/data%20Variance) and [Covariance](/doc/pure-variance/0.7.0.0/Pure.Covariance/data%20Covariance) structures can be kept alive to be amended and queried for richer low-overhead algorithm implementations in situations where continual full-pass analyses are prohibitively expensive.
@@ -26,23 +26,24 @@ Since [varies](/doc/pure-variance/0.7.0.0/Pure.Variance/varies) and [covaries](/
 The generic approach is similar, but lacks the type-safety of the function approach, above. The generic analyses map all values into a flattened structure. This will fail in the presence of duplicate names, but is nice for a quick-and-dirty analysis. Once intuition is gained about the structure and the connections in your data, it's best to switch to the functional approach, as above.
 
 ```haskell
-> points = [ (1,2,3), (2,3,4), (3,4,5), (4,5,6), (5,6,7) ]
+> points = take 5 [ (x,x^2,x^3) | x <- [1..] ]
 
-> varieds points
-  "1" =>
-    Variance {vCount = 5.0, vMean = 3.0, vMean2 = 10.0, vMinimum = 1.0, vMaximum = 5.0}
-  "2" =>
-    Variance {vCount = 5.0, vMean = 4.0, vMean2 = 10.0, vMinimum = 2.0, vMaximum = 6.0}
-  "3" =>
-    Variance {vCount = 5.0, vMean = 5.0, vMean2 = 10.0, vMinimum = 3.0, vMaximum = 7.0}
+> var = variances points
+> cov = covariances points
 
-> covarieds points
-  ("2","1") =>
-    ,Covariance {cCount = 5.0, cMeanx = 4.0, cMeany = 3.0, cMeanx2 = 10.0, cMeany2 = 10.0, cC = 10.0}
-  ("3","1") =>
-    ,Covariance {cCount = 5.0, cMeanx = 5.0, cMeany = 3.0, cMeanx2 = 10.0, cMeany2 = 10.0, cC = 10.0}
-  ("3","2") =>
-    Covariance {cCount = 5.0, cMeanx = 5.0, cMeany = 4.0, cMeanx2 = 10.0, cMeany2 = 10.0, cC = 10.0}
+-- lookup the variance for the first element of the tirple
+> lookupVariance "1" var >>= variance
+Just 1.5811388300841898
+
+> lookupVariance "2" var >>= stdDev
+Just 9.669539802906858
+
+-- lookup the covariance of the first and second elements of the triple
+> lookupCovariance "1" "2" cov >>= covariance
+Just 15.0
+
+> lookupCovariance "1" "3" cov >>= correlation
+Just 0.9431175138077005
 ```
 
 Analyses are derivable for custom structures via generics. [Vary](/doc/pure-variance/0.7.0.0/Pure.Variance/class%20Vary) for variance, and [Extract](/doc/pure-variance/0.7.0.0/Pure.Covariance/class%20Extract) for covariance.
@@ -50,17 +51,16 @@ Analyses are derivable for custom structures via generics. [Vary](/doc/pure-vari
 ```haskell
 > data Point = Point { x :: Double, y :: Double } deriving (Generic,Vary,Extract)
 
-> points = [ Point 1 2, Point 2 3, Point 3 4 ]
+> points = take 5 [ Point x (x ^ 2) | x <- [1..] ]
 
-> varieds points
-  "x" =>
-    Variance {vCount = 3.0, vMean = 2.0, vMean2 = 2.0, vMinimum = 1.0, vMaximum = 3.0}
-  "y" =>
-    Variance {vCount = 3.0, vMean = 3.0, vMean2 = 2.0, vMinimum = 2.0, vMaximum = 4.0}
+> var = variances points
+> cov = covariances points
 
-> covarieds points
-  ("y","x") =>
-    Covariance {cCount = 3.0, cMeanx = 3.0, cMeany = 2.0, cMeanx2 = 2.0, cMeany2 = 2.0, cC = 2.0}
+> lookupVariance "x" var >>= variance
+Just 2.5
+
+> lookupCovariance "x" "y" cov >>= correlation
+Just 0.9811049102515929
 ```
 
 

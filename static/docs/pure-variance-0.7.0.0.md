@@ -8,7 +8,7 @@ This package implements incremental and incremental parallel algorithms for [var
 
 ## Pure.Variance
 
-`Pure.Variance` exports utilites for two approaches to variance determination, the [functional approach](/doc/pure-variance/0.7.0.0/Pure.Variance/varies) and the [generic, class-based approach](/doc/pure-variance/0.7.0.0/Pure.Variance/varieds).
+`Pure.Variance` exports utilites for two approaches to variance determination, the [functional approach](/doc/pure-variance/0.7.0.0/Pure.Variance/varies) and the [generic, class-based approach](/doc/pure-variance/0.7.0.0/Pure.Variance/variances).
 
 ### data Variance
 
@@ -60,6 +60,10 @@ minimum_ :: Variance -> Maybe Double
 maximum_ :: Variance -> Maybe Double
 ```
 
+### variance
+
+`variance` is a synonym for [sampleVariance](/doc/pure-variance/0.7.0.0/Pure.Variance/sampleVariance), which uses the usual [Bessel's correction](https://en.wikipedia.org/wiki/Bessel's_correction).
+
 ### sampleVariance
 
 `sampleVariance` returns the variance of a sample, or `Nothing` if the sample [count](/doc/pure-variance/0.7.0.0/Pure.Variance/count) is 0.
@@ -75,6 +79,11 @@ sampleVariance :: Variance -> Maybe Double
 ```haskell
 populationVariance :: Variance -> Maybe Double
 ```
+
+### stdDev
+
+`stdDev` is a synonym for [sampleStdDev](/doc/pure-variance/0.7.0.0/Pure.Variance/sampleStdDev), which uses the usual [Bessel's correction](https://en.wikipedia.org/wiki/Bessel's_correction).
+
 
 ### sampleStdDev
 
@@ -144,17 +153,17 @@ class Vary a where
 lookupVariance :: String -> Varied -> Maybe Variance
 ```
 
-### varieds
+### variances
 
-`varieds` integrates a foldable of [Vary](/doc/pure-variance/0.7.0.0/Pure.Variance/class-vary) values into a flat map of `Variance`s.
+`variances` integrates a foldable of [Vary](/doc/pure-variance/0.7.0.0/Pure.Variance/class-vary) values into a flat map of `Variance`s.
 
 ```haskell
-varieds :: (Foldable f, Vary a) => f a -> Varied
+variances :: (Foldable f, Vary a) => f a -> Varied
 ```
 
 ## Pure.Covariance
 
-`Pure.Covariance` exports utilites for two approaches to covariance determination, the [functional approach](/doc/pure-variance/0.7.0.0/Pure.Covariance/covaries) and the [generic, class-based approach](/doc/pure-variance/0.7.0.0/Pure.Covariance/covarieds).
+`Pure.Covariance` exports utilites for two approaches to covariance determination, the [functional approach](/doc/pure-variance/0.7.0.0/Pure.Covariance/covaries) and the [generic, class-based approach](/doc/pure-variance/0.7.0.0/Pure.Covariance/covariances).
 
 ### data Covariance
 
@@ -218,6 +227,10 @@ meanx :: Covariance -> Maybe Double
 meany :: Covariance -> Maybe Double
 ```
 
+### covariance
+
+`covariance` is a synonym for [sampleCovariance](/doc/pure-variance/0.7.0.0/Pure.Covariance/sampleCovariance), which uses the usual [Bessel's correction](https://en.wikipedia.org/wiki/Bessel's_correction).
+
 ### sampleCovariance
 
 `sampleCovariance` returns the covariance of a sample, or `Nothing` if the sample [count](/doc/pure-variance/0.7.0.0/Pure.Covariance/count) is 0.
@@ -233,6 +246,10 @@ sampleCovariance :: Covariance -> Maybe Double
 ```haskell
 populationCovariance :: Covariance -> Maybe Double
 ```
+
+### variance_x
+
+`variance_x` is a synonym for [sampleVariance_x](/doc/pure-variance/0.7.0.0/Pure.Covariance/sampleVariance_x), which uses the usual [Bessel's correction](https://en.wikipedia.org/wiki/Bessel's_correction).
 
 ### sampleVariance_x
 
@@ -250,6 +267,10 @@ sampleVariance_x :: Covariance -> Maybe Double
 populationVariance_x :: Covariance -> Maybe Double
 ```
 
+### variance_y
+
+`variance_y` is a synonym for [sampleVariance_y](/doc/pure-variance/0.7.0.0/Pure.Covariance/sampleVariance_y), which uses the usual [Bessel's correction](https://en.wikipedia.org/wiki/Bessel's_correction).
+
 ### sampleVariance_y
 
 `sampleVariance_y` returns the variance of `y` for a sample, or `Nothing` if the sample [count](/doc/pure-variance/0.7.0.0/Pure.Covariance/count) is 0.
@@ -265,6 +286,10 @@ sampleVariance_y :: Covariance -> Maybe Double
 ```haskell
 populationVariance_y :: Covariance -> Maybe Double
 ```
+
+### stdDev_x
+
+`stdDev_x` is a synonym for [sampleStdDev_x](/doc/pure-variance/0.7.0.0/Pure.Covariance/sampleStdDev_x), which uses the usual [Bessel's correction](https://en.wikipedia.org/wiki/Bessel's_correction).
 
 ### sampleStdDev_x
 
@@ -282,6 +307,10 @@ sampleStdDev_x :: Covariance -> Maybe Double
 populationStdDev_x :: Covariance -> Maybe Double
 ```
 
+### stdDev_y
+
+`stdDev_y` is a synonym for [sampleStdDev_y](/doc/pure-variance/0.7.0.0/Pure.Covariance/sampleStdDev_y), which uses the usual [Bessel's correction](https://en.wikipedia.org/wiki/Bessel's_correction).
+
 ### sampleStdDev_y
 
 `sampleStdDev_y` returns the standard deviation of `y` for a sample variance, or `Nothing` if the sample [count](/doc/pure-variance/0.7.0.0/Pure.Covariance/count) is 0.
@@ -297,6 +326,10 @@ sampleStdDev_y :: Covariance -> Maybe Double
 ```haskell
 populationStdDev_y :: Covariance -> Maybe Double
 ```
+
+### correlation
+
+`correlation` is a synonym for [sampleCorrelation](/doc/pure-variance/0.7.0.0/Pure.Covariance/sampleCorrelation), which uses the usual [Bessel's correction](https://en.wikipedia.org/wiki/Bessel's_correction).
 
 ### sampleCorrelation
 
@@ -355,11 +388,11 @@ lookupCovariance :: String -> String -> Covaried -> Maybe Covariance
 covaried :: Extract a => a -> Covaried -> Covaried
 ```
 
-### covarieds
+### covariances
 
-`covarieds` integrates a foldable of co-varying `Real` values into a flat map of [Covariances](/doc/pure-variance/0.7.0.0/Pure.Covariance/data%20Covariance).
+`covariances` integrates a foldable of co-varying `Real` values into a flat map of [Covariances](/doc/pure-variance/0.7.0.0/Pure.Covariance/data%20Covariance).
 
 ```haskell
-covarieds :: (Foldable f, Extract a) => f a -> Covaried
+covariances :: (Foldable f, Extract a) => f a -> Covaried
 ```
 
