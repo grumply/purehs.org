@@ -14,7 +14,7 @@ This package implements incremental and incremental parallel algorithms for [var
 
 The `Variance` data type stores the result of analyzing some aggregation varying of values.
 
-> The `Variance` constructor isn't exported, and instead smart accessors are exported to prevent mis-use when sample size was 0. See [count](/doc/pure-variance/0.7.0.0/Pure.Variance/count), [mean](/doc/pure-variance/0.7.0.0/Pure.Variance/mean), [minimum_](/doc/pure-variance/0.7.0.0/Pure.Variance/minimum_), [maximum_](/doc/pure-variance/0.7.0.0/Pure.Variance/maximum_), [populationStdDev](/doc/pure-variance/0.7.0.0/Pure.Variance/populationStdDev), [sampleStdDev](/doc/pure-variance/0.7.0.0/Pure.Variance/sampleStdDev), [populationVariance](/doc/pure-variance/0.7.0.0/Pure.Variance/populationVariance), and [sampleVariance](/doc/pure-variance/0.7.0.0/Pure.Variance/sampleVariance).
+> The `Variance` constructor isn't exported, and instead smart accessors are exported to prevent mis-use when sample size was 0. See [count](/doc/pure-variance/0.7.0.0/Pure.Variance/count), [mean](/doc/pure-variance/0.7.0.0/Pure.Variance/mean), [minimum_](/doc/pure-variance/0.7.0.0/Pure.Variance/minimum_), [maximum_](/doc/pure-variance/0.7.0.0/Pure.Variance/maximum_), [stdDev](/doc/pure-variance/0.7.0.0/Pure.Variance/stdDev), [variance](/doc/pure-variance/0.7.0.0/Pure.Variance/variance).
 
 ```haskell
 data Variance = Variance
@@ -169,7 +169,7 @@ variances :: (Foldable f, Vary a) => f a -> Varied
 
 The `Covariance` data type stores the result of analyzing some aggregation of co-varying values.
 
-> The `Covariance` constructor isn't exported, and instead smart accessors are exported to prevent mis-use when sample size was 0. See [count](/doc/pure-variance/0.7.0.0/Pure.Covariance/count), [meanx](/doc/pure-variance/0.7.0.0/Pure.Covariance/meanx), [meany](/doc/pure-variance/0.7.0.0/Pure.Covariance/meany), [populationStdDev_x](/doc/pure-variance/0.7.0.0/Pure.Covariance/populationStdDev_x), [populationStdDev_y](/doc/pure-variance/0.7.0.0/Pure.Covariance/populationStdDev_y), [sampleStdDev_x](/doc/pure-variance/0.7.0.0/Pure.Covariance/sampleStdDev_x), [sampleStdDev_y](/doc/pure-variance/0.7.0.0/Pure.Covariance/sampleStdDev_y), [populationVariance_x](/doc/pure-variance/0.7.0.0/Pure.Covariance/populationVariance_x), [populationVariance_y](/doc/pure-variance/0.7.0.0/Pure.Covariance/populationVariance_y), [sampleVariance_x](/doc/pure-variance/0.7.0.0/Pure.Covariance/sampleVariance_x), and [sampleVariance_y](/doc/pure-variance/0.7.0.0/Pure.Covariance/sampleVariance_y).
+> The `Covariance` constructor isn't exported, and instead smart accessors are exported to prevent mis-use when sample size was 0. See [count](/doc/pure-variance/0.7.0.0/Pure.Covariance/count), [meanx](/doc/pure-variance/0.7.0.0/Pure.Covariance/meanx), [meany](/doc/pure-variance/0.7.0.0/Pure.Covariance/meany), [stdDev_x](/doc/pure-variance/0.7.0.0/Pure.Covariance/stdDev_x), [stdDev_y](/doc/pure-variance/0.7.0.0/Pure.Covariance/stdDev_y), [variance_x](/doc/pure-variance/0.7.0.0/Pure.Covariance/variance_x), [variance_y](/doc/pure-variance/0.7.0.0/Pure.Covariance/variance_y).
 
 ```haskell
 data Covariance = Covariance
