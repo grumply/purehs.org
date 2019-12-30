@@ -1,0 +1,365 @@
+# pure-variance
+
+This package implements incremental and incremental parallel algorithms for [variance](https://en.wikipedia.org/wiki/Variance) and [covariance](https://en.wikipedia.org/wiki/Covariance) as well as generic machinery for deriving analyses for arbitrary `Generic` structures containing varying and covarying values.
+
+> `pure-variance` uses [Welford's online variance algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) with the `Semigroup` and `Monoid` instances for [Variance](#variance) implementing the [parallel variant](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Parallel_algorithm). The [similar approach for covariance](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Online) is used with the `Semigroup` and `Monoid` instances for [Covariance](#covariance) implementing the [parallel variant](https://dl.acm.org/citation.cfm?doid=3221269.3223036).
+
+`pure-variance` has two approaches to population analysis; one may manually, and type-safely, analyze extraction functions or generically, and *stringly*-typed, for arbitrary `Generic` types containing varying or co-varying values.
+
+## Pure.Variance
+
+`Pure.Variance` exports utilites for two approaches to variance determination, the [functional approach](#varies) and the [generic, class-based approach](#varieds).
+
+### data Variance
+
+The `Variance` data type stores the result of analyzing some aggregation varying of values.
+
+> The `Variance` constructor isn't exported, and instead smart accessors are exported to prevent mis-use when sample size was 0. See [count](#count), [mean](#mean), [minimum_](#minimum_), [maximum_](#maximum_), [populationStdDev](#populationStdDev), [sampleStdDev](#sampleStdDev), [populationVariance](#populationVariance), and [sampleVariance](#sampleVariance).
+
+```haskell
+data Variance = Variance
+  { vCount    :: Double
+  , vMean     :: Double
+  , vMean2    :: Double
+  , vMinimum_ :: Double
+  , vMaximum_ :: Double
+  }
+```
+
+There are `Monoid` and `Semigroup` instances for `Variance` that allow for divide-and-conquer parallel variance determination.
+
+### count
+
+`count` returns the size of the analyzed sample.
+
+```haskell
+count :: Variance -> Int
+```
+
+### mean
+
+`mean` is a smart accessor that returns the sample mean, or `Nothing` if the sample [count](#count) is 0.
+
+```hasekll
+mean :: Variance -> Maybe Double
+```
+
+### minimum_
+
+`minimum_` is a smart accessor that returns the smallest element seen in a sample, or `Nothing` if the sample [count](#count) is 0.
+
+```haskell
+minimum_ :: Variance -> Maybe Double
+```
+
+### maximum_
+
+`maximum_` is a smart accessor that returns the largest element seen in the a sample, or `Nothing` if the sample [count](#count) is 0.
+
+```haskell
+maximum_ :: Variance -> Maybe Double
+```
+
+### sampleVariance
+
+`sampleVariance` returns the variance of a sample, or `Nothing` if the sample [count](#count) is 0.
+
+```haskell
+sampleVariance :: Variance -> Maybe Double
+```
+
+### populationVariance
+
+`populationVariance` returns the variance of a population, or `Nothing` if the population [count](#count) is 0.
+
+```haskell
+populationVariance :: Variance -> Maybe Double
+```
+
+### sampleStdDev
+
+`sampleStdDev` returns the standard deviation of a sample variance, or `Nothing` if the sample [count](#count) is 0.
+
+```haskell
+sampleStdDev :: Variance -> Maybe Double
+```
+
+### populationStdDev
+
+`populationStdDev` return the standard deviation of a population's variance, or `Nothing` if the population [count](#count) is 0.
+
+```haskell
+populationStdDev :: Variance -> Maybe Double
+```
+
+### vary
+
+`vary` integrates a `Real` value into an existing `Variance`. This is the core of [Welford's online algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm). This method takes a selector function to match the `covary` interface.
+
+```haskell
+vary :: Real b => (a -> b) -> a -> Variance -> Variance
+```
+
+See [varies](#varies) for analyzing a sample.
+
+### varies
+
+`varies` determines the `Variance` of a `Foldable` of `Real` values.
+
+```haskell
+varies :: (Foldable f, Real a) => f a -> Variance
+varies = foldl' (flip vary) mempty
+```
+
+### data Varied
+
+The `Varied` type is a newtype around a mapping from `String` to `Variance` for storing the results of a sample analysis of `Vary`ing structures of values.
+
+```haskell
+newtype Varied = Varied (HashMap String Variance)
+```
+
+See [lookupVariance](#lookupVariance) for extracting results from a `Varied`.
+
+### class Vary
+
+The `Vary` class defines the method for extracting values of interest from a structure.
+
+There are default instances for base `Real` types, as well as an instance for tuples, functorial wrappers, and vectors of `Real` values that are index-dependent. There are generic instances for products, sums, and records of those.
+
+> If you know of some magic to derive the analysis of structures while maintaining type safety and performance without GHC preprocessors or higher-kinded data, I would love to see it!
+
+The `Vary` function, `varied`, is designed/shaped to be a step in a fold for performance reasons.
+
+```haskell
+class Vary a where
+  varied :: String -> a -> Varied -> Varied
+```
+
+### lookupVariance
+
+`lookupVariance` attempts to retrieve the [Variance](#data-variance) at a given index in a [Varied](#data-varied) map.
+
+```haskell
+lookupVariance :: String -> Varied -> Maybe Variance
+```
+
+### varieds
+
+`varieds` integrates a foldable of [Vary](#class-vary) values into a flat map of `Variance`s.
+
+```haskell
+varieds :: (Foldable f, Vary a) => f a -> Varied
+```
+
+## Pure.Covariance
+
+`Pure.Covariance` exports utilites for two approaches to covariance determination, the [functional approach](#covaries) and the [generic, class-based approach](#covarieds).
+
+### data Covariance
+
+The `Covariance` data type stores the result of analyzing some aggregation of co-varying values.
+
+> The `Covariance` constructor isn't exported, and instead smart accessors are exported to prevent mis-use when sample size was 0. See [count](#count), [meanx](#meanx), [meany](#meany), [populationStdDev_x](#populationStdDev_x), [populationStdDev_y](#populationStdDev_y), [sampleStdDev_x](#sampleStdDev_x), [sampleStdDev_y](#sampleStdDev_y), [populationVariance_x](#populationVariance_x), [populationVariance_y](#populationVariance_y), [sampleVariance_x](#sampleVariance_x), and [sampleVariance_y](#sampleVariance_y).
+
+```haskell
+data Covariance = Covariance
+  { cCount    :: Double
+  , cMeanx    :: Double
+  , cMeany    :: Double
+  , cMeanx2   :: Double
+  , cMeany2   :: Double
+  , cC        :: Double
+  }
+```
+
+There are `Monoid` and `Semigroup` instances for `Covariance` that allow for divide-and-conquer parallel covariance determination.
+
+### covary
+
+`covary` integrates two `Real` values into an existing `Covariance`. This is the core of the [online covariance algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Online). This function takes two selector functions for extracting the values from an aggregate.
+
+```haskell
+covary :: (Real x, Real y) => (a -> x) -> (a -> y) -> a -> Variance -> Variance
+```
+
+See [covaries](#covaries) for analyzing a sample.
+
+### covaries
+
+`covaries` determines the `Covariance` of a `Foldable` of products of `Real` values.
+
+```haskell
+covaries :: (Foldable f, Real x, Real y) => (a -> x) -> (a -> y) -> f a -> Variance
+covaries f g = foldl' (flip (covary f g)) mempty
+```
+
+### count
+
+`count` returns the size of the analyzed sample.
+
+```haskell
+count :: Covariance -> Int
+```
+
+### meanx
+
+`meanx` is a smart accessor that returns the sample mean for `x`, or `Nothing` if the sample [count](#count) is 0.
+
+```haskell
+meanx :: Covariance -> Maybe Double
+```
+
+### meany
+
+`meany` is a smart accessor that returns the sample mean for `y`, or `Nothing` if the sample [count](#count) is 0.
+
+```haskell
+meany :: Covariance -> Maybe Double
+```
+
+### sampleCovariance
+
+`sampleCovariance` returns the covariance of a sample, or `Nothing` if the sample [count](#count) is 0.
+
+```haskell
+sampleCovariance :: Covariance -> Maybe Double
+```
+
+### populationCovariance
+
+`populationCovariance` returns the covariance of a population, or `Nothing` if the population [count](#count) is 0.
+
+```haskell
+populationCovariance :: Covariance -> Maybe Double
+```
+
+### sampleVariance_x
+
+`sampleVariance_x` returns the variance of `x` for a sample, or `Nothing` if the sample [count](#count) is 0.
+
+```haskell
+sampleVariance_x :: Covariance -> Maybe Double
+```
+
+### populationVariance_x
+
+`populationVariance_x` returns the variance of `x` for a population, or `Nothing` if the population [count](#count) is 0.
+
+```haskell
+populationVariance_x :: Covariance -> Maybe Double
+```
+
+### sampleVariance_y
+
+`sampleVariance_y` returns the variance of `y` for a sample, or `Nothing` if the sample [count](#count) is 0.
+
+```haskell
+sampleVariance_y :: Covariance -> Maybe Double
+```
+
+### populationVariance_y
+
+`populationVariance_y` returns the variance of `y` for a population, or `Nothing` if the population [count](#count) is 0.
+
+```haskell
+populationVariance_y :: Covariance -> Maybe Double
+```
+
+### sampleStdDev_x
+
+`sampleStdDev_x` returns the standard deviation of `x` for a sample variance, or `Nothing` if the sample [count](#count) is 0.
+
+```haskell
+sampleStdDev_x :: Covariance -> Maybe Double
+```
+
+### populationStdDev_x
+
+`populationStdDev_x` return the standard deviation of `x` for a population's variance, or `Nothing` if the population [count](#count) is 0.
+
+```haskell
+populationStdDev_x :: Covariance -> Maybe Double
+```
+
+### sampleStdDev_y
+
+`sampleStdDev_y` returns the standard deviation of `y` for a sample variance, or `Nothing` if the sample [count](#count) is 0.
+
+```haskell
+sampleStdDev_y :: Covariance -> Maybe Double
+```
+
+### populationStdDev_y
+
+`populationStdDev_y` return the standard deviation of `y` for a population's variance, or `Nothing` if the population [count](#count) is 0.
+
+```haskell
+populationStdDev_y :: Covariance -> Maybe Double
+```
+
+### sampleCorrelation
+
+Apply [Pearson's Correlation Coefficient](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient) to a sample's `Covariance`. Returns a value in the range `[-1,1]`, where `-1` is inverse linear correlation, `0` means uncorrelated, and `1` means positive linear correlation.
+
+```haskell
+sampleCorrelation :: Covariance -> Maybe Double
+```
+
+### populationCorrelation
+
+Apply [Pearson's Correlation Coefficient](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient) to a population's `Covariance`. Returns a value in the range `[-1,1]`, where `-1` is inverse linear correlation, `0` means uncorrelated, and `1` means positive linear correlation.
+
+```haskell
+populationCorrelation :: Covariance -> Maybe Double
+```
+
+### data Covaried
+
+The `Covaried` type is a newtype around a mapping from `(String,String)` to `Covariance` for storing the results of a sample analysis structures of co-varying values.
+
+```haskell
+newtype Covaried = Covaried (HashMap (String,String) Covariance)
+```
+
+See [lookupCovariance](#lookupCovariance) for extracting results from a `Covaried`.
+
+### class Extract
+
+The `Extract` class defines the method for extracting `Real` values of interest from a structure.
+
+There are default instances for tuples, functorial wrappers, and vectors of `Real` values that are index-dependent. There are generic instances for products, sums, and records of those.
+
+> If you know of some magic to derive the analysis of structures while maintaining type safety and performance without GHC preprocessors or higher-kinded data, I would love to see it!
+
+The `Extract` function, `extract`, is designed/shaped to be a step in a fold for performance reasons.
+
+```haskell
+class Extract a where
+  extract :: String -> a -> [(String,Double)] -> [(String,Double)]
+```
+
+### lookupCovariance
+
+`lookupCovariance` attempts to retrieve the [Covariance](#data-covariance) at a given index pair in a [Covaried](#data-covaried) map. Order of the indices is not important.
+
+```haskell
+lookupCovariance :: String -> String -> Covaried -> Maybe Covariance
+```
+
+### covaried
+
+`covaried` extracts the `Real` values from a structure and integrates them into an existing [Covaried](#data-covaried) analysis.
+
+```haskell
+covaried :: Extract a => a -> Covaried -> Covaried
+```
+
+### covarieds
+
+`covarieds` integrates a foldable of co-varying `Real` values into a flat map of [Covariances](#data-covariance).
+
+```haskell
+covarieds :: (Foldable f, Extract a) => f a -> Covaried
+```
+
