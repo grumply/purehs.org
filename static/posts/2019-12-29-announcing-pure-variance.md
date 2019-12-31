@@ -7,17 +7,24 @@
 > import Pure.Covariance
 
 > points = take 5 [ (x,x^2) | x <- [1..] ]
+points :: [(Double,Double)]
 
-> variance (varies fst points)
+> varx = varies fst points
+varx :: Variance  
+
+> cov = covaries fst snd points
+cov :: Covariance
+
+> variance varx
 Just 2.5
 
-> stdDev (varies snd points)
+> stdDev varx
 Just 9.669539802906858
 
-> covariance (covaries fst snd points)
+> covariance cov
 Just 15.0
 
-> correlation (covaries fst snd points)
+> correlation cov
 Just 0.9811049102515929
 ```
 
@@ -27,9 +34,13 @@ The generic approach is similar, but lacks the type-safety of the function appro
 
 ```haskell
 > points = take 5 [ (x,x^2,x^3) | x <- [1..] ]
+points :: [(Double,Double,Double)]
 
 > var = variances points
+var :: Variances  
+
 > cov = covariances points
+cov :: Covariances
 
 -- lookup the variance for the first element of the tirple
 > lookupVariance "1" var >>= variance
@@ -46,15 +57,19 @@ Just 15.0
 Just 0.9431175138077005
 ```
 
-Analyses are derivable for custom structures via generics. [Vary](/doc/pure-variance/0.7.0.0/Pure.Variance/class%20Vary) for variance, and [Extract](/doc/pure-variance/0.7.0.0/Pure.Covariance/class%20Extract) for covariance.
+Analyses are derivable for custom structures via generics. [Vary](/doc/pure-variance/0.7.0.0/Pure.Variance/class%20Vary) for variance, and [Covary](/doc/pure-variance/0.7.0.0/Pure.Covariance/class%20Covary) for covariance.
 
 ```haskell
-> data Point = Point { x :: Double, y :: Double } deriving (Generic,Vary,Extract)
+> data Point = Point { x :: Double, y :: Double } deriving (Generic,Vary,Covary)
 
 > points = take 5 [ Point x (x ^ 2) | x <- [1..] ]
+points :: [Point]
 
 > var = variances points
+var :: Variances  
+
 > cov = covariances points
+cov :: Covariances
 
 > lookupVariance "x" var >>= variance
 Just 2.5

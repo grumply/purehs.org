@@ -16,7 +16,7 @@ Standard `Component` state is a staple of Pure and is defined as a core `View` t
 
 All approaches to state management derive from the core `Component` facility, including [pure-state](/doc/pure-state), [pure-elm](/doc/pure-elm), and [excelsior](/doc/excelsior).
 
-We initialize the state within the `construct` field and we write component-local (let-bound) update functions. Note that these let-bound update functions may be freely passed throught your application and, when used, return `True` if the component is still alive.
+We initialize the state within the `construct` field and we write component-local (let-bound) update functions. Note that these let-bound update functions may be freely passed through your application and, when used, return `True` if the component is still alive.
 
 ```haskell
 counter = flip ComponentIO () $ \self ->

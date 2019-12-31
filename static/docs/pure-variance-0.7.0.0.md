@@ -120,15 +120,15 @@ varies :: (Foldable f, Real a) => f a -> Variance
 varies = foldl' (flip vary) mempty
 ```
 
-### data Varied
+### data Variances
 
-The `Varied` type is a newtype around a mapping from `String` to `Variance` for storing the results of a sample analysis of `Vary`ing structures of values.
+The `Variances` type is a newtype around a mapping from `String` to `Variance` for storing the results of a sample analysis of `Vary`ing structures of values.
 
 ```haskell
-newtype Varied = Varied (HashMap String Variance)
+newtype Variances = Variances (HashMap String Variance)
 ```
 
-See [lookupVariance](/doc/pure-variance/0.7.0.0/Pure.Variance/lookupVariance) for extracting results from a `Varied`.
+See [lookupVariance](/doc/pure-variance/0.7.0.0/Pure.Variance/lookupVariance) for extracting results from a `Variances`.
 
 ### class Vary
 
@@ -142,15 +142,15 @@ The `Vary` function, `varied`, is designed/shaped to be a step in a fold for per
 
 ```haskell
 class Vary a where
-  varied :: String -> a -> Varied -> Varied
+  varied :: String -> a -> Variances -> Variances
 ```
 
 ### lookupVariance
 
-`lookupVariance` attempts to retrieve the [Variance](/doc/pure-variance/0.7.0.0/Pure.Variance/data-variance) at a given index in a [Varied](/doc/pure-variance/0.7.0.0/Pure.Variance/data-varied) map.
+`lookupVariance` attempts to retrieve the [Variance](/doc/pure-variance/0.7.0.0/Pure.Variance/data%20Variance) at a given index in a [Variances](/doc/pure-variance/0.7.0.0/Pure.Variance/data%20Variances) map.
 
 ```haskell
-lookupVariance :: String -> Varied -> Maybe Variance
+lookupVariance :: String -> Variances -> Maybe Variance
 ```
 
 ### variances
@@ -158,7 +158,7 @@ lookupVariance :: String -> Varied -> Maybe Variance
 `variances` integrates a foldable of [Vary](/doc/pure-variance/0.7.0.0/Pure.Variance/class-vary) values into a flat map of `Variance`s.
 
 ```haskell
-variances :: (Foldable f, Vary a) => f a -> Varied
+variances :: (Foldable f, Vary a) => f a -> Variances
 ```
 
 ## Pure.Covariance
@@ -347,45 +347,45 @@ Apply [Pearson's Correlation Coefficient](https://en.wikipedia.org/wiki/Pearson_
 populationCorrelation :: Covariance -> Maybe Double
 ```
 
-### data Covaried
+### data Covariances
 
-The `Covaried` type is a newtype around a mapping from `(String,String)` to `Covariance` for storing the results of a sample analysis structures of co-varying values.
+The `Covariances` type is a newtype around a mapping from `(String,String)` to `Covariance` for storing the results of a sample analysis structures of co-varying values.
 
 ```haskell
-newtype Covaried = Covaried (HashMap (String,String) Covariance)
+newtype Covariances = Covariances (HashMap (String,String) Covariance)
 ```
 
-See [lookupCovariance](/doc/pure-variance/0.7.0.0/Pure.Covariance/lookupCovariance) for extracting results from a `Covaried`.
+See [lookupCovariance](/doc/pure-variance/0.7.0.0/Pure.Covariance/lookupCovariance) for extracting results from a `Covariances`.
 
-### class Extract
+### class Covary
 
-The `Extract` class defines the method for extracting `Real` values of interest from a structure.
+The `Covary` class defines the method for extracting `Real` values of interest from a structure.
 
 There are default instances for tuples, functorial wrappers, and vectors of `Real` values that are index-dependent. There are generic instances for products, sums, and records of those.
 
 > If you know of some magic to derive the analysis of structures while maintaining type safety and performance without GHC preprocessors or higher-kinded data, I would love to see it!
 
-The `Extract` function, `extract`, is designed/shaped to be a step in a fold for performance reasons.
+The `Covary` function, `extract`, is designed/shaped to be a step in a fold for performance reasons.
 
 ```haskell
-class Extract a where
+class Covary a where
   extract :: String -> a -> [(String,Double)] -> [(String,Double)]
 ```
 
 ### lookupCovariance
 
-`lookupCovariance` attempts to retrieve the [Covariance](/doc/pure-variance/0.7.0.0/Pure.Covariance/data%20Covariance) at a given index pair in a [Covaried](/doc/pure-variance/0.7.0.0/Pure.Covariance/data%20Covaried) map. Order of the indices is not important.
+`lookupCovariance` attempts to retrieve the [Covariance](/doc/pure-variance/0.7.0.0/Pure.Covariance/data%20Covariance) at a given index pair in a [Covariances](/doc/pure-variance/0.7.0.0/Pure.Covariance/data%20Covariances) map. Order of the indices is not important.
 
 ```haskell
-lookupCovariance :: String -> String -> Covaried -> Maybe Covariance
+lookupCovariance :: String -> String -> Covariances -> Maybe Covariance
 ```
 
 ### covaried
 
-`covaried` extracts the `Real` values from a structure and integrates them into an existing [Covaried](/doc/pure-variance/0.7.0.0/Pure.Covariance/data%20Covaried) analysis.
+`covaried` extracts the `Real` values from a structure and integrates them into an existing [Covariances](/doc/pure-variance/0.7.0.0/Pure.Covariance/data%20Covariances) analysis.
 
 ```haskell
-covaried :: Extract a => a -> Covaried -> Covaried
+covaried :: Covary a => a -> Covariances -> Covariances
 ```
 
 ### covariances
@@ -393,6 +393,6 @@ covaried :: Extract a => a -> Covaried -> Covaried
 `covariances` integrates a foldable of co-varying `Real` values into a flat map of [Covariances](/doc/pure-variance/0.7.0.0/Pure.Covariance/data%20Covariance).
 
 ```haskell
-covariances :: (Foldable f, Extract a) => f a -> Covaried
+covariances :: (Foldable f, Covary a) => f a -> Covariances
 ```
 
