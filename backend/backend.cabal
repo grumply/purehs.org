@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c9d7936b9ac24224e43d19086515fd6120ec912019a3f9941df433fc7043e43a
+-- hash: 6c8fb4255079a9c8f3ae1c09e066094cdf953df4348da29d3e1d16af5e042343
 
 name:           backend
 version:        0.1.0.0
@@ -43,7 +43,7 @@ executable backend
       src
       ../shared/src
   default-extensions: AutoDeriveTypeable BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveDataTypeable DeriveFoldable DeriveFunctor DeriveGeneric DeriveTraversable DoAndIfThenElse EmptyCase EmptyDataDecls ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving ImplicitParams InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns OverloadedStrings PartialTypeSignatures PatternGuards PatternSynonyms PolyKinds Rank2Types RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators TypeSynonymInstances ViewPatterns TemplateHaskell
-  ghc-options: -Wall -fno-warn-unused-do-bind
+  ghc-options: -Wall -fno-warn-unused-do-bind -threaded -O2 -rtsopts -with-rtsopts=-N
   build-depends:
       base
     , bytestring

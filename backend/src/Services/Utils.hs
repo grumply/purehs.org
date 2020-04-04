@@ -1,6 +1,6 @@
 module Services.Utils where
 
-import Pure.Elm (View())
+import Pure.Elm (View(..))
 import Pure.Data.Render
 import Pure.Data.Txt as Txt
 import Pure.TagSoup
@@ -33,7 +33,10 @@ load sub parse = do
   where
     read cd fp@(toTxt . dropExtension -> fn) = do
       cnt <- readFile (cd </> sub </> fp)
-      pure $ parse (Txt.replace "^" " " fn) (parseContent $ toTxt cnt)
+      pure $ parse (Txt.replace "^" " " fn) (List.filter nonempty (parseContent $ toTxt cnt))
+
+    nonempty (TextView _ "\n") = False
+    nonempty _ = True
 
 pattern Dash before after <- (Txt.breakOn "-" -> (before,safeTail -> after))
 

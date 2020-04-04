@@ -28,6 +28,7 @@ instance Eq Doc where
 instance Ord Doc where
   compare = compare `on` meta
 
+-- | Break a Doc into an introduction, and a list of modules broken up by H2s.
 breakDoc :: Doc -> ([View],[[View]])
 breakDoc d =
   let
@@ -35,3 +36,4 @@ breakDoc d =
     h2 _ = False
    in
     breakMany h2 (content d)
+

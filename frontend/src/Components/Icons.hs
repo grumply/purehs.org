@@ -1,36 +1,37 @@
 module Components.Icons where
 
-import Control.Monad
+import Styles.Colors
+import Styles.Themes
 
 import Pure.Elm
-import Pure.Data.CSS
 import Pure.Data.SVG
 import Pure.Data.SVG.Properties
 import Pure.Router (lref)
-import Pure.Theme
 
-import Themes
-
+gitHubLink :: Themeable t => Txt -> t -> View
 gitHubLink link t =
   A <| Href link . Attribute "target" "_blank" . Theme t . Rel "noopener" . Attribute "title" "GitHub" |>
     [ gitHubLogo ]
 
+gitHubLogo :: View
 gitHubLogo =
   Svg <| ViewBox "0 0 24 24" |>
     [ Path <| D "M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
     ]
 
-logo simple linked theme =
+logo :: Themeable t => Bool -> Bool -> t -> View
+logo simple linked logoTheme =
   let svg True  = simpleLogo
       svg False = regularLogo
   in
-    Div <| Theme theme |>
+    Div <| Theme logoTheme |>
       [ if linked then
           A <| lref "/" |> [ svg simple ]
         else
           svg simple
       ]
 
+simpleLogo :: View
 simpleLogo =
   Svg <| Theme SimpleLogoT . ViewBox "0 0 50.23 50.48" |>
     [ G <||> [ p ] ]
@@ -38,13 +39,14 @@ simpleLogo =
 
     p = Path <| Class "letter" . D "M41.14,18.42c0,7-6.6,10.74-10.74,10.74a1.32,1.32,0,0,1-1.33-1.3s0-.06,0-.08a1.25,1.25,0,0,1,1.26-1.2c3.42-.18,8.16-3.18,8.16-8.16,0-4.68-3.66-8-8.7-8a14.23,14.23,0,0,0-7.32,1.92c2.44,4.64,3.44,10.82,3.44,16.82,0,11-3.42,17.28-8.58,17.28-4.42,0-7.42-4-7.42-12.72C9.92,26.1,12.68,17,19,11.64a9.19,9.19,0,0,0-7.12-3.72,1.23,1.23,0,0,1-1.32-1.14V6.72A1.36,1.36,0,0,1,11.86,5.4,11.33,11.33,0,0,1,21,10.2,17.45,17.45,0,0,1,29.8,7.92C36.52,7.92,41.14,12.42,41.14,18.42ZM20.26,13.86c-5.58,5-7.68,13.86-7.68,19.86,0,5.22,1.5,10.38,4.86,10.38,3.12,0,5.7-5.58,5.82-14.4C23.32,24.06,22.48,18.06,20.26,13.86Z"
 
+regularLogo :: View
 regularLogo =
   Svg <| Theme RegularLogoT . ViewBox "0 0 157.38 50.58" |>
-    [ G <||> [ open, pure, dot, hs, close ] ]
+    [ G <||> [ open, pure', dot, hs, close ] ]
   where
 
-    pure = G <| Class "pure" |> [ p, u, r, e ]
-    hs   = G <| Class "ext"  |> [ h, s ]
+    pure' = G <| Class "pure" |> [ p, u, r, e ]
+    hs    = G <| Class "ext"  |> [ h, s ]
 
     path cls d = Path <| Class cls . D d
 
@@ -74,24 +76,22 @@ regularLogo =
 data SimpleLogoT = SimpleLogoT
 instance Themeable SimpleLogoT where
   theme c _ = void $
-    is c $ do
-      has ".letter" .> do
-        fill =: blueHighlight
+    is c $
+      has ".letter" .>
+        "fill" =: blueHighlight
 
 data RegularLogoT = RegularLogoT
 instance Themeable RegularLogoT where
   theme c _ = void $
     is c $ do
 
-      has ".bracket" .> do
-        fill =: baseWhite
+      let fill = "fill"
 
-      has ".letter" .> do
-        fill =: baseGreen
+      has ".bracket" .> fill =: baseWhite
 
-      has ".ext" .> do
-        fill =: baseWhite
+      has ".letter"  .> fill =: baseGreen
 
-      has ".period" .> do
-        fill =: baseWhite
+      has ".ext"     .> fill =: baseWhite
+
+      has ".period"  .> fill =: baseWhite
 

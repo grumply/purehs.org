@@ -10,7 +10,7 @@ author: Sean Hickman
 
 github: grumply/purehs.org
 
-ghc-options: -Wall -fno-warn-unused-do-bind
+ghc-options: -Wall -fno-warn-unused-do-bind -threaded -O2 -rtsopts -with-rtsopts=-N
 
 default-extensions:
   - AutoDeriveTypeable

@@ -34,6 +34,6 @@ and services are implemented in exactly the same fashion as client applications,
 allowing for abstractions to be shared by client and server, including
 server-side rendering and view serialization.
 
-If you're interested, take a look at the [Tutorials](/tuts).
+If you're interested, take a look at the [Tutorials](/tut).
 
 If you have questions, check out the [Discourse](http://discourse.purehs.org).

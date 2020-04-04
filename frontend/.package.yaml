@@ -70,6 +70,7 @@ dependencies:
   - pure-elm
   - pure-json
   - pure-lifted
+  - pure-localstorage
   - pure-render
   - pure-router
   - pure-styles

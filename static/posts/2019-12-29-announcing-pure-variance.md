@@ -1,6 +1,6 @@
 # Announcing pure-variance
 
-[pure-variance](/doc/pure-variance/0.7.0.0) implements both online and parallel-online algorithms of variance and covariance with generic machinery for deriving the analysis of arbitrary type topologies.
+[pure-variance](/doc/pure-variance/latest) implements both online and parallel-online algorithms of variance and covariance with generic machinery for deriving the analysis of arbitrary type topologies.
 
 ```haskell
 > import Pure.Variance
@@ -28,7 +28,7 @@ Just 15.0
 Just 0.9811049102515929
 ```
 
-Since [varies](/doc/pure-variance/0.7.0.0/Pure.Variance/varies) and [covaries](/doc/pure-variance/0.7.0.0/Pure.Covariance/covaries) implement on-line algorithms, the [Variance](/doc/pure-variance/0.7.0.0/Pure.Variance/data%20Variance) and [Covariance](/doc/pure-variance/0.7.0.0/Pure.Covariance/data%20Covariance) structures can be kept alive to be amended and queried for richer low-overhead algorithm implementations in situations where continual full-pass analyses are prohibitively expensive.
+Since [varies](/doc/pure-variance/latest/Pure.Variance/varies) and [covaries](/doc/pure-variance/latest/Pure.Covariance/covaries) implement on-line algorithms, the [Variance](/doc/pure-variance/latest/Pure.Variance/data%20Variance) and [Covariance](/doc/pure-variance/latest/Pure.Covariance/data%20Covariance) structures can be kept alive to be amended and queried for richer low-overhead algorithm implementations in situations where continual full-pass analyses are prohibitively expensive.
 
 The generic approach is similar, but lacks the type-safety of the function approach, above. The generic analyses map all values into a flattened structure. This will fail in the presence of duplicate names, but is nice for a quick-and-dirty analysis. Once intuition is gained about the structure and the connections in your data, it's best to switch to the functional approach, as above.
 
@@ -57,7 +57,7 @@ Just 15.0
 Just 0.9431175138077005
 ```
 
-Analyses are derivable for custom structures via generics. [Vary](/doc/pure-variance/0.7.0.0/Pure.Variance/class%20Vary) for variance, and [Covary](/doc/pure-variance/0.7.0.0/Pure.Covariance/class%20Covary) for covariance.
+Analyses are derivable for custom structures via generics. [Vary](/doc/pure-variance/latest/Pure.Variance/class%20Vary) for variance, and [Covary](/doc/pure-variance/latest/Pure.Covariance/class%20Covary) for covariance.
 
 ```haskell
 > data Point = Point { x :: Double, y :: Double } deriving (Generic,Vary,Covary)

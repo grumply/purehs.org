@@ -24,7 +24,7 @@ import Data.Ord (Down(..))
 import Data.List as List
 import System.IO.Unsafe
 
-epoch = Hours 1 0
+epoch = Years 1 0
 
 {-# NOINLINE packages #-}
 packages :: Cached [Package.Package]

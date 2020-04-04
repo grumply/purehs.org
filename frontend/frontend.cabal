@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9c196635a02807aa1825d72dc5459b54b6457992ea32e1e05a850628a93be862
+-- hash: c1233b39f8d4959288b41e626af8ae9c67f2546bba07c00adc59d694d099814a
 
 name:                frontend
 version:             0.1.0.0
@@ -25,26 +25,34 @@ source-repository head
 executable frontend
   main-is: Main.hs
   other-modules:
+    API
+    App
+    Components.Breadcrumbs
     Components.Header
     Components.Icons
     Components.Nav
-    Components.Titler
-    Components.With
-    Themes
-    Types
-    Utils
-    View.About
-    View.Blog
-    View.Docs
-    View.Docs.Breadcrumbs
-    View.Docs.Entity
-    View.Docs.Module
-    View.Docs.Package
-    View.Docs.Packages
-    View.Docs.Searcher
-    View.Docs.Version
-    View.Home
-    View.Tutorials
+    Components.Searcher
+    Control.Sync
+    Control.With
+    Data.Route
+    Pages.About
+    Pages.Blog
+    Pages.Blog.Post
+    Pages.Docs
+    Pages.Docs.Entity
+    Pages.Docs.Module
+    Pages.Docs.Package
+    Pages.Docs.Packages
+    Pages.Docs.PackageSearch
+    Pages.Docs.Styles
+    Pages.Docs.Version
+    Pages.Home
+    Pages.Tutorials
+    Pages.Tutorials.Tutorial
+    Styles.Colors
+    Styles.Fonts
+    Styles.Responsive
+    Styles.Themes
     Shared
     Shared.Cache
     Shared.Doc
@@ -66,6 +74,7 @@ executable frontend
     pure-elm,
     pure-json,
     pure-lifted,
+    pure-localstorage,
     pure-render,
     pure-router,
     pure-styles,

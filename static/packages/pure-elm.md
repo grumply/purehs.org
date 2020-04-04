@@ -2,6 +2,6 @@ An implementation of [The Elm Architecture](https://guide.elm-lang.org/architect
 
 # Changelog
 
-## 0.7.0.0
+## 0.8.0.0
 
 First public release of pure-elm.

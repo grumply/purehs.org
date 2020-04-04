@@ -2,19 +2,32 @@
 
 Pure implements several approaches to state management:
 
-* [1](#pure-core) [Pure components](/doc/pure-core) have internal state that can be modified locally and non-locally via a reference.
+* [1](#pure-core) [Pure components](/doc/pure-core/latest/Pure.Data.View/data%20Comp) have local state with non-local modification via a reference.
 
-* [2](#pure-state) [pure-state](/doc/pure-state) implements monadic state management.
+* [2](#pure-state) [pure-state](/doc/pure-state/latest) implements monadic local state management with with non-local modification via a reference or property injection.
 
-* [3](#excelsior) [excelsior](/doc/excelsior) implements redux-style global state management using dynamic messaging.
+* [3](#excelsior) [excelsior](/doc/excelsior/latest) implements redux-style global state management using dynamic messaging for non-local modification.
 
-* [4](#pure-elm) [pure-elm](/doc/pure-elm) implements [The Elm Architecture](https://guide.elm-lang.org/architecture/).
+* [4](#pure-elm) [pure-elm](/doc/pure-elm/latest) implements [The Elm Architecture](https://guide.elm-lang.org/architecture/) for local state management and non-local modification via messaging.
+
+| Type       | Property Injection | Messaging | Globally accessible | Direct write access | Direct read access |
+| Component  |                 ✅ |        ❌ |               ❌[1] |             ✅[1,2] |            ✅[1,2] |
+| pure-state |                 ✅ |        ❌ |               ❌[1] |             ✅[1,2] |            ✅[1,2] |
+| excelsior  |                 ❌ |        ✅ |               ✅[3] |                  ❌ |                 ✅ |
+| pure-elm   |                 ✅ |        ✅ |               ✅[4] |                  ❌ |                 ❌ |
+
+[1] Access is controlled by a reference to the context.
+[2] Like ReactJS, access to component state is queued and batched.
+[3] excelsior supports global direct read access and global message-based modification.
+[4] If desired, global messaging can be used, but, by default, access is controlled by a scoped implicit that is optionally passed to nested children.
+
+> Note that where messaging is available, direct write access is not.
 
 ## pure-core
 
 Standard `Component` state is a staple of Pure and is defined as a core `View` type.
 
-All approaches to state management derive from the core `Component` facility, including [pure-state](/doc/pure-state), [pure-elm](/doc/pure-elm), and [excelsior](/doc/excelsior).
+All approaches to state management derive from the core `Component` facility, including [pure-state](/doc/pure-state/latest), [pure-elm](/doc/pure-elm/latest), and [excelsior](/doc/excelsior/latest).
 
 We initialize the state within the `construct` field and we write component-local (let-bound) update functions. Note that these let-bound update functions may be freely passed through your application and, when used, return `True` if the component is still alive.
 
@@ -39,11 +52,11 @@ counter = flip ComponentIO () $ \self ->
 main = inject body counter
 ```
 
-[Many other lifecycle methods](/doc/pure-core/0.7.0.0/Pure.Data.View/data%20Comp) exist for `Components`.
+[Many other lifecycle methods](/doc/pure-core/latest/Pure.Data.View/data%20Comp) exist for `Components`.
 
 ## pure-state
 
-[pure-state](/doc/pure-state) implements a stateful `View`-builder monad. Due to the monadic nature of `pure-state`, this is especially useful for forms!
+[pure-state](/doc/pure-state/latest) implements a stateful `View`-builder monad. Due to the monadic nature of `pure-state`, this is especially useful for forms!
 
 ```haskell
 counter = runPure (0 :: Int) $ do
@@ -150,11 +163,11 @@ main = inject body $
     ]
 ```
 
-The difference between this implementation and the component implementation or the pur-state implementation above is that the state of this counter is implicitly shared across the application; any expression that uses `command`, or calls `watch`, will witness the same counter state.
+The difference between this implementation and the component implementation or the pure-state implementation above is that the state of this counter is implicitly shared across the application; any expression that uses `command`, or calls `watch`, will witness the same counter state.
 
 ## pure-elm
 
-[pure-elm](/doc/pure-elm) implements [The Elm Architecture](https://guide.elm-lang.org/architecture/) that encompasses a unified design ideology.
+[pure-elm](/doc/pure-elm/latest) implements [The Elm Architecture](https://guide.elm-lang.org/architecture/) that encompasses a unified design ideology.
 
 The elm architecture uses a message-based approach, like `excelsior` above, but, by default, confines the context in which the messages may be dispatched using an implicit constraint.
 
@@ -201,3 +214,5 @@ main = inject body (run app env)
 ## Conclusion
 
 As a guide, I tend to start with `pure-elm` for views, `excelsior` for global stores. I view the `pure-core` `Component` as a lower-level construct that is generally to be avoided, especially in UI code. `Component` is, clearly, more powerful - since the others are implemented with it - but that power is usually unnecessary. I reserve `pure-state` for special cases of complex, highly computational views.
+
+

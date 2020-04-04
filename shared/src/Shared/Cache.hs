@@ -45,3 +45,23 @@ instance Semigroup Cache where
 instance Monoid Cache where
   mempty = Cache [] [] [] [] [] [] [] [] []
 
+type Traversal s t a b = forall f. Applicative f => (a -> f b) -> s -> f t
+type Traversal' t a = Traversal t t a a
+
+traverseTutorials :: Traversal' Cache (Map.Map Txt (Try Tutorial))
+traverseTutorials f c = (\ts -> c { tutorials = Map.toList ts }) <$> f (Map.fromList $ tutorials c)
+
+traverseDocs :: Traversal' Cache (Map.Map (Txt,Txt) (Try Doc))
+traverseDocs f c = (\ds -> c { docs = Map.toList ds }) <$> f (Map.fromList $ docs c)
+
+traversePages :: Traversal' Cache (Map.Map Txt (Try Page))
+traversePages f c = (\ps -> c { pages = Map.toList ps }) <$> f (Map.fromList $ pages c)
+
+traversePosts :: Traversal' Cache (Map.Map Txt (Try Post))
+traversePosts f c = (\ps -> c { posts = Map.toList ps }) <$> f (Map.fromList $ posts c)
+
+traversePackages :: Traversal' Cache (Map.Map Txt (Try Package))
+traversePackages f c = (\ps -> c { packages = Map.toList ps }) <$> f (Map.fromList $ packages c)
+
+
+
