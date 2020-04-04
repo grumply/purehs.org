@@ -1,6 +1,6 @@
 # purehs.org
 
-[![Build Status](https://travis-ci.org/grumply/purehs.org.svg?branch=master)](https://travis-ci.org/grumply/purehs.org)
+![CI](https://github.com/grumply/pure-platform/workflows/CI/badge.svg)
 
 This repository implements [purehs.org](http://www.purehs.org).
 
