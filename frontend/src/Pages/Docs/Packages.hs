@@ -82,30 +82,30 @@ results mpvs =
 
 package :: App.App => Package.Meta -> [Txt] -> View
 package pm versions =
-    Article <| Theme PackageT |>
-      [ Header <||>
-        [ H2 <||>
-          [ A <| link (VersionR (Package.package pm) (Just $ List.last versions)) |>
-            [ text (Package.package pm) ]
-          ]
+  Article <| Theme PackageT |>
+    [ Header <||>
+      [ H2 <||>
+        [ A <| link (VersionR (Package.package pm) (Just $ List.last versions)) |>
+          [ text (Package.package pm) ]
         ]
-      , Main <||>
-        fmap processLinks (Package.synopsis pm)
-      , Footer <||>
-        [ Nav <| Theme VersionsT |>
-          [ P <||> do
-            List.intersperse (Span <||> [ "/" ]) $
-              [ A <| link (VersionR (Package.package pm) (Just v)) |>
-                [ text v ]
-              | v <- versions
-              ]
-          , P <||>
-            [ A <| link (PackageR (Package.package pm)) |>
-              [ "Changelog" ]
+      ]
+    , Main <||>
+      fmap processLinks (Package.synopsis pm)
+    , Footer <||>
+      [ Nav <| Theme VersionsT |>
+        [ P <||> do
+          List.intersperse (Span <||> [ "/" ]) $
+            [ A <| link (VersionR (Package.package pm) (Just v)) |>
+              [ text v ]
+            | v <- versions
             ]
+        , P <||>
+          [ A <| link (PackageR (Package.package pm)) |>
+            [ "Changelog" ]
           ]
         ]
       ]
+    ]
 
 data SidebarT = SidebarT
 instance Themeable SidebarT where

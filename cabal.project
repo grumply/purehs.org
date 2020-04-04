@@ -1,10 +1,12 @@
-tests: True
-benchmarks: False
-optimization: 2
-profiling: False
-documentation: False
+compiler: ghc
 allow-newer: all
 jobs: $ncpus
 packages:
   backend/
   frontend/
+
+package frontend
+  optimization: 0
+
+package backend
+  optimization: 2

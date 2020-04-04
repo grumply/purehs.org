@@ -36,7 +36,7 @@
     "distribute": "cp dist/ghcjs/build/*/ghcjs-8.6.0.1/*/x/frontend/build/frontend/frontend.jsexe/all.js dist/site/main.js",
     "flush": "rm -r dist/ghcjs/build/*/ghcjs-8.6.0.1/*",
     "prod:backend": "cabal new-build backend --project-file=cabal.project --builddir=dist/ghc/",
-    "prod:frontend": "cabal new-build exe:frontend --project-file=cabal-ghcjs.project --builddir=dist/ghcjs/ && cp ./dist/ghcjs/build/*/ghcjs-*/*/x/*/build/frontend/frontend.jsexe/all.js ./dist/site/main.js && closure-compiler --compilation_level ADVANCED_OPTIMIZATIONS --jscomp_off=\"*\" --js ./dist/site/main.js --js_output_file dist/site/main.js.min && gzip < ./dist/site/main.js.min > ./dist/site/main.js.min.gz"
+    "prod:frontend": "cabal new-build exe:frontend --project-file=cabal-ghcjs.project --builddir=dist/ghcjs/ && cp ./dist/ghcjs/build/*/ghcjs-*/*/x/*/opt/build/frontend/frontend.jsexe/all.js ./dist/site/main.js && closure-compiler --compilation_level ADVANCED_OPTIMIZATIONS --jscomp_off=\"*\" --js ./dist/site/main.js --js_output_file dist/site/main.js.min && gzip < ./dist/site/main.js.min > ./dist/site/main.js.min.gz"
   },
   "author": "Sean Hickman",
   "email": "sean@grumply.com",

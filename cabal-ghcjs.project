@@ -1,9 +1,8 @@
 compiler: ghcjs
-profiling: False
-tests: False
-benchmarks: False
-documentation: False
 allow-newer: all
 jobs: $ncpus
 packages:
   frontend/
+
+package frontend
+  optimization: 2

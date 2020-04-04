@@ -11,7 +11,7 @@ author: Sean Hickman
 github: grumply/purehs.org
 
 ghc-options: -Wall -fno-warn-unused-do-bind
-ghcjs-options: -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=30000000
+ghcjs-options: -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=3000000
 
 default-extensions:
   - AutoDeriveTypeable
