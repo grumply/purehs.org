@@ -20,3 +20,13 @@ jobs:
     - uses: cachix/cachix-action@v5
       with:
         name: purehs
+
+    - name: optimized build
+      run: |
+        nix-env -iA nixpkgs.pkgs.closurecompiler
+        ./ghc npm run prod:backend
+        ./ghcjs npm run prod:frontend
+        du -sh ./dist/ghc/build/*/ghc-*/backend-*/x/backend/opt/build/backend/backend
+        du -sh ./dist/site/main.js
+        du -sh ./dist/site/main.js.min
+        du -sh ./dist/site/main.js.min.gz
