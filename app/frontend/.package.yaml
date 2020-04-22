@@ -1,0 +1,101 @@
+email: <Email>
+library:
+  source-dirs:
+  - src
+  other-modules: []
+category: Web
+ghc-options: -Wall -fno-warn-unused-do-bind -rtsopts -threaded
+dependencies:
+- base
+- containers
+- pure
+- pure-css
+- pure-elm
+- pure-json
+- pure-router
+- pure-styles
+- pure-svg
+- pure-theme
+- pure-try
+- pure-txt
+- pure-txt-search
+- pure-uri
+- pure-websocket
+- pure-spinners
+- shared
+- lens
+default-extensions:
+- AutoDeriveTypeable
+- BangPatterns
+- ConstraintKinds
+- DataKinds
+- DefaultSignatures
+- DeriveDataTypeable
+- DeriveFoldable
+- DeriveFunctor
+- DeriveGeneric
+- DeriveTraversable
+- DoAndIfThenElse
+- EmptyCase
+- EmptyDataDecls
+- ExistentialQuantification
+- FlexibleContexts
+- FlexibleInstances
+- FunctionalDependencies
+- GADTs
+- GeneralizedNewtypeDeriving
+- ImplicitParams
+- InstanceSigs
+- KindSignatures
+- LambdaCase
+- MultiParamTypeClasses
+- MultiWayIf
+- NamedFieldPuns
+- OverloadedStrings
+- PartialTypeSignatures
+- PatternGuards
+- PatternSynonyms
+- PolyKinds
+- RankNTypes
+- RecordWildCards
+- ScopedTypeVariables
+- StandaloneDeriving
+- TupleSections
+- TypeApplications
+- TypeFamilies
+- TypeFamilyDependencies
+- TypeOperators
+- TypeSynonymInstances
+- ViewPatterns
+- TemplateHaskell
+name: frontend
+version: 0.1.0.0
+synopsis: frontend client
+author: <Author>
+ghcjs-options: -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=5000 -DGHCJS_BUSY_YIELD=1
+license: BSD3
+executables:
+  frontend:
+    source-dirs:
+    - src
+    main: Main.hs
+    dependencies:
+    - frontend
+    - base
+    - containers
+    - pure
+    - pure-css
+    - pure-elm
+    - pure-json
+    - pure-router
+    - pure-styles
+    - pure-svg
+    - pure-theme
+    - pure-try
+    - pure-txt
+    - pure-txt-search
+    - pure-uri
+    - pure-websocket
+    - pure-spinners
+    - shared
+    - lens
