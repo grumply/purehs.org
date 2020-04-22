@@ -8,46 +8,34 @@ Next, clone the project skeleton.
 
 ```bash
 git clone --depth=1 https://github.com/grumply/pure-project-skeleton myapp/
-cd myapp/
-rm -rf ./.git
 ```
 
-Prepare the frontend development server using a nix shell `./ghcjs` with `npm`.
+Run the frontend and backend development servers in separate shells.
 
 ```bash
-./ghcjs npm install
+./develop --ghcjs
 ```
-
-Run a development web server inside a nix shell serving the frontend client locally at [localhost:8080](localhost:8080) with a control panel at [localhost:3000](localhost:3000). 
 
 ```bash
-./ghcjs npm run dev:frontend
+./develop --ghc
 ```
 
-In a separate shell, run the backend websocket server.
+These development servers will watch source files for changes and recompile as necessary.  The frontend server will serve the application at [localhost](localhost). The backend server serves websocket requests at [localhost:8081](localhost:8081).
 
-```bash
-./ghc npm run dev:backend
-```
-
-These development servers will watch source files for changes and recompile as necessary. When the frontend changes, the frontend development server will reload any connected browser pages.
+> ## Note 
+> 
+> The development system currently requires two seaparate invocations (`--ghc` and `--ghcjs`) for performance reasons.
 
 ## IDE
 
 **Average installation time: 8 minutes _(mostly pre-built binary downloads)_**
 
-The `pure-project-skeleton` includes a simple wrapper for easy `Vim` or [VS Code](https://code.visualstudio.com) + [Haskell IDE Engine (hie)](https://github.com/haskell/haskell-ide-engine) integration to provide type signatures, completions, and other goodies.
+The `pure-project-skeleton` includes a simple wrapper for easy [neovim](https://neovim.io) or [VS Code](https://code.visualstudio.com) integration with [Haskell IDE Engine](https://github.com/haskell/haskell-ide-engine) to provide type signatures, completions, and other goodies.
 
-
-First, enable the all-hies cachix cache:
+First, enable the all-hies cachix cache and install `hie` for `ghc-8.6.5`:
 
 ```bash
 cachix use all-hies
-```
-
-Install a system-wide `hie` for `ghc-8.6.5`:
-
-```bash
 nix-env -iA selection --arg selector 'p: { inherit (p) ghc865; }' -f https://github.com/infinisil/all-hies/tarball/master
 ```
 
