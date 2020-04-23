@@ -347,7 +347,7 @@ instance Themeable WithSidebarT where
     is c $ do
       apply $ do
         display    =: flex
-        flexWrap   =: wrap
+        flexWrap   =: wrapreverse
         minHeight  =: per 100
 
       child "*" . is ":last-child" .> do
@@ -418,4 +418,3 @@ pattern WithoutSidebar content =
 pattern HiddenMedium :: View -> View
 pattern HiddenMedium content =
   Children [ content ] (Theme HiddenMediumT Div)
-

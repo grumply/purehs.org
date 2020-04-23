@@ -70,7 +70,7 @@ success (pkg,ver,mdl,ent,latest) doc
   , Meta {..} <- Doc.meta d
   , v         <- bool (Just ver) Nothing latest
   = WithHeader (breadcrumbs (EntityR pkg v mdl ent)) $
-      WithSidebar (packageSearch package v [m]) $
+      WithSidebar (packageSearch "Module" package v [m]) $
         Div <| Theme MarkdownT . Theme UnhideT |> 
           unhide e
 

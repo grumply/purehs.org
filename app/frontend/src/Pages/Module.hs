@@ -76,7 +76,7 @@ doc mdl d latest
   , Meta {..}  <- Doc.meta d 
   , v          <- bool (Just version) Nothing latest
   = WithHeader (breadcrumbs (ModuleR package v mdl)) $
-      WithSidebar (packageSearch package v [md]) $
+      WithSidebar (packageSearch "Module" package v [md]) $
         Div <| Theme MarkdownT |> 
           [ processLinks e
           | e <- linkEntities package v mdl (safeTail md)

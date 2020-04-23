@@ -72,7 +72,7 @@ doc d@(Doc.meta -> Doc.Meta {..}) latest =
   let (desc,modules) = breakDoc d 
       v = bool (Just version) Nothing latest
    in WithHeader (breadcrumbs (VersionR package v)) $
-        WithSidebar (packageSearch package v modules) $
+        WithSidebar (packageSearch "Package" package v modules) $
           Div <| Theme MarkdownT |>
             [ processLinks d
             | d <- desc

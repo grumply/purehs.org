@@ -16,10 +16,11 @@ import Data.Data (Data)
 import Data.Function (on)
 import Data.List as List
 import Data.Maybe (fromMaybe,mapMaybe)
+import Data.Ord
 import GHC.Generics (Generic)
 
-packageSearch :: Txt -> Maybe Txt -> [[View]] -> View
-packageSearch p v md = searcher (packageSearchView ms) es
+packageSearch :: Txt -> Txt -> Maybe Txt -> [[View]] -> View
+packageSearch ctx p v md = searcher (packageSearchView ctx ms) es
   where
     ms = mapMaybe (module_ p v) md
     es = List.concatMap (entries p v) md
@@ -27,8 +28,14 @@ packageSearch p v md = searcher (packageSearchView ms) es
 data Entity = Entity EntityType Txt (Maybe Txt) Txt Txt
   deriving (Generic,Search,Data)
 
+entityType :: Entity -> EntityType
+entityType (Entity ety _ _ _ _) = ety
+
+entityModule :: Entity -> Txt
+entityModule (Entity _ _ _ m _) = m
+
 data EntityType = DataType | Class | Function | Pattern
-  deriving (Generic,Search,Data)
+  deriving (Generic,Search,Data,Eq,Ord)
 
 module_ :: Txt -> Maybe Txt -> [View] -> Maybe (Txt,Maybe Txt,Txt)
 module_ p v (Children [ TextView _ m ] H2 : _) = Just (p,v,m)
@@ -47,19 +54,18 @@ entries p v (Children [ TextView _ m ] H2 : es) = List.foldr (extract m) [] es
     extract _ _ es = es
 entries _ _ _ = []
 
-packageSearchView :: [(Txt,Maybe Txt,Txt)] -> (Txt -> IO ()) -> Maybe [Entity] -> View
-packageSearchView ms search mrs = 
+packageSearchView :: Txt -> [(Txt,Maybe Txt,Txt)] -> (Txt -> IO ()) -> Maybe [Entity] -> View
+packageSearchView ctx ms search mrs = 
   Div <||>
-    ( Input <| Theme SearcherT . OnInput (withInput search) . Placeholder "Search Package" . AutoFocus "true"
+    ( Input <| Theme SearcherT . OnInput (withInput search) . Placeholder ("Search " <> ctx) 
     : modules (fromMaybe [] mrs)
     )
   where
     modules :: [Entity] -> [View]
     modules [] = fmap moduleHeader ms 
-    modules es = fmap results $ List.groupBy ((==) `on` entityModule) es
-
-    entityModule :: Entity -> Txt
-    entityModule (Entity _ _ _ m _) = m
+    modules es = fmap results 
+               $ List.groupBy ((==) `on` entityModule) 
+               $ List.sortBy (comparing entityType) es
 
 results :: [Entity] -> View
 results es@(Entity _ p v m _ : _) = 
@@ -140,7 +146,7 @@ entry c clr = void $ do
 
 data DataT = DataT
 instance Themeable DataT where
-  theme c _ = entry c purple_
+  theme c _ = entry c cyan_
 
 data ClassT = ClassT
 instance Themeable ClassT where

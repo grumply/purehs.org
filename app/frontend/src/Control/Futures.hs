@@ -9,7 +9,7 @@ module Control.Futures
 
 import Control.Concurrent
 
-import Pure.Elm hiding (Left,Right,Start,Options)
+import Pure.Elm hiding (Left,Right,Start,Options,key)
 
 import Data.Foldable
 import Data.Traversable
@@ -74,30 +74,28 @@ producingKeyed
   -> (key -> IO a)
   -> (key -> Maybe a -> View) 
   -> View
-producingKeyed key p f = run (App [Start] [Receive] [Shutdown] mdl update view) (key,p,f)
+producingKeyed k p f = run (App [Start] [Receive] [Shutdown] mdl0 update view) (k,p,f)
   where
-    mdl = KeyedModel @tag key Nothing Nothing
+    mdl0 = KeyedModel @tag k Nothing Nothing
 
     update :: Elm (Message a) 
            => Message a 
            -> (key,key -> IO a,key -> Maybe a -> View) 
            -> KeyedModel tag key a 
            -> IO (KeyedModel tag key a)
-    update Start (k,p,_) KeyedModel {..} = do
-      let io = p k
-      keyedProducer <- Just <$> forkIO (io >>= command . Eventuated)
-      pure KeyedModel {..}
+    update Start (_,p,_) mdl = do
+      mtid <- Just <$> forkIO (p (key mdl) >>= command . Eventuated)
+      pure mdl { keyedProducer = mtid }
 
     update (Eventuated (Just -> e)) _ mdl =
-      pure mdl { keyedEvitable = e } 
+      pure (KeyedModel (key mdl) Nothing e)
 
-    update Receive (k,p,_) KeyedModel {..}
-      | k == key = pure KeyedModel {..}
+    update Receive (k,p,_) mdl
+      | k == key mdl = pure mdl
       | otherwise = do
-        for_ keyedProducer killThread
-        let io = p k
-        keyedProducer <- Just <$> forkIO (io >>= command . Eventuated)
-        pure KeyedModel {..}
+        for_ (keyedProducer mdl) killThread
+        mtid <- Just <$> forkIO (p k >>= command . Eventuated)
+        pure (KeyedModel k mtid Nothing) 
 
     update Shutdown _ KeyedModel {..} =
       case keyedProducer of
