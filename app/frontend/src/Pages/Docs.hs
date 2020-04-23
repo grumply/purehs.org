@@ -23,19 +23,21 @@ import Data.Maybe (mapMaybe)
 
 deriving instance Search Package.Meta
 
+data Docs
+
 page :: App.App => View
 page = searcher listing versions
 
 versions :: App.App => [(Package.Meta,[Txt])]
-versions = List.take 1000 (List.cycle (Cache.packageMetas (App.cache session))) <&> \pm ->
+versions = Cache.packageMetas (App.cache session) <&> \pm ->
   let pkg = Package.package pm
       match dm
         | Doc.package dm == pkg = Just (Doc.version dm)
         | otherwise = Nothing
    in (pm,mapMaybe match (Cache.docMetas (App.cache session)))
 
-listing :: App.App => (Txt -> IO ()) -> Maybe [(Package.Meta,[Txt])] -> View
-listing search mpvs = 
+listing :: App.App => (Txt -> IO ()) -> [(Package.Meta,[Txt])] -> View
+listing search pvs = 
   Page $
     WithHeader (header DocsR False) $
       WithSidebar sidebar content 
@@ -43,7 +45,7 @@ listing search mpvs =
     content = 
       Div <||>
         [ Input <| Theme SearcherT . OnInput (withInput search) . Placeholder "Search" . AutoFocus "true"
-        , results mpvs
+        , results pvs
         ]
 
     sidebar =
@@ -76,12 +78,10 @@ topPackages =
 topPackage :: Txt -> View
 topPackage p = Li <||> [ A <| link (VersionR p Nothing) |> [ text p ] ]
 
-results :: App.App => Maybe [(Package.Meta,[Txt])] -> View
-results mpvs = 
+results :: App.App => [(Package.Meta,[Txt])] -> View
+results pvs = 
   Div <||>
-    case mpvs of
-      Nothing  -> [ package p vs | (p,vs) <- versions ]
-      Just pvs -> [ package p vs | (p,vs) <- pvs      ]
+    [ package p vs | (p,vs) <- pvs      ]
 
 package :: App.App => Package.Meta -> [Txt] -> View
 package pm versions =

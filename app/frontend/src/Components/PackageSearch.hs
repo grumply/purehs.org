@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveAnyClass, DeriveDataTypeable #-}
+{-# LANGUAGE DeriveAnyClass, DeriveDataTypeable, AllowAmbiguousTypes #-}
 module Components.PackageSearch (packageSearch) where
 
 import Components.Searcher
@@ -17,6 +17,7 @@ import Data.Function (on)
 import Data.List as List
 import Data.Maybe (fromMaybe,mapMaybe)
 import Data.Ord
+import Data.Typeable
 import GHC.Generics (Generic)
 
 packageSearch :: Txt -> Txt -> Maybe Txt -> [[View]] -> View
@@ -54,18 +55,19 @@ entries p v (Children [ TextView _ m ] H2 : es) = List.foldr (extract m) [] es
     extract _ _ es = es
 entries _ _ _ = []
 
-packageSearchView :: Txt -> [(Txt,Maybe Txt,Txt)] -> (Txt -> IO ()) -> Maybe [Entity] -> View
-packageSearchView ctx ms search mrs = 
+packageSearchView :: Txt -> [(Txt,Maybe Txt,Txt)] -> (Txt -> IO ()) -> [Entity] -> View
+packageSearchView ctx ms search rs = 
   Div <||>
     ( Input <| Theme SearcherT . OnInput (withInput search) . Placeholder ("Search " <> ctx) 
-    : modules (fromMaybe [] mrs)
+    : modules rs
     )
   where
     modules :: [Entity] -> [View]
     modules [] = fmap moduleHeader ms 
     modules es = fmap results 
-               $ List.groupBy ((==) `on` entityModule) 
-               $ List.sortBy (comparing entityType) es
+               $ fmap (List.sortBy (comparing entityType))
+               $ List.groupBy ((==) `on` entityModule)
+               $ List.sortBy (comparing entityModule) es
 
 results :: [Entity] -> View
 results es@(Entity _ p v m _ : _) = 

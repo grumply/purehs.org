@@ -19,8 +19,6 @@ import Data.List as List
 import Data.Function ((&))
 import Data.Maybe
 
-data Module
-
 page :: App.App => Txt -> Maybe Txt -> Txt -> View
 page pkg ver mdl 
   | Just v <- maybe (App.latest pkg) Just ver
@@ -41,13 +39,13 @@ page pkg ver mdl
 
 packageModule :: App.App => Txt -> Txt -> Txt -> Bool -> View
 packageModule pkg ver mdl latest = 
-  producingKeyed @Module (pkg,ver,mdl,latest) producer 
+  producingKeyed @Doc.Doc (pkg,ver) producer 
     (consumingWith options . consumer)
   where
 
-    producer (p,v,_,_) = App.loadDoc (p,v)
+    producer = App.loadDoc
 
-    consumer = success
+    consumer = success mdl latest
 
     options = defaultOptions 
             & suspense (Milliseconds 500 0) loading 
@@ -59,8 +57,8 @@ loading = WithoutSidebar (Div <||> [ View (def @ChasingDots) ])
 problems :: View
 problems = WithoutSidebar "Problem loading module."
 
-success :: App.App => (Txt,Txt,Txt,Bool) -> Maybe Doc.Doc -> View
-success (p,v,m,l) md
+success :: App.App => Txt -> Bool -> (Txt,Txt) -> Maybe Doc.Doc -> View
+success m l (p,v) md
   | Just d <- md
   = doc m d l
 
@@ -72,7 +70,8 @@ failed = WithoutSidebar "Module not found."
 
 doc :: App.App => Txt -> Doc -> Bool -> View
 doc mdl d latest 
-  | (_,(md:_)) <- breakDoc d
+  | (_,mds)    <- breakDoc d
+  , (md:_)     <- findModule mdl mds
   , Meta {..}  <- Doc.meta d 
   , v          <- bool (Just version) Nothing latest
   = WithHeader (breadcrumbs (ModuleR package v mdl)) $

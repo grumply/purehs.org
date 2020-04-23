@@ -35,16 +35,14 @@ page pkg ver
             & suspense (Milliseconds 500 0) loading
             & trouble  (Seconds 5 0) problems
 
-data Version
-
 version :: App.App => Txt -> Txt -> Bool -> View
 version pkg ver latest =
-  producingKeyed @Version (pkg,ver,latest) producer 
+  producingKeyed @Doc.Doc (pkg,ver) producer 
     (consumingWith options . consumer)
   where
-    producer (p,v,_) = App.loadDoc (p,v)
+    producer = App.loadDoc
 
-    consumer = success
+    consumer = success latest
 
     options = defaultOptions 
             & suspense (Milliseconds 500 0) loading 
@@ -56,8 +54,8 @@ loading = WithoutSidebar (Div <||> [ View (def @ChasingDots) ])
 problems :: View
 problems = WithoutSidebar (H2 <||> [ "Problem loading package." ])
 
-success :: App.App => (Txt,Txt,Bool) -> Maybe Doc.Doc -> View
-success (pkg,ver,latest) md
+success :: App.App => Bool -> (Txt,Txt) -> Maybe Doc.Doc -> View
+success latest (pkg,ver) md
   | Just d <- md
   = doc d latest
 

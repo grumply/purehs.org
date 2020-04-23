@@ -36,17 +36,14 @@ page pkg ver mdl ent
             & suspense (Milliseconds 500 0) loading
             & trouble  (Seconds 5 0) problems
 
-data Entity
-
 entity :: App.App => Txt -> Txt -> Txt -> Txt -> Bool -> View
 entity pkg ver mdl ent latest =
-  producingKeyed @Entity (pkg,ver,mdl,ent,latest) 
-    producer 
+  producingKeyed @Doc.Doc (pkg,ver) producer 
     (consumingWith options . consumer)
   where
-    producer (p,v,_,_,_) = App.loadDoc (p,v)
+    producer = App.loadDoc
 
-    consumer = success
+    consumer = success mdl ent latest
 
     options = defaultOptions 
             & suspense (Milliseconds 500 0) loading 
@@ -61,8 +58,8 @@ problems = WithoutSidebar "Problem loading package."
 failed :: View
 failed = WithoutSidebar "Entity not found."
 
-success :: App.App => (Txt,Txt,Txt,Txt,Bool) -> Maybe Doc.Doc -> View
-success (pkg,ver,mdl,ent,latest) doc
+success :: App.App => Txt -> Txt -> Bool -> (Txt,Txt) -> Maybe Doc.Doc -> View
+success mdl ent latest (pkg,ver) doc
   | Just d    <- doc
   , (_,mdls)  <- Doc.breakDoc d
   , Just m    <- lookupModule mdl mdls

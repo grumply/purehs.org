@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveAnyClass, DeriveDataTypeable #-}
+{-# LANGUAGE DeriveAnyClass, DeriveDataTypeable, AllowAmbiguousTypes #-}
 module Components.Searcher (searcher,Msg(..)) where
 
 import Styles.Themes
@@ -7,24 +7,22 @@ import Pure.Data.Txt as Txt
 import Pure.Data.Txt.Search
 import Pure.Elm hiding (Class,Data,Type,Pattern)
 
+import Data.Typeable
+
 import Pure.Data.JSON (logJSON)
 
-data Env x = Env [x] ((Txt -> IO ()) -> Maybe [x] -> View)
-data Msg = Receive | Search Txt
-data Model x = Model Txt (Maybe [x])
+type Renderer x = (Txt -> IO ()) -> [x] -> View
 
-searcher :: (Search x, _) => ((Txt -> IO ()) ->  Maybe [x] -> View) -> [x] -> View
-searcher f xs = run (App [] [Receive] [] (Model "" Nothing) update view) (Env xs f)
+data Env x = Env [x] (Renderer x)
+data Msg = Run | Search Txt
+data Model x = Model Txt [x]
 
-update :: Search x => Msg -> Env x -> Model x -> IO (Model x)
-update (Search q) (Env es _) _ = do
-  logJSON ("Search" :: Txt)
-  let results = containing def q es
-  pure (Model q $ Just results)
-update Receive (Env es _) (Model q _) = do
-  logJSON ("Received" :: Txt)
-  let results = containing def q es
-  pure (Model q $ Just results)
+searcher :: (Search x, _) => Renderer x -> [x] -> View
+searcher f xs = run (App [Run] [Run] [] (Model "" []) update view) (Env xs f)
+
+update :: (Search x) => Msg -> Env x -> Model x -> IO (Model x)
+update Run (Env es _) (Model q _) = pure (Model q (containing def q es))
+update (Search q) (Env es _) _    = pure (Model q (containing def q es))
 
 view :: Elm Msg => Env x -> Model x -> View
 view (Env _ f) (Model _ rs) = f (command . Search) rs
