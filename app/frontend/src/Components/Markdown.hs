@@ -332,7 +332,12 @@ instance Theme MarkdownT where
           color =: toTxt green
           background =: none
 
-    has ".prev" $
+    has ".prev" $ do
+      apply $ do
+        position =: absolute
+        bottom =: 20px
+        left =: 8vw
+
       has (tag A) $ do
         apply $ do
           display       =: block
@@ -356,7 +361,12 @@ instance Theme MarkdownT where
           color =: toTxt green
           background =: none
 
-    has ".next" $
+    has ".next" $ do
+      apply $ do
+        position =: absolute
+        bottom =: 20px
+        right =: 8vw
+
       has (tag A) $ do
         apply $ do
           display       =: block

@@ -14,8 +14,7 @@ import Pure.WebSocket (mkRequest,(<:>),none,(<:+:>))
 import qualified Pure.WebSocket as WS (FullAPI,api)
 
 host :: String
--- host = "159.65.79.222"
-host = "192.168.1.8"
+host = "159.65.79.222"
 
 port :: Int
 port = 8081
