@@ -4,20 +4,27 @@ library:
   - src
   other-modules: []
 category: Web
-ghc-options: -Wall -fno-warn-unused-do-bind -rtsopts -threaded
+ghc-options: '-Wall -fno-warn-unused-do-bind -rtsopts -threaded '
 dependencies:
 - base
+- async
 - containers
 - pure
 - pure-css
 - pure-elm
 - pure-json
+- pure-lifted
+- pure-maybe
+- pure-random-pcg
+- pure-render
 - pure-router
 - pure-styles
 - pure-svg
 - pure-theme
+- pure-time
 - pure-try
 - pure-txt
+- pure-txt-interpolate
 - pure-txt-search
 - pure-uri
 - pure-websocket
@@ -68,11 +75,13 @@ default-extensions:
 - TypeSynonymInstances
 - ViewPatterns
 - TemplateHaskell
+- PostfixOperators
+- DerivingVia
 name: frontend
 version: 0.1.0.0
 synopsis: frontend client
 author: <Author>
-ghcjs-options: -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=5000 -DGHCJS_BUSY_YIELD=1
+ghcjs-options: -O -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=3000000 -DGHCJS_BUSY_YIELD=20
 license: BSD3
 executables:
   frontend:
@@ -82,17 +91,24 @@ executables:
     dependencies:
     - frontend
     - base
+    - async
     - containers
     - pure
     - pure-css
     - pure-elm
     - pure-json
+    - pure-lifted
+    - pure-maybe
+    - pure-random-pcg
+    - pure-render
     - pure-router
     - pure-styles
     - pure-svg
     - pure-theme
+    - pure-time
     - pure-try
     - pure-txt
+    - pure-txt-interpolate
     - pure-txt-search
     - pure-uri
     - pure-websocket

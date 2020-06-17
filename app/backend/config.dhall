@@ -11,6 +11,7 @@ let deps =
       , "http-types"
       , "pandoc"
       , "pure"
+      , "pure-cached"
       , "pure-core"
       , "pure-default"
       , "pure-elm"
@@ -21,12 +22,16 @@ let deps =
       , "pure-time"
       , "pure-try"
       , "pure-txt"
+      , "pure-txt-interpolate"
       , "pure-websocket"
-      , "shared"
+      , "text"
       , "wai"
       , "wai-app-static"
       , "wai-extra"
       , "warp"
+      , "yaml"
+      , "Glob"
+      , "shared"
       ]
 in
   backend //

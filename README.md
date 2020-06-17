@@ -1,163 +1,276 @@
-# Multi-package Pure Skeleton with Development Environment
+# Purehs.org
 
-![CI](https://github.com/grumply/pure-project-skeleton/workflows/CI/badge.svg)
+Site source for [purehs.org](http://purehs.org)
 
-This repo is an example of combining `cabal.project`, `Nix`, `cachix`, and `pure-platform` for an improved development experience.
+## Publishing Packages, Blog Posts, and Tutorials 
 
-## First run
+Publish packages via pull request conforming to the following configuration and documentation formats.
 
-Follow the steps at [purehs.cachix.org](https://purehs.cachix.org) to install [nix](https://nixos.org/nix/) and [cachix](https://cachix.org).
+Make sure you upload an author bio and avatar with your first post, tutorial, or package.
 
-## Development
+Note that there is a global blog and there are global tutorials. For each package there is a blog, and for each package version there are package tutorials. It is expected that tutorials are copied over with each new version and updated where necessary.
 
-If you're not running an OS and CPU architecture combination for which Cachix has a pre-built and cached copy of Pure's custom `ghcjs-base`, the first build will be very, very slow. Subsequent builds will take advantage of nix memoization. Most recent linux and macos systems will benefit from the binary cache.
+For the most part, at least at the moment, the Pure.hs ecosystem is evergreen in the sense that most development has been commited to the meta repository [pure-platform](https://github.com/grumply/pure-platform). This has worked well for me, but if anyone else starts using and developing in pure, a new solution will need to be developed. For now, I would be happy to add any work to the meta-repository if you're interested in publishing it. Packages don't really add much time to the build unless they're big (like [pure-semantic-ui](https://github.com/grumply/pure-semantic-ui)) or incur massive dependencies (like [pure-xhr](https://github.com/grumply/pure-xhr)). Overall, I welcome any interest or contributions.
 
-### Backend Development
+### Directory Structure
 
-To run a backend development server that will:
+Legend:
 
-- rebuild configurations
-- watch backend and shared Haskell and Cabal files for changes
-- run tests
-- rebuild and restart the server when necessary
+* ISO 8601: <YYYY-mm-ddThh:mm> or <YYYY-mm-dd>
+* <>: placeholder; substitute with relevant name or date or yaml, etc....
+* []: optional; can be omitted
 
-```bash
-$ ./develop --ghc
+> Note: <slug> is an identifier that is semi-guaranteed to be unique by the filesystem
+
+#### Author directory structure
+
+```
+authors/
+  <author>/
+    author.yaml
+    author.md
 ```
 
-### Frontend Development
+##### author.yaml
 
-To run a frontend development server that will:
-
-- serve your application at `localhost`
-- watch frontend and shared Haskell and Cabal files for changes
-- rebuild the application when necessary
-
-```bash
-$ ./develop --ghcjs
+```yaml
+# author.yaml
+name: <display name>
+[github]: <github name>
+[twitter]: <twitter name>
+[email]: <email>
+[company]: <company>
+synopsis: |
+  A short description to use in page title.
+description: |
+  A text description to go in the page's meta description tag.
+excerpt: |
+  A markdown excerpt from the author's bio.
 ```
 
-### IDE Tools
+#### Page directory structure
 
-I suggest running `./develop --ghc` and `./develop --ghcjs` in two terminals, and allowing your editor to run `HIE`.
-
-#### Haskell IDE Engine (hie)
-
-[hie](https://github.com/haskell/haskell-ide-engine) is a full-featured Haskell IDE with [hlint](https://github.com/ndmitchell/hlint) integration, quick actions and refactoring, haddock documentation and type on hover, jump to definition, completions, formatting, and more.
-
-* Be sure you followed the steps at [purehs.cachix.org](https://purehs.cachix.org) to enable cached builds as directed in [First run](#first-run)
-
-* Tell `cachix` to use the `all-hies` build cache.
-  ```bash
-  cachix use all-hies
-  ```
-
-* Install the ghc 8.6.5 hie to match pure-platform's ghc version.
-  ```bash
-  nix-env -iA selection --arg selector 'p: { inherit (p) ghc865; }' -f https://github.com/infinisil/all-hies/tarball/master
-  ```
-
-#### VS Code
-
-* Install [Haskell Language Server for VS Code](https://marketplace.visualstudio.com/items?itemName=alanz.vscode-hie-server).
-
-* In VS Code settings search for `useHieWrapper` and be sure the `Use Custom Hie Wrapper` checkbox is selected and set the `User Custom Hie Wrapper Path` to
-  ```bash
-  ${workspaceFolder}/develop
-  ```
-
-#### nvim
-
-* Install [coc.nvim](https://github.com/neoclide/coc.nvim).
-
-* Follow the [instructions here](https://github.com/neoclide/coc.nvim/wiki/Language-servers#haskell), but change the command to `./develop` and the root patterns to `["cabal.config"]`.
-
-#### ghcid
-
-[ghcid](https://github.com/ndmitchell/ghcid) integration is also available, but has fewer features than `hie`.
-
-Run `ghcid`
-
-```bash
-nix-shell default.nix -A shells.ghc --run "ghcid -c \"cabal new-repl $project\""
+```
+pages/
+  <slug>/
+    page.yaml
+    page.md
 ```
 
-where `$project` can be any of `frontend`, `backend`, `shared`, or `test`
+##### page.yaml
 
-## Production
-
-### `nix-build`
-
-Nix can be used for creating deterministic, production-ready build products. You can use the `nix-build` command to build all or parts of your multi-package project with Nix.
-
-- Build everything
-
-  ```bash
-  $ nix-build
-    {.. build output omitted ..}
-  $ tree result
-  result
-  ├── ghc
-  │   ├── backend -> /nix/store/{..}-backend-0.1.0.0
-  │   ├── frontend -> /nix/store/{..}-frontend-0.1.0.0
-  │   └── shared -> /nix/store/{..}-shared-0.1.0.0
-  └── ghcjs
-      ├── frontend -> /nix/store/{..}-frontend-0.1.0.0
-      └── shared -> /nix/store/{..}-shared-0.1.0.0
-
-  7 directories, 0 files
-  ```
-
-- Build the backend only
-
-  ```bash
-  $ nix-build -o backend-result -A ghc.backend
-  ```
-
-- Build the frontend only
-
-  ```bash
-  $ nix-build -o frontend-result -A ghcjs.frontend
-  ```
-
-## License
-
-The `LICENSE` files in this project exist only as demonstrative templates. You have the right to modify those files in any way that is compatible with the following BSD-3 license for this project.
-
-```LICENSE
-Copyright (c) 2020, Sean Hickman
-
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-
-    * Redistributions in binary form must reproduce the above
-      copyright notice, this list of conditions and the following
-      disclaimer in the documentation and/or other materials provided
-      with the distribution.
-
-    * Neither the name of Sean Hickman nor the names of other
-      contributors may be used to endorse or promote products derived
-      from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```yaml
+# page.yaml
+slug : <slug>
+synopsis: |
+  A short description to use in page title.
+description: |
+  A text description to go in the page's meta description tag.
+excerpt: |
+  A markdown excerpt. Likely unused since this is a page and lists of
+  pages aren't likely to be shown anywhere.
 ```
 
-## Thanks
+#### Blog directory structure
 
-Thanks to [Will Fancher](https://github.com/elvishjerricco) for [reflex-project-skeleton](https://github.com/elvishjerricco/reflex-project-skeleton) on which this project is based.
+
+```
+blog/
+  <slug>/
+    post.yaml
+    post.md
+```
+
+##### post.yaml
+
+```yaml
+# post.yaml
+title: <title>
+[subtitle]: <subtitle>
+slug: <slug>
+[episode]: <series number>
+published: <ISO 8601>
+[edited]: <ISO 8601>
+authors:
+  - author1
+  - author2
+editors: []
+tags:
+  - tag1
+  - tag2
+synopsis: |
+  A short description to use in page title.
+description: |
+  A text description to be used in a page meta tag.
+excerpt: |
+  A post excerpt in markdown for display in lists.
+```
+
+#### Tutorials directory structure
+
+```
+tutorials/
+  <slug>/
+    tutorial.yaml
+    tutorial.md
+```
+
+##### tutorial.yaml
+
+```yaml
+# tutorial.yaml
+title: <title>
+[subtitle]: <subtitle>
+slug: <slug>
+[episode]: <series number>
+published: <ISO 8601>
+[edited]: <ISO 8601>
+authors:
+  - author1
+  - author2
+editors: []
+tags:
+  - tag1
+  - tag2
+[packages]:
+  - package1
+  - package2
+synopsis: |
+  A short description to use in page title.
+description: |
+  A text description to be used in a page meta tag.
+excerpt: |
+  A post excerpt in markdown for display in lists.
+```
+
+#### Packages directory structure
+
+```
+packages/
+  <package>/
+    package.yaml
+    package.md
+    blog/
+      <slug>/
+        post.yaml
+        post.md
+    versions/
+      <version>/
+        version.yaml
+        modules/
+          <module>/
+            module.yaml
+            module.md
+        tutorials/
+          <slug>/
+            tutorial.yaml
+            tutorial.md
+```
+
+##### package.yaml
+
+```yaml
+# package.yaml
+name: <package name>
+author: <author name>
+latest: <version>
+published: <ISO 8601>
+license: <license-type>
+[repo]: <url>
+[homepage]: <url>
+collaborators: []
+tags:
+  - tag1
+  - tag2
+synopsis: |
+  A short description to use in page title.
+description: |
+  A text description to be used in a page meta tag.
+excerpt: |
+  A package excerpt in markdown to be shown in lists of packages. Keep short.
+```
+
+##### post.yaml
+
+```yaml
+# post.yaml
+title: <title>
+[subtitle]: <subtitle>
+slug: <slug>
+[episode]: <series number>
+published: <ISO 8601>
+[edited]: <ISO 8601>
+authors:
+  - author1
+  - author2
+editors: []
+tags:
+  - tag1
+  - tag2
+synopsis: |
+  A short description to use in page title.
+description: |
+  A text description to be used in a page meta tag. Keep short.
+excerpt: |
+  A post excerpt in markdown for display in lists. Keep short.
+```
+
+##### version.yaml
+
+```yaml
+# version.yaml
+version: <version>
+changes: |
+  Important version-specific changes and examples in markdown.
+```
+
+##### module.yaml
+
+```yaml
+# module.yaml
+name: <module name>
+synopsis: |
+  A short description to use in page title.
+description: |
+  Module description to be used in page meta tags. Keep short.
+excerpt: |
+  A module excerpt in markdown to be shown in lists of modules. Keep somewhat short.
+```
+
+##### tutorial.yaml
+
+```yaml
+# tutorial.yaml
+title: <title>
+[subtitle]: <subtitle>
+slug: <slug>
+[episode]: <series number>
+published: <ISO 8601>
+[edited]: <ISO 8601>
+authors:
+  - author1
+  - author2
+editors: []
+tags:
+  - tag1
+  - tag2
+[packages]:
+  - package1
+  - package2
+synopsis: |
+  A short description to use in page title.
+description: |
+  A text description to be used in a page meta tag. Keep short.
+excerpt: |
+  A post excerpt in markdown for display in lists. Keep short.
+```
+
+##### module.md
+
+Module markdown format is:
+
+* H2 represents an entity start
+* Code highlighting with click-to-copy is supported in fenced code blocks
+* Inline live editors are supported when code is wrapped in ```<pre data-try></pre>```. The backend will guarantee that such code is compiled and results are cached.
+* Content wrapped in a ```<div class="hide">``` tag will be hidden in module pages, but not in entity pages.
 

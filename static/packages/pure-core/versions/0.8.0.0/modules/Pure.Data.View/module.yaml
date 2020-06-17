@@ -1,0 +1,7 @@
+name: Pure.Data.View
+synopsis: |
+  Core types and methods for Pure.hs
+description: |
+  Documentation for core types and methods used to construct and manage hierarchical computational contexts and views.
+excerpt: |
+  `Pure.Data.View` exports core types and methods for constructing and management of live hierarchical contexts.

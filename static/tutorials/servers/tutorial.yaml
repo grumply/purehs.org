@@ -1,0 +1,22 @@
+title: Servers in 5 Minutes
+slug: servers
+series: 5-Minute Series
+episode: 4
+published: 2020-05-31
+authors:
+  - Sean Hickman
+editors: []
+tags:
+  - beginner
+  - servers
+  - 5 minutes
+packages:
+  - pure
+synopsis: |
+  Pure.hs Applications in 5 Minutes
+description: |
+  Learn Pure.hs server development in 5 minutes.
+excerpt: |
+  In part 5 of the [5-Minute Series](./5-minute), we'll learn how to develop servers using the same tools learned earlier in this series.
+
+  If you're ready, we'll take what we learned in [Part 2: Components](./components) to implement a backend server that runs as native code. Let's get started!

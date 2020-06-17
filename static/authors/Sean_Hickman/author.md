@@ -1,0 +1,1 @@
+Sean Hickman lives in Wichita Falls, Texas and founded [alogram](alogram.com) and developed the Pure.hs framework. 

@@ -1,6 +1,10 @@
 email: <Email>
+library:
+  source-dirs:
+  - src
+  other-modules: []
 category: Web
-ghc-options: -Wall -fno-warn-unused-do-bind -rtsopts -threaded
+ghc-options: '-Wall -fno-warn-unused-do-bind -rtsopts -threaded '
 dependencies:
 - base
 - bytestring
@@ -11,21 +15,32 @@ dependencies:
 - pure-elm
 - pure-json
 - pure-render
+- pure-time
 - pure-try
 - pure-txt
+- pure-txt-interpolate
+- pure-txt-search
 - pure-websocket
+- time
+- Glob
+- yaml
 - base
+- async
 - containers
 - pure
 - pure-css
 - pure-elm
 - pure-json
+- pure-maybe
+- pure-render
 - pure-router
 - pure-styles
 - pure-svg
 - pure-theme
+- pure-time
 - pure-try
 - pure-txt
+- pure-txt-interpolate
 - pure-txt-search
 - pure-uri
 - pure-websocket
@@ -40,6 +55,7 @@ dependencies:
 - http-types
 - pandoc
 - pure
+- pure-cached
 - pure-core
 - pure-default
 - pure-elm
@@ -50,14 +66,19 @@ dependencies:
 - pure-time
 - pure-try
 - pure-txt
+- pure-txt-interpolate
 - pure-websocket
-- shared
+- text
 - wai
 - wai-app-static
 - wai-extra
 - warp
+- yaml
+- Glob
+- shared
 - pure-test
 - pure-bench
+- frontend
 - shared
 - backend
 default-extensions:
@@ -108,11 +129,87 @@ name: test
 version: 0.1.0.0
 synopsis: executable tests
 author: <Author>
-ghcjs-options: -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=5000 -DGHCJS_BUSY_YIELD=1
+ghcjs-options: -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=5000 -DGHCJS_BUSY_YIELD=20
 license: BSD3
 executables:
   test:
     source-dirs:
     - src
     main: Main.hs
-    other-modules: []
+    dependencies:
+    - test
+    - base
+    - bytestring
+    - containers
+    - hashable
+    - pure
+    - pure-core
+    - pure-elm
+    - pure-json
+    - pure-render
+    - pure-time
+    - pure-try
+    - pure-txt
+    - pure-txt-interpolate
+    - pure-txt-search
+    - pure-websocket
+    - time
+    - Glob
+    - yaml
+    - base
+    - async
+    - containers
+    - pure
+    - pure-css
+    - pure-elm
+    - pure-json
+    - pure-maybe
+    - pure-render
+    - pure-router
+    - pure-styles
+    - pure-svg
+    - pure-theme
+    - pure-time
+    - pure-try
+    - pure-txt
+    - pure-txt-interpolate
+    - pure-txt-search
+    - pure-uri
+    - pure-websocket
+    - pure-spinners
+    - shared
+    - lens
+    - base
+    - bytestring
+    - containers
+    - directory
+    - filepath
+    - http-types
+    - pandoc
+    - pure
+    - pure-cached
+    - pure-core
+    - pure-default
+    - pure-elm
+    - pure-json
+    - pure-render
+    - pure-server
+    - pure-tagsoup
+    - pure-time
+    - pure-try
+    - pure-txt
+    - pure-txt-interpolate
+    - pure-websocket
+    - text
+    - wai
+    - wai-app-static
+    - wai-extra
+    - warp
+    - yaml
+    - Glob
+    - shared
+    - pure-test
+    - pure-bench
+    - frontend
+    - shared
+    - backend

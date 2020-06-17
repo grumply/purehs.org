@@ -1,0 +1,14 @@
+title: Announcing Pure.hs
+slug: announcing-pure
+published: 2020-04-30
+authors:
+  - Sean Hickman
+editors: []
+tags:
+  - pure.hs
+synopsis: |
+  The first public release of Pure.hs
+description: |
+  Announcing the first release of Pure.hs, a library ecosystem for web applications, servers, and services.
+excerpt: |
+  I'm pleased to announce the first public release of Pure.hs, a library ecosystem for web applications, servers, and services.

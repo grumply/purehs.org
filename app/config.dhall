@@ -15,7 +15,7 @@ let extensions =
       , "RecordWildCards", "ScopedTypeVariables", "StandaloneDeriving"
       , "TupleSections", "TypeApplications", "TypeFamilies"
       , "TypeFamilyDependencies", "TypeOperators", "TypeSynonymInstances"
-      , "ViewPatterns", "TemplateHaskell"
+      , "ViewPatterns", "TemplateHaskell", "PostfixOperators", "DerivingVia"
       ]
 
 let PackageConfiguration =
@@ -31,10 +31,9 @@ let package = \(pkg : PackageConfiguration) ->
       , author = authorName
       , email = authorEmail
       , license = "BSD3"
-      , ghc-options = "-Wall -fno-warn-unused-do-bind -rtsopts -threaded"
-      , ghcjs-options = "-threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=5000 -DGHCJS_BUSY_YIELD=1"
+      , ghc-options = "-Wall -fno-warn-unused-do-bind -rtsopts -threaded "
+      , ghcjs-options = "-O -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=3000000 -DGHCJS_BUSY_YIELD=20"
       , default-extensions = extensions
       }
-
 in
   package

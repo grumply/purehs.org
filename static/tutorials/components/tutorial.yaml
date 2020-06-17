@@ -1,0 +1,23 @@
+title: Components in 5 Minutes
+slug: components
+series: 5-Minute Series
+episode: 2
+published: 2020-05-29
+authors:
+  - Sean Hickman
+editors: []
+tags:
+  - beginner
+  - components
+  - 5 minutes
+packages:
+  - pure
+synopsis: |
+  Pure.hs Components in 5 Minutes
+description: |
+  Get a grasp on the Pure.hs component type and how to create a managed stateful context in 5 minutes.
+excerpt: |
+  In part 2 of the [5-Minute Series](./5-minute), we'll cover dynamic views and state management to build more complex, managed views.
+
+  If you're ready, we'll follow up our doomsday machine from [Part 1: Basics](./basics) with a countdown timer. Let's get started!
+

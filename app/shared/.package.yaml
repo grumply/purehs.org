@@ -4,7 +4,7 @@ library:
   - src
   other-modules: []
 category: Web
-ghc-options: -Wall -fno-warn-unused-do-bind -rtsopts -threaded
+ghc-options: '-Wall -fno-warn-unused-do-bind -rtsopts -threaded '
 dependencies:
 - base
 - bytestring
@@ -15,9 +15,15 @@ dependencies:
 - pure-elm
 - pure-json
 - pure-render
+- pure-time
 - pure-try
 - pure-txt
+- pure-txt-search
 - pure-websocket
+- time
+- Glob
+- yaml
+- pure-txt-interpolate
 default-extensions:
 - AutoDeriveTypeable
 - BangPatterns
@@ -66,5 +72,5 @@ name: shared
 version: 0.1.0.0
 synopsis: shared types and apis
 author: <Author>
-ghcjs-options: -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=5000 -DGHCJS_BUSY_YIELD=1
+ghcjs-options: -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=5000 -DGHCJS_BUSY_YIELD=20
 license: BSD3

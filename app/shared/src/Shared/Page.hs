@@ -1,25 +1,29 @@
-{-# language DeriveAnyClass #-}
+{-# language DeriveAnyClass, DerivingVia, DuplicateRecordFields #-}
 module Shared.Page where
 
-import Pure.Data.JSON (ToJSON,FromJSON)
-import Pure.Data.Render ()
-import Pure.Data.Txt (Txt)
-import Pure.Data.View (View)
+import Shared.Types (Description,Excerpt,Slug,Markdown,Title,Synopsis)
 
-import Data.Function (on)
+import Pure.Data.JSON (ToJSON,FromJSON)
+import Pure.Data.Txt (Txt,ToTxt,FromTxt)
+
 import GHC.Generics (Generic)
 
-data Meta = Meta
-  { slug :: {-# UNPACK #-}!Txt
-  } deriving (Eq,Ord,Generic,ToJSON,FromJSON)
+import Pure.Data.Txt.Search (Search)
 
-data Page = Page
-  { meta :: {-# UNPACK #-}!Meta
-  , content :: ![View]
-  } deriving (Generic,ToJSON,FromJSON)
+data Page content = Page
+  { slug :: Slug
+  , title :: Title
+  , synopsis :: Synopsis
+  , description :: Description
+  , excerpt :: Excerpt content
+  } deriving (Generic,ToJSON,FromJSON,Functor,Foldable,Search)
 
-instance Eq Page where
-  (==) = (==) `on` meta
+type PageView = Page Markdown
 
-instance Ord Page where
-  compare = compare `on` meta
+newtype PageContent content = PageContent content
+  deriving (Functor,Foldable)
+  deriving (ToTxt,ToJSON,FromTxt,FromJSON)
+    via content
+
+type PageContentMarkdown = PageContent Txt
+type PageContentView = PageContent Markdown

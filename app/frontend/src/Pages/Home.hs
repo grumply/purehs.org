@@ -1,231 +1,218 @@
-module Pages.Home (page) where
+module Pages.Home (page,GradientT(..)) where
 
 import qualified App
 import Components.Header (header)
-import Components.Icons  (logo)
+import Components.Icons  (logo,animatedLogo)
 import Data.Route
 import Styles.Colors
-import Styles.Themes hiding (ContentT)
+import Styles.Themes hiding (ContentT,page)
 
-import Pure.Elm.Application as Elm hiding (home,page)
+import Pure.Elm.Application as Elm hiding (home,page,green,lavender,blue,brightness,teal)
+
+import Prelude hiding (all,min,max)
 
 page :: App.App => View
 page =
-  Div <| Theme HomeT |>
-    [ header HomeR True
+  Div <| Themed @HomeT |>
+    [ header HomeR
     , home
     ]
 
 home :: App.App => View
 home = 
-  Div <| Theme ContentT |>
-    [ Div <| Theme IntroT |>
-      [ Div <| Theme HeroT |>
-        [ logo False False HeroLogoT
-        , H1 <| Theme SloganT |>
-          [ "Dynamic Hierarchical Contexts"
-          ]
-        , P <| Theme DescriptionT |>
-          [ "Performance + Expressiveness + Asynchrony"
-          ]
-        , Div <| Theme CallToActionT |>
-          [ A <| link (TutorialR "install") . Theme GetPureT |>
-            [ "Get Pure" ]
-          , A <| link (TutorialR "basics") . Theme StartTutorialT |>
-            [ "Start Tutorial" ]
+  Div <| Themed @ContentT |>
+    [ Div <| Themed @IntroT |>
+      [ Div <| Themed @HeroT |>
+        [ logo @HeroLogoT False False 
+        , H1 <| Themed @SloganT |>
+          [ "Dynamic Hierarchical Contexts" ]
+        , P <| Themed @DescriptionT |>
+          [ "Performance + Expressiveness + Asynchrony" ]
+        , Div <| Themed @CallToActionT |>
+          [ A <| link (PageR "about") . Themed @ButtonT . Themed @AboutPureT |>
+            [ "About Pure.hs" ]
+          , A <| link (TutorialR "install") . Themed @ButtonT . Themed @GetPureT |>
+            [ "Get Pure.hs" ]
           ]
         ]
       ]
-    , Div <| Theme GradientT
+    , Div <| Themed @GradientT
     ]
 
-data HomeT = HomeT
-instance Themeable HomeT where
-  theme c _ = void $ do
+data HomeT
+instance Theme HomeT where
+  theme c = void $ do
     is c .> do
-      height          =: per 100
+      height =: (100%)
 
     atMedia "(max-height: 500px)" $
       is c .> do
-        paddingTop    =: pxs 48
-        paddingBottom =: pxs 48
+        padding-top    =: 24px
+        padding-bottom =: 48px
 
-data GradientT = GradientT
-instance Themeable GradientT where
-  theme c _ = void $ do
+data GradientT
+instance Theme GradientT where
+  theme c = void $ do
 
     atKeyframes "shimmer" $ do
-      is (per   0) .> opacity =: one
-      is (per 100) .> opacity =: zero
-
+      is (0%)   .> opacity =: 1
+      is (100%) .> opacity =: 0
 
     is c .> do
-      let gradient = deg 150                   <&>>
-                     darkLavender  <<>> per 15 <&>>
-                     blueHighlight <<>> per 70 <&>>
-                     lightGreen    <<>> per 95
+      position   =: absolute
+      min-height =: (100%)
+      width      =: 100vw
+      top        =: 0
+      left       =: 0
+      z-index    =: (-100)
+      opacity    =: 1
+      background =: linearGradient
+        [150deg
+        ,toTxt blue     <<>> (10%)
+        ,toTxt lavender <<>> (65%)
+        ,toTxt green    <<>> (95%)
+        ]
 
-      position        =: absolute
-      height          =: per 100
-      width           =: per 100
-      top             =: zero
-      left            =: zero
-      zIndex          =: neg (int 100)
-      opacity         =: one
-      background      =: linearGradient(gradient)
-
-    is c . is ":before" .> do
-      let gradient = deg 210                   <&>>
-                     darkLavender  <<>> per 15 <&>>
-                     blueHighlight <<>> per 70 <&>>
-                     lightGreen    <<>> per 95
-
-      Elm.content     =: "\"\""
-      position        =: absolute
-      display         =: block
-      height          =: per 100
-      width           =: per 100
-      top             =: zero
-      left            =: zero
-      zIndex          =: neg (int 99)
-      opacity         =: zero
-      background      =: linearGradient(gradient)
-      animation       =: "shimmer" <<>> sec 3 <<>> easeInOut <<>> normal
+    is c . is before .> do
+      content    =: emptyQuotes
+      position   =: absolute
+      display    =: block
+      min-height =: (100%)
+      width      =: 100vw
+      top        =: 0
+      left       =: 0
+      z-index    =: (-99)
+      opacity    =: 0
+      background =: linearGradient
+        [210deg
+        ,toTxt blue     <<>> (10%)
+        ,toTxt lavender <<>> (65%)
+        ,toTxt teal     <<>> (95%)
+        ]
+      animation  =: "shimmer" <<>> 3s <<>> easeinout <<>> normal
 
     atMedia "(max-height: 500px)" $
       is c .> do
-        paddingTop    =: pxs 48
-        paddingBottom =: pxs 48
+        padding-top    =: 24px
+        padding-bottom =: 48px
 
-data ContentT = ContentT
-instance Themeable ContentT where
-  theme c _ = void $ do
+data ContentT
+instance Theme ContentT where
+  theme c = void $ do
 
     is c .> do
       display         =: flex
-      flexDirection   =: column
-      justifyContent  =: center
-      height          =: per 100
+      flex-direction  =: column
+      justify-content =: center
+      height          =: (100%)
 
-data IntroT = IntroT
-instance Themeable IntroT where
-  theme c _ = void $ do
+data IntroT
+instance Theme IntroT where
+  theme c = void $ do
     is c .> do
-      display    =: flex
-      flex       =: one
-      color      =: baseWhite
-      alignItems =: center
+      display     =: flex
+      flex        =: 1
+      color       =: toTxt base
+      align-items =: center
 
     is c $ do
-      apply $ marginTop =: pxs 75
+      apply $ 
+        margin-top =: 75px
 
       atMedia "(max-width: 48em)" .> do
-        marginTop =: pxs 50
+        margin-top =: 50px
 
 
-data HeroT = HeroT
-instance Themeable HeroT where
-  theme c _ = void $ do
+data HeroT
+instance Theme HeroT where
+  theme c = void $ do
     is c .> do
-      display       =: flex
-      flex          =: one
-      flexDirection =: column
-      textAlign     =: center
-      fontWeight    =: int 200
+      display        =: flex
+      flex           =: 1
+      flex-direction =: column
+      text-align     =: center
+      font-weight    =: 200
+      max-width      =: (100%)
 
-data HeroLogoT = HeroLogoT
-instance Themeable HeroLogoT where
-  theme c _ = void $ do
+data HeroLogoT
+instance Theme HeroLogoT where
+  theme c = void $ do
     is c $ do
       apply $ do
         margin =: auto
-        width  =: "90vmin"
+        width  =: 90vmin
 
-data SloganT = SloganT
-instance Themeable SloganT where
-  theme c _ = void $ do
+data SloganT
+instance Theme SloganT where
+  theme c = void $ do
     is c .> do
-      marginTop      =: pxs 8
-      marginBottom   =: pxs 4
-      display        =: flex
-      flex           =: one
-      flexWrap       =: wrap
-      justifyContent =: center
-      flexDirection  =: row
-      fontWeight     =: int 200
-      fontSize       =: pxs 40
-      textShadow     =: pxs 1 <<>> pxs 1 <<>> hsla(215,35.14,40,0.5)
+      margin-top      =: 8px
+      margin-bottom   =: 4px
+      display         =: flex
+      flex            =: 1
+      flex-wrap       =: wrap
+      justify-content =: center
+      flex-direction  =: row
+      font-weight     =: 200
+      font-size       =: 40px
+      text-shadow     =* [1px,1px,hsla(215,(35.14%),(40%),0.5)]
 
     is c . has "span" .> do
-      display        =: flex
-      marginLeft     =: pxs 4
-      justifyContent =: center
+      display         =: flex
+      margin-left     =: 4px
+      justify-content =: center
 
     atMedia "(max-width: 48em)" $
-      is c .> do
-        fontSize =: pxs 30
+      is c .>
+        font-size =: 30px
 
-data DescriptionT = DescriptionT
-instance Themeable DescriptionT where
-  theme c _ = void $ do
+data DescriptionT
+instance Theme DescriptionT where
+  theme c = void $ do
     is c .> do
-      display        =: "inline-flex"
-      flex           =: one
-      justifyContent =: center
-      fontSize       =: pxs 24
-      textShadow     =: pxs 1 <<>> pxs 1 <<>> hsla(215,35.14,40,0.5)
+      display         =: inline-flex
+      flex            =: 1
+      justify-content =: center
+      font-size       =: 24px
+      text-shadow     =* [1px,1px,hsla(215,(35.14%),(40%),0.5)]
 
     atMedia "(max-width: 48em)" $
-      is c .> do
-        fontSize =: pxs 22
+      is c .>
+        font-size =: 22px
 
-buttonBoxShadow opacity vOff blur vOff' blur' =
-       zero <<>> pxs vOff  <<>> pxs blur  <<>> darkLavender
-  <&>> zero <<>> pxs vOff' <<>> pxs blur' <<>> rgba(0,0,0,0.1)
+data CallToActionT
+instance Theme CallToActionT where
+  theme c = void $ do
+    is c .> do
+      height          =: 50px
+      display         =: flex
+      flex-direction  =: row
+      justify-content =: center
+      margin-top      =: 8px
+      margin-bottom   =: 8px
 
-callToActionButtonStyles background text = do
+data AboutPureT
+instance Theme AboutPureT where
+  theme c = void $ is c $ callToActionButtonStyles (toTxt green { brightness = 80 }) (toTxt base)
+
+data GetPureT
+instance Theme GetPureT where
+  theme c = void $ is c $ callToActionButtonStyles (toTxt base) (toTxt lavender)
+
+callToActionButtonStyles bkg text = do
   apply $ do
-    transition      =: "all" <<>> sec 0.1 <<>> easeInOut
-    backgroundColor =: background
-    color           =: text
+    transition       =* [all,0.1s,easeinout]
+    background-color =: bkg
+    color            =: text
+    box-shadow       =: buttonBoxShadow 3 4 (toTxt lavender { brightness = 80 }) 1 3 (rgba(0,0,0,0.11))
 
-  is hovered .> do
-    transform       =: scale(dec 1.1) <<>> translateY(pxs (-3))
-    boxShadow       =: buttonBoxShadow 0.11 10 14 3 6
+  is hover .> do
+    color      =: text
+    transform  =* [scale(1.1),translateY((-3)px)]
+    box-shadow =: buttonBoxShadow 10 14 (toTxt lavender { brightness = 40 }) 3 6 (rgba(0,0,0,0.11))
 
   is active .> do
-    transform       =: scale(dec 0.9) <<>> translateY(pxs 5)
-    boxShadow       =: buttonBoxShadow 0.13 4 6 1 3
+    color      =: text
+    transform  =* [scale(0.9),translateY(5px)]
+    box-shadow =: buttonBoxShadow 4 6 (toTxt lavender { brightness = 40 }) 1 3 (rgba(0,0,0,0.13))
 
-data CallToActionT = CallToActionT
-instance Themeable CallToActionT where
-  theme c _ = void $ do
-    is c .> do
-      height           =: pxs 50
-      display          =: flex
-      flexDirection    =: row
-      justifyContent   =: center
-      marginTop        =: pxs 8
-      marginBottom     =: pxs 8
-
-    is c . has "a" .> do
-      display          =: inlineBlock
-      marginLeft       =: pxs 16
-      marginRight      =: pxs 16
-      height           =: pxs 44
-      lineHeight       =: pxs 44
-      padding          =: zero <<>> pxs 14
-      boxShadow        =: buttonBoxShadow 0.13 4 6 1 3
-      borderRadius     =: pxs 5
-      fontWeight       =: int 600
-      textTransform    =: uppercase
-      "letter-spacing" =: ems 0.025
-      textDecoration   =: none
-
-data GetPureT = GetPureT
-instance Themeable GetPureT where
-  theme c _ = void $ is c $ callToActionButtonStyles baseGreen baseWhite
-
-data StartTutorialT = StartTutorialT
-instance Themeable StartTutorialT where
-  theme c _ = void $ is c $ callToActionButtonStyles baseWhite darkLavender

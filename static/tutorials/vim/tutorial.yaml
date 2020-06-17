@@ -1,0 +1,20 @@
+title: Vim IDE Integration Instructions
+slug: vim
+series: Quickstart
+episode: 2
+published: 2020-05-01
+authors:
+  - Sean Hickman
+editors: []
+tags:
+  - beginner
+  - install
+  - IDE
+packages:
+  - pure
+synopsis: |
+  Configure Vim with a Pure.hs-compatible IDE.
+description: |
+  Set up an IDE for Pure.hs development in Vim to show type signatures on hover, pop-up completions, and other goodies.
+excerpt: |
+  Set up an IDE for Pure.hs development in Vim to show type signatures on hover, pop-up completions, and other goodies.

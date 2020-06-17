@@ -1,0 +1,22 @@
+title: Composition in 5 Minutes
+slug: composition
+series: 5-Minute Series
+episode: 4
+published: 2020-05-31
+authors:
+  - Sean Hickman
+editors: []
+tags:
+  - beginner
+  - composition
+  - 5 minutes
+packages:
+  - pure
+synopsis: |
+  Pure.hs Composition in 5 Minutes
+description: |
+  Learn how to decompose a monolithic application into composable pieces in 5 minutes.
+excerpt: |
+  In part 4 of the [5-Minute Series](./5-minute), we'll cover decomposition and simplification of a monolithic application into multiple composable pieces for easier comprehension and extension.
+
+  If you're ready, we'll take what we did in [Part 4: Applications](./applications) and break it down into easier to manage functional chunks. Let's get started!

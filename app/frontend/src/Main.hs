@@ -1,68 +1,117 @@
+{-# language DuplicateRecordFields, UndecidableInstances, DeriveAnyClass #-}
 module Main where
 
-import qualified API
 import App
-import qualified Pages.About as About
-import qualified Pages.Blog as Blog
-import qualified Pages.Post as Post
-import qualified Pages.Docs as Docs
-import qualified Pages.Entity as Entity
-import qualified Pages.Module as Module
-import qualified Pages.Package as Package
-import qualified Pages.Version as Version
+import Components.Breadcrumbs as Breadcrumbs
+import Components.Header as Header
+
+import Pages.Author as Author
+import Pages.Page as Page
+import Pages.Post as Post
+import Pages.Tutorial as Tutorial
+import Pages.Package as Package
+
 import qualified Pages.Home as Home
-import qualified Pages.Tutorials as Tutorials
-import qualified Pages.Tutorial as Tutorial
 
-import qualified Shared
+import Shared
+import Shared.Types as Types
+import Shared.Blog as Blog
+import Shared.Tutorial as Tutorial
+import Shared.Author as Author
 
-import Styles.Themes
+import Styles.Themes as Themes hiding (wait)
 
 import Data.Route
+import Data.Render
+import Data.Resource
 
-import Pure.Elm.Application hiding (Session,Settings)
+import Pure.Data.Txt as Txt
+import Pure.Data.Txt.Search
+import Pure.Data.JSON (pretty)
+import Pure (Pure(..))
+import Pure.Elm.Application hiding (Session,Settings,content,page,wait,Async,title,render,Title)
+import qualified Pure.Elm.Application as Elm
+import Pure.Maybe
 import qualified Pure.WebSocket as WS
 
-import Control.Applicative
+import Control.Concurrent
+import Control.Concurrent.Async (Async,async,wait)
+import Data.Function ((&))
 import Data.Functor
-import Data.Maybe
-
-import Debug.Trace
+import Data.List as List
+import Data.Typeable
+import GHC.Exts (IsList(..))
+import GHC.Generics
+import System.IO
 
 main :: IO ()
-main = inject body (Div <| Theme AppT |> [ run app App.Settings ]) 
+main = do
+  hSetBuffering stdout LineBuffering
+  ws <- WS.clientWS Shared.host Shared.port
+  start <- time
+  start `seq` WS.remote responseTimeAPI ws responseTest () (\_ -> time >>= \end -> print (end - start))
+  inject body (Div <| Themed @AppT |> [ run (app ws) App.Settings ])
   where
-    app = App [App.Startup] [] [App.Routed] [] App.emptySession update view
+    app ws = App [] [] [App.Routed] [] (App.mkSession ws) update Main.view
 
 update :: Elm Message Route => Route -> Message -> Settings -> Session -> IO Session
-update _rt App.Startup _ ses = do
-  ws <- WS.websocket
-  WS.enact ws API.impl 
-  WS.activate ws Shared.host Shared.port False
-  pure ses { App.socket = ws }
-
 update _rt (App.UpdateSession f) _ ses = 
   pure (f ses)
 
-update _old (App.Routed _new) _ ses = 
-  -- delay the restoration by one command batch
-  command App.RestoreScrollPosition $> ses
-
-update _rt App.RestoreScrollPosition _ ses =
-  addAnimation restoreScrollPosition $> ses
+update _old (App.Routed _new) _ ses = do
+  -- preload about/install
+  case _new of
+    HomeR -> void $ forkIO $ void $ do
+      delay (Millisecond * 150)
+      req ses getPage "about" 
+      req ses getPageContent "about" 
+      req ses getTutorial "install"
+      req ses getTutorialContent "install"
+    _ -> pure ()
+  -- delay the restoration by a few frames
+  async (delay (Millisecond * 100) >> addAnimation restoreScrollPosition) $> ses
 
 view :: Route -> App.Page
-view r = page $
+view r = Elm.page $ 
   case r of
-    NoR             -> Null
-    AboutR          -> About.page
-    HomeR           -> Home.page
-    TutorialsR      -> Tutorials.page
-    BlogR           -> Blog.page
-    PostR p         -> Post.page p
-    PackageR p      -> Package.page p
-    TutorialR t     -> Tutorial.page t
-    VersionR p v    -> Version.page p v
-    ModuleR p v m   -> Module.page p v m
-    EntityR p v m e -> Entity.page p v m e
-    DocsR           -> Docs.page
+    -- Home page is a bit more custom.
+    NoR -> Null
+    HomeR -> Home.page
+    _ -> 
+      Themes.page $ 
+        withHeader (Header.header r) $ 
+          Div <||>
+            [ case r of
+                PageR _ -> Null
+                _ -> 
+                  Header <| Themed @PageHeaderT |> 
+                    [ Nav <||> Breadcrumbs.breadcrumbs r 
+                    , Nav <||> Breadcrumbs.sublinks r
+                    ]
+            , producingKeyed @Route r resource app
+            ]
+
+app :: App.App => Route -> Maybe Resource -> View
+app rt Nothing = Null
+app rt (Just rsc) = render (rt,rsc)
+
+instance Render (Route,Resource) where
+  render (rt,rsc) = 
+    case rsc of
+      PageResource pv pcv        -> render (rt,(pv,pcv))
+
+      PackagesResource pvs       -> render (rt,pvs)
+      PackageResource pv vs      -> render (rt,(pv,vs))
+
+      TutorialsResource tvs      -> render (rt,tvs)
+      TutorialResource tv tcv    -> render (rt,(tv,tcv))
+
+      BlogResource pvs           -> render (rt,pvs)
+      PostResource pv pcv        -> render (rt,(pv,pcv))
+
+      AuthorsResource avs        -> render (rt,avs)
+      AuthorResource av acv      -> render (rt,(av,acv))
+
+      ModulesResource p vs ms    -> render (rt,(p,vs,ms))
+
+      _                          -> Null

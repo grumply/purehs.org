@@ -1,32 +1,90 @@
-{-# language DeriveAnyClass #-}
+{-# language DeriveAnyClass, DerivingVia, DuplicateRecordFields #-}
 module Shared.Package where
 
-import Pure.Data.JSON (ToJSON,FromJSON)
-import Pure.Data.Render ()
-import Pure.Data.Txt (Txt)
-import Pure.Data.View (View)
+import qualified Shared.Types as Types
+import Shared.Types
+  ( ModuleName
+  , PackageName
+  , Synopsis
+  , Changes
+  , Description
+  , Name
+  , Markdown
+  , Published
+  , Tags
+  , License
+  , Repository
+  , Homepage
+  , Collaborators
+  , Excerpt
+  )
 
+import Pure.Data.JSON (ToJSON,FromJSON)
+import Pure.Data.Txt (Txt,ToTxt,FromTxt)
+
+import Control.Arrow ((&&&))
 import Data.Function (on)
 import GHC.Generics (Generic)
 
-data Meta = Meta
-  { package  :: {-# UNPACK #-}!Txt
-  , synopsis :: {-# UNPACK #-}![View]
-  } deriving (Generic,ToJSON,FromJSON)
+import Pure.Data.Txt.Search (Search)
 
-instance Eq Meta where
-  (==) = (==) `on` package
+data Package format = Package
+  { name :: PackageName
+  , author :: Name
+  , latest :: Types.Version
+  , published :: Published
+  , license :: License
+  , repository :: Maybe Repository
+  , homepage :: Maybe Homepage
+  , collaborators :: Collaborators
+  , tags :: Tags
+  , synopsis :: Synopsis
+  , description :: Description
+  , excerpt :: Excerpt format
+  } deriving (Generic,ToJSON,FromJSON,Functor,Search)
 
-instance Ord Meta where
-  compare = compare `on` package
+instance Eq (Package format) where
+  (==) = (==) `on` ((name :: Package format -> PackageName) &&& latest)
 
-data Package = Package
-  { meta  :: {-# UNPACK #-}!Meta
-  , content  :: ![View]
-  } deriving (Generic,ToJSON,FromJSON)
+instance Ord (Package format) where
+  compare = compare `on` ((name :: Package format -> PackageName) &&& latest)
 
-instance Eq Package where
-  (==) = (==) `on` meta
+type PackageYaml = Package Txt
+type PackageView = Package Markdown
 
-instance Ord Package where
-  compare = compare `on` meta
+data Version format = Version
+  { version :: Types.Version
+  , changes :: Changes format
+  } deriving (Generic,ToJSON,FromJSON,Functor,Foldable,Search)
+
+instance Eq (Version format) where
+  (==) = (==) `on` (version :: Version format -> Types.Version)
+
+-- Ord on version is a little funky, so omitted
+
+type VersionYaml = Version Txt
+type VersionView = Version Markdown
+
+data Module format = Module
+  { name :: ModuleName
+  , synopsis :: Synopsis 
+  , description :: Description
+  , excerpt :: Excerpt format
+  } deriving (Generic,ToJSON,FromJSON,Functor,Foldable,Search)
+
+instance Eq (Module format) where
+  (==) = (==) `on` (name :: Module format -> ModuleName)
+
+instance Ord (Module format) where
+  compare = compare `on` (name :: Module format -> ModuleName)
+
+type ModuleYaml = Module Txt
+type ModuleView = Module Markdown
+
+newtype ModuleContent content = ModuleContent content
+  deriving (Functor,Foldable)
+  deriving (Generic,ToTxt,ToJSON,FromTxt,FromJSON)
+    via content
+
+type ModuleContentMarkdown = ModuleContent Txt
+type ModuleContentView = ModuleContent Markdown

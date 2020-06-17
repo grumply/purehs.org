@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9b52e2d2245ca0f68706716353936b114edae196c16d77364a7755863d3577d9
+-- hash: b036f0c845c085e39d186d7f0b53a90e0f46bcf540cd2911fa64e0a9977c7f92
 
 name:           frontend
 version:        0.1.0.0
@@ -18,54 +18,68 @@ build-type:     Simple
 
 library
   exposed-modules:
-      API
       App
+      Components.Article
+      Components.Author
+      Components.Avatar
       Components.Breadcrumbs
+      Components.CopyToClipboard
+      Components.Editor
       Components.Header
       Components.Icons
+      Components.Listing
+      Components.Markdown
       Components.Nav
-      Components.PackageSearch
+      Components.Route
       Components.Searcher
-      Control.Futures
-      Control.Sync
-      Control.With
+      Components.Section
+      Components.Subtitle
+      Components.Tags
+      Components.Time
+      Components.Title
+      Data.Entity
+      Data.Placeholders
+      Data.Render
+      Data.Resource
       Data.Route
       Main
-      Pages.About
-      Pages.Blog
-      Pages.Docs
-      Pages.Entity
+      Pages.Author
       Pages.Home
-      Pages.Module
       Pages.Package
+      Pages.Page
       Pages.Post
       Pages.Tutorial
-      Pages.Tutorials
-      Pages.Version
       Styles.Colors
       Styles.Fonts
       Styles.Responsive
       Styles.Themes
   hs-source-dirs:
       src
-  default-extensions: AutoDeriveTypeable BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveDataTypeable DeriveFoldable DeriveFunctor DeriveGeneric DeriveTraversable DoAndIfThenElse EmptyCase EmptyDataDecls ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving ImplicitParams InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns OverloadedStrings PartialTypeSignatures PatternGuards PatternSynonyms PolyKinds RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators TypeSynonymInstances ViewPatterns TemplateHaskell
-  ghc-options: -Wall -fno-warn-unused-do-bind -rtsopts -threaded
-  ghcjs-options: -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=5000 -DGHCJS_BUSY_YIELD=1
+  default-extensions: AutoDeriveTypeable BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveDataTypeable DeriveFoldable DeriveFunctor DeriveGeneric DeriveTraversable DoAndIfThenElse EmptyCase EmptyDataDecls ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving ImplicitParams InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns OverloadedStrings PartialTypeSignatures PatternGuards PatternSynonyms PolyKinds RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators TypeSynonymInstances ViewPatterns TemplateHaskell PostfixOperators DerivingVia
+  ghc-options: -Wall -fno-warn-unused-do-bind -rtsopts -threaded 
+  ghcjs-options: -O -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=3000000 -DGHCJS_BUSY_YIELD=20
   build-depends:
-      base
+      async
+    , base
     , containers
     , lens
     , pure
     , pure-css
     , pure-elm
     , pure-json
+    , pure-lifted
+    , pure-maybe
+    , pure-random-pcg
+    , pure-render
     , pure-router
     , pure-spinners
     , pure-styles
     , pure-svg
     , pure-theme
+    , pure-time
     , pure-try
     , pure-txt
+    , pure-txt-interpolate
     , pure-txt-search
     , pure-uri
     , pure-websocket
@@ -75,29 +89,36 @@ library
 executable frontend
   main-is: Main.hs
   other-modules:
-      API
       App
+      Components.Article
+      Components.Author
+      Components.Avatar
       Components.Breadcrumbs
+      Components.CopyToClipboard
+      Components.Editor
       Components.Header
       Components.Icons
+      Components.Listing
+      Components.Markdown
       Components.Nav
-      Components.PackageSearch
+      Components.Route
       Components.Searcher
-      Control.Futures
-      Control.Sync
-      Control.With
+      Components.Section
+      Components.Subtitle
+      Components.Tags
+      Components.Time
+      Components.Title
+      Data.Entity
+      Data.Placeholders
+      Data.Render
+      Data.Resource
       Data.Route
-      Pages.About
-      Pages.Blog
-      Pages.Docs
-      Pages.Entity
+      Pages.Author
       Pages.Home
-      Pages.Module
       Pages.Package
+      Pages.Page
       Pages.Post
       Pages.Tutorial
-      Pages.Tutorials
-      Pages.Version
       Styles.Colors
       Styles.Fonts
       Styles.Responsive
@@ -105,11 +126,12 @@ executable frontend
       Paths_frontend
   hs-source-dirs:
       src
-  default-extensions: AutoDeriveTypeable BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveDataTypeable DeriveFoldable DeriveFunctor DeriveGeneric DeriveTraversable DoAndIfThenElse EmptyCase EmptyDataDecls ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving ImplicitParams InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns OverloadedStrings PartialTypeSignatures PatternGuards PatternSynonyms PolyKinds RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators TypeSynonymInstances ViewPatterns TemplateHaskell
-  ghc-options: -Wall -fno-warn-unused-do-bind -rtsopts -threaded
-  ghcjs-options: -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=5000 -DGHCJS_BUSY_YIELD=1
+  default-extensions: AutoDeriveTypeable BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveDataTypeable DeriveFoldable DeriveFunctor DeriveGeneric DeriveTraversable DoAndIfThenElse EmptyCase EmptyDataDecls ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving ImplicitParams InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns OverloadedStrings PartialTypeSignatures PatternGuards PatternSynonyms PolyKinds RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators TypeSynonymInstances ViewPatterns TemplateHaskell PostfixOperators DerivingVia
+  ghc-options: -Wall -fno-warn-unused-do-bind -rtsopts -threaded 
+  ghcjs-options: -O -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=3000000 -DGHCJS_BUSY_YIELD=20
   build-depends:
-      base
+      async
+    , base
     , containers
     , frontend
     , lens
@@ -117,13 +139,19 @@ executable frontend
     , pure-css
     , pure-elm
     , pure-json
+    , pure-lifted
+    , pure-maybe
+    , pure-random-pcg
+    , pure-render
     , pure-router
     , pure-spinners
     , pure-styles
     , pure-svg
     , pure-theme
+    , pure-time
     , pure-try
     , pure-txt
+    , pure-txt-interpolate
     , pure-txt-search
     , pure-uri
     , pure-websocket

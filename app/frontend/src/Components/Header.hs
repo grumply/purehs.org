@@ -1,122 +1,128 @@
 module Components.Header where
 
+import qualified App
 import Components.Icons
 import Components.Nav
 import Data.Route
-import Styles.Themes
+import Styles.Themes hiding (nav)
+import Styles.Responsive
+import Styles.Colors
 
-import Pure.Elm hiding (left,right)
+import Pure.Data.SVG (pattern Svg)
+import Pure.Elm hiding (nav,lavender)
 import qualified Pure.Elm as Pure
 
-header :: Route -> Bool -> View
-header rt transp =
+import Prelude hiding (max)
+
+{-# NOINLINE header #-}
+header :: App.App => Route -> View
+header rt =
   let 
-    t = if transp then id else Theme SolidHeaderT
+    transp | HomeR <- rt = True
+           | otherwise   = False
+    t = if transp then id else Themed @SolidHeaderT
     b = if transp then barMinusLogo else bar
   in 
-    Header <| Theme HeaderBaseT . t |> 
+    Header <| Themed @HeaderBaseT . t |> 
       [ b rt ]
 
-bar_ :: Bool -> Route -> View
+bar_ :: App.App => Bool -> Route -> View
 bar_ b rt =
-  let 
-    l = if b then left else Null
-    r = right rt
-  in
-    Div <| Theme BarT |> [ l , r ]
+  Div <| Themed @BarT |> 
+    [ if b then left else Null 
+    , right 
+    ]
+  where
+    left = 
+      Section <| Themed @LeftT |>
+        [ logo @HeaderLogoT False True ]
 
-bar :: Route -> View
+    right =
+      Section <| Themed @RightT |>
+        [ nav rt
+        , gitHubLink @HeaderGitHubLinkT "https://github.com/grumply/pure-platform" 
+        ]
+
+bar :: App.App => Route -> View
 bar = bar_ True
 
-barMinusLogo :: Route -> View
+barMinusLogo :: App.App => Route -> View
 barMinusLogo = bar_ False
 
-left :: View
-left = 
-  Section <| Theme LeftT |>
-    [ logo False True HeaderLogoT ]
+data SolidHeaderT
+instance Theme SolidHeaderT where
+  theme c = void $ is c .> do
+    background-color =: toTxt lavender 
 
-right :: Route -> View
-right rt =
-  Section <| Theme RightT |>
-    [ nav rt
-    , gitHubLink "https://github.com/grumply/pure" HeaderGitHubLinkT
-    ]
-
-data SolidHeaderT = SolidHeaderT
-instance Themeable SolidHeaderT where
-  theme c _ = void $ is c .> do
-    backgroundColor =: hsla(250,49,49,0.9)
-
-data HeaderBaseT = HeaderBaseT
-instance Themeable HeaderBaseT where
-  theme c _ = void $ is c .> do
+data HeaderBaseT
+instance Theme HeaderBaseT where
+  theme c = void $ is c .> do
     position  =: absolute
-    top       =: zero
-    Pure.left =: zero
-    zIndex    =: int 100
-    width     =: per 100
+    top       =: 0
+    left      =: 0
+    z-index   =: 100
+    width     =: (100%)
 
 data BarT = BarT
-instance Themeable BarT where
-  theme c _ = void $ is c $ do
+instance Theme BarT where
+  theme c = void $ is c $ do
     apply $ do
-      paddingLeft   =: pxs 20
-      paddingRight  =: pxs 20
-      marginLeft    =: auto
-      marginRight   =: auto
-      height        =: pxs 60
-      display       =: flex
-      alignItems    =: center
-      justifyContent =: spaceBetween
-      flexDirection =: row
+      padding-left    =: 15px
+      padding-right   =: 15px
+      margin-left     =: auto
+      margin-right    =: auto
+      height          =: 40px
+      display         =: flex
+      align-items     =: center
+      justify-content =: space-between
+      flex-direction  =: row
 
-    atMedia "(max-width: 768px)" .> do
-      paddingLeft =: pxs 15
-      paddingRight =: pxs 15
-      height =: pxs 40
+    mediumScreens <%> do
+      padding-left  =: 20px
+      padding-right =: 20px
+      height        =: 60px
 
-    atMedia "(min-width: 780px)" .>
-      width =: per 90
+    largeScreens <%> do
+      width =: (90%) 
 
-    atMedia "(min-width: 1340px)" .>
-      maxWidth =: pxs 1260
+    hugeScreens <%> do
+      max-width =: 1260px
 
 data LeftT = LeftT
-instance Themeable LeftT where
-  theme c _ = void $ is c .> do
-    display =: flex
-    justifyContent =: flexStart
+instance Theme LeftT where
+  theme c = void $ is c .> do
+    display         =: flex
+    justify-content =: flex-start
 
 data HeaderLogoT = HeaderLogoT
-instance Themeable HeaderLogoT where
-  theme c _ = void $ is c $ do
-    apply $
-      width  =: pxs 100
+instance Theme HeaderLogoT where
+  theme c = void $ is c $ do
+    apply $ 
+      width =: 85px
 
-    atMedia "(max-width: 48em)" .>
-      width  =: pxs 85
+    mediumScreens <%> do
+      width =: 100px
 
-data RightT = RightT
-instance Themeable RightT where
-  theme c _ = void $
+data RightT
+instance Theme RightT where
+  theme c = void $
     is c .> do
-      display =: flex
-      width =: per 100
-      justifyContent =: flexEnd
+      display         =: flex
+      width           =: (100%)
+      justify-content =: flex-end
 
-data HeaderGitHubLinkT = HeaderGitHubLinkT
-instance Themeable HeaderGitHubLinkT where
-  theme c _ = void $
+data HeaderGitHubLinkT
+instance Theme HeaderGitHubLinkT where
+  theme c = void $
     is c $ do
-      let fill = "fill"
       apply $ do
-        marginLeft =: pxs 20
-        fill =: white
+        display     =: none
+        margin-left =: 20px
+        fill        =: white
 
-      atMedia "(max-width: 500px)" .>
-        display =: none
+      mediumScreens <%> do
+        display =: initial
 
-      has "svg" .> do
-        marginLeft =: auto
-        width  =: pxs 30
+      has (tag Svg) .> do
+        margin-left =: auto
+        width       =: 30px

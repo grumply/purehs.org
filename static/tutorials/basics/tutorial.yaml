@@ -1,0 +1,22 @@
+title: Fundamentals in 5 Minutes
+slug: basics
+series: 5-Minute Series
+episode: 1
+published: 2020-05-27
+authors:
+  - Sean Hickman
+editors: []
+tags:
+  - beginner
+  - basics
+  - 5 minutes
+packages:
+  - pure
+synopsis: |
+  Pure.hs Fundamentals in 5 Minutes
+description: |
+  Get a grasp on the Pure.hs fundamental types and abstractions to build web sites in 5 minutes.
+excerpt: |
+  In part 1 of the [5-Minute Series](./5-minute), we'll step through some of the Pure.hs fundamentals.
+
+  If you're ready to learn the fundamentals, the best place to start is in applying Pure.hs abstractions to user interfaces. Let's get started!

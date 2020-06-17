@@ -1,0 +1,22 @@
+title: APIs in 5 Minutes
+slug: apis
+series: 5-Minute Series
+episode: 6
+published: 2020-05-31
+authors:
+  - Sean Hickman
+editors: []
+tags:
+  - beginner
+  - apis
+  - 5 minutes
+packages:
+  - pure
+synopsis: |
+  Pure.hs APIs in 5 Minutes
+description: |
+  Learn Pure.hs API development in 5 minutes.
+excerpt: |
+  In part 6, the final part of the [5-Minute Series](./5-minute), we'll learn how to design type-safe WebSocket APIs.
+
+  If you're ready, we'll follow up part 5 with an implementation of our API and create a server to serve it and a client to communicate with it. Let's get started!

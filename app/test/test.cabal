@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1f8a9d7b0ace533d2508ddb90ef3987ea590f744e9d0c790ad273f5a1c9a60e8
+-- hash: c9e8b73533ac6e91aaba6482875cb65af744e249795b082305574b24de338117
 
 name:           test
 version:        0.1.0.0
@@ -16,31 +16,37 @@ license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 
-executable test
-  main-is: Main.hs
+library
+  exposed-modules:
+      Main
   hs-source-dirs:
       src
   default-extensions: AutoDeriveTypeable BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveDataTypeable DeriveFoldable DeriveFunctor DeriveGeneric DeriveTraversable DoAndIfThenElse EmptyCase EmptyDataDecls ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving ImplicitParams InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns OverloadedStrings PartialTypeSignatures PatternGuards PatternSynonyms PolyKinds RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators TypeSynonymInstances ViewPatterns TemplateHaskell
-  ghc-options: -Wall -fno-warn-unused-do-bind -rtsopts -threaded
-  ghcjs-options: -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=5000 -DGHCJS_BUSY_YIELD=1
+  ghc-options: -Wall -fno-warn-unused-do-bind -rtsopts -threaded 
+  ghcjs-options: -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=5000 -DGHCJS_BUSY_YIELD=20
   build-depends:
-      backend
+      Glob
+    , async
+    , backend
     , base
     , bytestring
     , containers
     , directory
     , filepath
+    , frontend
     , hashable
     , http-types
     , lens
     , pandoc
     , pure
     , pure-bench
+    , pure-cached
     , pure-core
     , pure-css
     , pure-default
     , pure-elm
     , pure-json
+    , pure-maybe
     , pure-render
     , pure-router
     , pure-server
@@ -53,12 +59,75 @@ executable test
     , pure-time
     , pure-try
     , pure-txt
+    , pure-txt-interpolate
     , pure-txt-search
     , pure-uri
     , pure-websocket
     , shared
+    , text
+    , time
     , wai
     , wai-app-static
     , wai-extra
     , warp
+    , yaml
+  default-language: Haskell2010
+
+executable test
+  main-is: Main.hs
+  other-modules:
+      Paths_test
+  hs-source-dirs:
+      src
+  default-extensions: AutoDeriveTypeable BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveDataTypeable DeriveFoldable DeriveFunctor DeriveGeneric DeriveTraversable DoAndIfThenElse EmptyCase EmptyDataDecls ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving ImplicitParams InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns OverloadedStrings PartialTypeSignatures PatternGuards PatternSynonyms PolyKinds RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators TypeSynonymInstances ViewPatterns TemplateHaskell
+  ghc-options: -Wall -fno-warn-unused-do-bind -rtsopts -threaded 
+  ghcjs-options: -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=5000 -DGHCJS_BUSY_YIELD=20
+  build-depends:
+      Glob
+    , async
+    , backend
+    , base
+    , bytestring
+    , containers
+    , directory
+    , filepath
+    , frontend
+    , hashable
+    , http-types
+    , lens
+    , pandoc
+    , pure
+    , pure-bench
+    , pure-cached
+    , pure-core
+    , pure-css
+    , pure-default
+    , pure-elm
+    , pure-json
+    , pure-maybe
+    , pure-render
+    , pure-router
+    , pure-server
+    , pure-spinners
+    , pure-styles
+    , pure-svg
+    , pure-tagsoup
+    , pure-test
+    , pure-theme
+    , pure-time
+    , pure-try
+    , pure-txt
+    , pure-txt-interpolate
+    , pure-txt-search
+    , pure-uri
+    , pure-websocket
+    , shared
+    , test
+    , text
+    , time
+    , wai
+    , wai-app-static
+    , wai-extra
+    , warp
+    , yaml
   default-language: Haskell2010

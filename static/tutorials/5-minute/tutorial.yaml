@@ -1,0 +1,22 @@
+title: Pure.hs 5-Minute Series
+slug: 5-minute
+series: 5-Minute Series
+published: 2020-05-25
+authors:
+  - Sean Hickman
+editors: []
+tags:
+  - beginner
+  - introduction
+  - 5 minute
+packages:
+  - pure
+synopsis: |
+  Pure.hs 5-Minutes Series
+description: |
+  The Pure.hs 5-minute series will walk you through from basic web and application design through to full-blown server development in easy-to-digest 5-minute chunks.
+excerpt: |
+  If you already know HTML/CSS and one of [Haskell](https://www.haskell.org), [Elm](https://elm-lang.org), [PureScript](https://www.purescript.org), or [ReactJS](https://reactjs.org), you'll be able to design applications with Pure.hs. If you're new to functional programming, check out [Learn Haskell](http://learnyouahaskell.com) and change your life! If you're new to web development, check out Codecademy's [Learn HTML](https://www.codecademy.com/learn/learn-html) followed by [Learn CSS](https://www.codecademy.com/learn/learn-css) and [Learn JavaScript](https://www.codecademy.com/learn/introduction-to-javascript).
+
+  The Pure.hs 5-Minute Series will take a tour through the very basics of user-interface design, to state management, application design, and server and API development in easy-to-digest 5-minute chunks.
+

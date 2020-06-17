@@ -1,0 +1,10 @@
+slug: about
+title: About Pure.hs
+synopsis: |
+  Modern web application design within the Haskell ecosystem. 
+description: |
+  Modern application design within the Haskell ecosystem. If you know Haskell, PureScript, Elm, or ReactJS, you’ll be able to design applications with Pure.
+excerpt: |
+  Pure was developed to fill the role of modern application design within the Haskell ecosystem. Pure implements a compelling abstraction for the implementation of web servers and services, web clients, and modern desktop applications based on web technologies.
+
+  If you know Haskell, Elm, PureScript, or ReactJS, you’ll be able to design applications with Pure.

@@ -1,25 +1,20 @@
-module Styles.Themes (module Styles.Themes, module Export, pattern Theme, Themeable(..)) where
+{-# language TypeApplications #-}
+module Styles.Themes where
 
 import Styles.Colors
 import Styles.Fonts
 import Styles.Responsive
 
-import Pure.Elm
-import Pure.Data.CSS as Export
-import Pure.Theme
+import Pure.Elm hiding (selection,green,lavender,black,green,brightness,gray)
+import Pure.Spinners
 
-import Control.Monad as Export
+import Prelude hiding (or,max,min,reverse)
 
-import Prelude hiding (or)
-
-fontStyle :: Txt
-fontStyle = "font-style"
-
-data AppT = AppT
-instance Themeable AppT where
-  theme c _ = void $ do
-    is c . child "div" .> do
-      height =: per 100
+data AppT
+instance Theme AppT where
+  theme c = void $ do
+    is c . child (tag Div) .> do
+      height =: (100%)
   -- opinionated resets
   -- system fonts chosen under the assumption that they are well-optimized.
   -- border-box is, currently, the only sane box model.
@@ -30,391 +25,363 @@ instance Themeable AppT where
   --  Set box model to border-box
   --  Set a default 100% height
   --
-    is "*" . or is ":after" . or is ":before" .> do
-      boxSizing  =: inherit
-      "-wekit-box-sizing" =: inherit
+    is "*" . or is after . or is before .> do
+      box-sizing  =: inherit
+      webkit-box-sizing =: inherit
 
-    is "html" .> do
-      boxSizing =: borderBox
+    is (tag Html) .> do
+      box-sizing =: border-box
+      background-color =: toTxt base
 
     is "body" .> do
-      fontFamily =: defaultFont
-      "text-rendering" =: "optimizeLegibility"
-      "-webkit-font-smoothing" =: antialiased
-      "-moz-osx-font-smoothing" =: "grayscale"
+      font-family =: defaultFont
+      text-rendering =: "optimizeLegibility"
+      webkit-font-smoothing =: antialiased
+      moz-osx-font-smoothing =: grayscale
 
     -- page defaults
 
-    is "html" .> do
-      height =: per 100
+    is (tag Html) .> do
+      height =: (100%)
 
     is "body" .> do
-      margin =: zero
-      height =: per 100
+      margin =: 0
+      height =: (100%)
 
-    is "body" . child "div" .> do
-      width  =: per 100
-      height =: per 100
+    is "body" . child (tag Div) .> do
+      width  =: (100%)
+      height =: (100%)
 
-data MarkdownT = MarkdownT
-instance Themeable MarkdownT where
-  theme c _ = void $ is c $ do
-    id .> do
-      width =: per 100
+    is (tag A) .> do
+      text-decoration =: none
 
-    atMedia "(max-width: 480px)" .> do
-      fontSize =: ems 0.45
-
-    atMedia "(min-width: 481px)" .> do
-      fontSize =: ems 0.85
-
-    has "table" $ do
-
-      apply $ do
-        color =: "#666"
-        fontSize =: pxs 12
-        textShadow =: "1px 1px 0px #fff"
-        background =: "#eaebec"
-        border =: "#ccc 1px solid"
-        "-moz-border-radius" =: pxs 3
-        "-webkit-border-radius" =: pxs 3
-        borderRadius =: pxs 3
-        "-moz-box-shadow" =: "0 1px 2px #d1d1d1"
-        "-webkit-box-shadow" =: "0 1px 2px #d1d1d1"
-        boxShadow =: "0 1px 2px #d1d1d1"
-        tableLayout =: fixed
-        width =: per 100
-
-      has "a" $ do
-
-        is ":link" .> do
-          color =: "#666"
-          fontWeight =: bold
-          textDecoration =: none
-
-        is ":active" .> do
-          color =: "#bd5a35"
-          textDecoration =: underline
-
-        is ":hover" .> do
-          color =: "#bd5a35"
-          textDecoration =: underline
-
-      has "th" $ do
-
-        apply $ do
-          overflowX =: scroll
-          padding =: "8px 12px 8px 12px"
-          borderTop =: "1px solid #fafafa"
-          borderBottom =: "1px solid #e0e0e0"
-          background =: "#ededed"
-          background =: "-webkit-gradient(linear, left top, left bottom, from(#ededed), to(#ebebeb))"
-          background =: "-moz-linear-gradient(top,  #ededed,  #ebebeb)"
-        is ":first-child" .> do
-          textAlign =: left
-          paddingLeft =: pxs 20
-
-      has "tr" $ do
-
-        apply $ do
-          textAlign =: center
-          paddingLeft =: pxs 20
-
-        is ":first-child" . has "th" $ do
-
-          is ":first-child" .> do
-            "-moz-border-radius-topleft" =: pxs 3
-            "-webkit-border-top-left-radius" =: pxs 3
-            "border-top-left-radius" =: pxs 3
-
-          is ":last-child" .> do
-            "-moz-border-radius-topright" =: pxs 3
-            "-webkit-border-top-right-radius" =: pxs 3
-            "border-top-right-radius" =: pxs 3
-
-        is ":nth-child(even)" .> do
-          background =: "#f6f6f6"
-          background =: "-webkit-gradient(linear, left top, left bottom, from(#f8f8f8), to(#f6f6f6))"
-          background =: "-moz-linear-gradient(top,  #f8f8f8,  #f6f6f6)"
-
-        is ":last-child" . has "td" $ do
-          apply $ borderBottom =: zero
-
-          is ":first-child" .> do
-            "-moz-border-radius-bottomleft" =: pxs 3
-            "-webkit-border-bottom-left-radius" =: pxs 3
-            "border-bottom-left-radius" =: pxs 3
-
-          is ":last-child" .> do
-            "-moz-border-radius-bottomright" =: pxs 3
-            "-webkit-border-bottom-right-radius" =: pxs 3
-            "border-bottom-right-radius" =: pxs 3
-
-        is ":hover" . has "td" .> do
-          background =: "#f2f2f2"
-          background =: "-webkit-gradient(linear, left top, left bottom, from(#f2f2f2), to(#f0f0f0))"
-          background =: "-moz-linear-gradient(top,  #f2f2f2,  #f0f0f0)"
-
-
-      has "td" $ do
-
-        apply $ do
-          padding =: pxs 18
-          borderTop =: "1px solid #ffffff"
-          borderBottom =: "1px solid #e0e0e0"
-          borderLeft =: "1px solid #e0e0e0"
-          background =: "#fafafa"
-          background =: "-webkit-gradient(linear, left top, left bottom, from(#fbfbfb), to(#fafafa))"
-          background =: "-moz-linear-gradient(top,  #fbfbfb,  #fafafa)"
-
-        is ":first-child" .> do
-          wordBreak =: breakWord
-          textAlign =: center
-          borderLeft =: zero
-
-    has "p" .> do
-      lineHeight =: ems 1.7
-      fontSize   =: pxs 18
-      fontWeight =: int 300
-      color      =: darkGray
-      margin     =: pxs 16
-
-    let greenHighlight = do
-          background       =: pureGreen 85
-          borderBottom     =: pxs 1 <<>> solid <<>> baseGreen
-          color            =: selection
-          textDecoration   =: none
-
-    has "p" . has "a" $ do
-      apply greenHighlight
-
-      is hovered .> do
-        background       =: lightGreen
-        borderBottom     =: pxs 1 <<>> solid <<>> darkGreen
-
-    has "ul" .> do
-      listStyle =: none
-
-    has "h1" .> do
-      fontFamily  =: defaultFont
-      fontSize    =: pxs 48
-      margin      =: zero
-
-    has "h2" .> do
-      fontSize   =: pxs 32
-
-    has "h3" .> do
-      fontSize   =: pxs 28
-      paddingTop =: ems 1
-      borderTop  =: solid <<>> pxs 1 <<>> lightGray
-
-    has "h3" . has "a" $ do
-
-      apply greenHighlight
-
-      is hovered .> do
-        background       =: lightGreen
-        borderBottom     =: pxs 1 <<>> solid <<>> darkGreen
-
-
-    has "p" . has "code" .> do
-      fontFamily       =: defaultMonoFont
-      wordBreak        =: breakWord
-      padding          =: zero <<>> pxs 4
-      background       =: pureOrange 88
-
-    has "blockquote" $ do
-      apply $ do
-        backgroundColor =: pureOrange 93
-        borderLeft      =: pxs 10 <<>> solid <<>> pureRed 82
-        padding         =: pxs 16 <<>> pxs 0 <<>> pxs 16 <<>> pxs 16
-        margin          =: pxs 20 <<>> pxs 0 <<>> pxs 20 <<>> pxs (-16)
-
-      atMedia "(max-width: 48em)" $ do
-        apply $
-          marginRight =: pxs (-16)
-
-        has ".sourceCode" . has "pre" .> do
-          marginRight =: zero
-
-      atMedia "(min-width: 48em)" .> do
-        marginLeft  =: pxs 16
-        marginRight =: pxs 16
-
-      has "h2" .> do
-        margin =: pxs 8
-        fontSize =: pxs 20
-
-      has "p" .> do
-        marginTop =: zero
-
-    has "pre" . is ".sourceCode" .> do
-      marginLeft       =: pxs (-16)
-      marginRight      =: pxs (-16)
-      fontSize         =: ems 1
-      fontFamily       =: defaultMonoFont
-      fontWeight       =: int 300
-      "-webkit-font-smoothing" =: auto
-      backgroundColor  =: black
-      color            =: mono1
-      overflow         =: auto
-
-    has "pre" . is ".sourceCode" $
-      atMedia "(min-width: 48em)" .> do
-        borderRadius     =: pxs 10
-        marginLeft       =: pxs 16
-        marginRight      =: pxs 16
-
-    has "code" . is ".sourceCode" .> do
-      fontFamily       =: inherit
-      margin           =: pxs 16
-      lineHeight       =: ems 1.3
-      display          =: block
-      paddingBottom    =: pxs 2
-
-    has ".sourceLine" .> do
-      whiteSpace       =: preWrap
-      display          =: inlineBlock
-      lineHeight       =: ems 1.5
-      width            =: per 100
-
-    has "code" . has "span" $ do
-      is ".co" .> do { color =: mono3; fontStyle =: italic }                         -- Comment
-      is ".dt" .> color =: orange2                                                   -- DataType
-      is ".kw" .> do { color =: purple_ }                                            -- Keyword
-      is ".cf" .> do { color =: purple_ }                                            -- ControlFlow
-      is ".op" .> color =: mono1                                                     -- Operator
-      is ".ot" .> color =: blue_                                                     -- Other
-      is ".sc" .> color =: blue_                                                     -- SpecialChar
-      is ".ss" .> color =: blue_                                                     -- SpecialString
-      is ".vs" .> color =: blue_                                                     -- VerbatimString
-      is ".cn" .> color =: orange1                                                   -- Constant
-      is ".dv" .> color =: orange1                                                   -- DecVal
-      is ".bn" .> color =: orange1                                                   -- BaseN
-      is ".fl" .> color =: orange1                                                   -- Float
-      is ".ch" .> color =: orange1                                                   -- Char
-      is ".st" .> color =: green_                                                    -- String
-      is ".va" .> color =: red1                                                      -- Variable
-      is ".fu" .> color =: cyan_                                                     -- Function
-      is ".al" .> do { color =: red2; fontWeight =: bold }                           -- Alert
-      is ".er" .> do { color =: red2; fontWeight =: bold }                           -- Error
-      is ".wa" .> do { color =: red1; fontWeight =: bold; fontStyle =: italic }      -- Warning
-      is ".im" .> color =: purple_                                                   -- Import
-      is ".bu" .> color =: purple_                                                   -- BuiltIn
-      is ".ex" .> color =: purple_                                                   -- Extension
-      is ".do" .> do { color =: mono3; fontStyle =: italic }                         -- Documentation
-      is ".an" .> do { color =: purple_; fontWeight =: bold; fontStyle =: italic }   -- Annotation
-      is ".cv" .> do { color =: mono3; fontWeight =: bold; fontStyle =: italic }     -- CommentVar
-      is ".in" .> do { color =: mono3; fontWeight =: bold; fontStyle =: italic }     -- Information
-
-data PageT = PageT
-instance Themeable PageT where
-  theme c _ = void $ 
+data PageT
+instance Theme PageT where
+  theme c = void $ 
     is c $ do
       apply $ do
-        -- always at least 100% height
-        minHeight     =: per 100
-
-        background    =: baseWhite
+        height =: (100%)
 
       child "*" .> do
-        -- always at least 100% height 
-        minHeight    =: per 100
+        height         =: (100%)
+        width          =: (100%)
+        max-width      =: 1200px
+        padding-left   =: 16px
+        padding-right  =: 16px
+        margin-left    =: auto
+        margin-right   =: auto
+        padding-bottom =: 10px
 
-        -- up to 1200px width
-        width        =: per 100
-        maxWidth     =: pxs 1200
-
-        -- pad left and right
-        paddingLeft  =: pxs 16
-        paddingRight =: pxs 16
-
-        -- center content
-        marginLeft   =: auto
-        marginRight  =: auto
-
-data WithHeaderT = WithHeaderT
-instance Themeable WithHeaderT where
-  theme c _ = void $
-    is c $ 
-      apply $ do
-        -- push-down from header
-        marginTop    =: pxs 64 
-
-data WithSidebarT = WithSidebarT
-instance Themeable WithSidebarT where
-  theme c _ = void $
+data WithHeaderT
+instance Theme WithHeaderT where
+  theme c = void $ do
     is c $ do
-      apply $ do
-        display    =: flex
-        flexWrap   =: wrapreverse
-        minHeight  =: per 100
+      apply $ do 
+        padding-top =: 64px
 
-      child "*" . is ":last-child" .> do
-        margin =: pxs 10
-        flexBasis =: pxs 268
-        flexGrow =: one
+      child (tag Div) . child (tag Div) .> do
+        padding-bottom =: 1px
+    
 
-      child "*" . is ":first-child" .> do
-        flexBasis =: zero
-        flexGrow  =: int 999
-        minWidth  =: "calc(" <> per 75 <<->> pxs 20 <> ")"
-
-data WithoutSidebarT = WithoutSidebarT
-instance Themeable WithoutSidebarT where
-  theme c _ = void $ is c $
+data HideT
+instance Theme HideT where
+  theme c = void $
     is c $ do
-      apply $ do
-        display    =: flex
-        flexWrap   =: wrap
+      has (subtheme @MoreT) .> 
+        display =: none
 
-      child "*" .> do
-        flexBasis =: zero
-        minWidth =: per 100
-
-data UnhideT = UnhideT
-instance Themeable UnhideT where
-  theme c _ = void $ 
-    is c $
       has ".hide" $ do
-        apply $ display =: none
-        next "*" .>
+        apply $ 
           display =: none
 
-data HiddenMediumT = HiddenMediumT
-instance Themeable HiddenMediumT where
-  theme c _ = void $ 
+        -- display any .more elements iff there is a .hide 
+        -- element before it at the same level
+        nexts (subtheme @MoreT) .> do
+          display =: initial
+
+data UnhideT
+instance Theme UnhideT where
+  theme c = void $ do
+    is c . is c $ do
+      has ".hide" $ do
+        apply $ 
+          display =: initial
+
+        nexts (subtheme @MoreT) .> do
+          display =: none
+
+data MoreT
+instance Theme MoreT where
+  theme c = void $
+    is c $ do
+
+      has (tag A) $ do
+        apply $ do
+          display       =: block
+          text-align    =: right
+          margin-right  =: 16px
+          margin-top    =: 30px
+          color         =: toTxt black
+          border-bottom =: none
+          background    =: none
+          font-size     =: 18px
+
+        is hover .> do
+          color =: toTxt green
+          background =: none
+
+        is visited .> do
+          color =: toTxt black
+          background =: none
+
+        is visited . is hover .> do
+          color =: toTxt green
+          background =: none
+
+data HiddenMediumT
+instance Theme HiddenMediumT where
+  theme c = void $ 
     is c $ do
       apply $ 
         display =: none
 
-      largeScreens <#> do
+      largeScreens <%> do
         display =: block
 
-data LoadingT = LoadingT
-instance Themeable LoadingT where
-  theme c _ = void $ is c $ return ()
+data LoadingT
+instance Theme LoadingT where
+  theme c = void $ is c $ return ()
 
-data FailedT = FailedT
-instance Themeable FailedT where
-  theme c _ = void $ is c $ return ()
+data FailedT
+instance Theme FailedT where
+  theme c = void $ is c $ return ()
 
-pattern Page :: View -> View
-pattern Page content = 
-  Children [ content ] (Theme PageT Div)
+page c = Div <| Themed @PageT |> [ c ]
 
-pattern WithHeader :: View -> View -> View
-pattern WithHeader header content =
-  Children [ header, content ] (Theme WithHeaderT Div)
+withHeader h c = 
+  Div <| Themed @WithHeaderT |> 
+    [ h , c ]
 
-pattern WithSidebar :: View -> View -> View
-pattern WithSidebar sidebar content =
-  Children [ content , sidebar ] (Theme WithSidebarT Div)
+data ErrorT
+instance Theme ErrorT where
+  theme c = void $ 
+    is c $ do
+      apply $ do
+        width  =: (90%)
+        margin =* [40px,auto]
 
-pattern WithoutSidebar :: View -> View
-pattern WithoutSidebar content =
-  Children [ content ] (Theme WithoutSidebarT Div)
+      mediumScreens <%> do
+        width =: 720px
 
-pattern HiddenMedium :: View -> View
-pattern HiddenMedium content =
-  Children [ content ] (Theme HiddenMediumT Div)
+      largeScreens <%> do
+        width =: 900px
+
+      child (tag Header) $ do
+        child (tag H1) $ do
+          apply $ do
+            margin-top    =: 0
+            margin-bottom =: 24px
+            color         =: toTxt lavender
+            font-size     =: 4em
+            font-family   =: titleFont
+        
+        child (tag H2) .> do
+          margin-bottom =: 44px
+          color         =: toTxt black
+          font-size     =: 1.5em
+          font-family   =: titleFont
+
+      has (tag P) $ do
+        apply $ do
+          color =: toTxt black
+          font-family =: defaultFont
+          line-height =: 28px
+          font-size   =: 16px
+
+        has (tag A) $ do
+
+          apply $ do
+            background-color =: toTxt (faded green)
+            border-bottom    =* [1px,solid,toTxt green]
+            color            =: toTxt black
+            text-decoration  =: none
+
+          is hover .> do
+            background    =: toTxt green
+            border-bottom =* [1px,solid,toTxt black]
+
+problems nm c =
+    Div <||>
+      [ Div <| Themed @ErrorT |>
+        [ Header <||>
+          [ H1 <||> [ fromTxt (nm <> " not found.") ]
+          , H2 <||> [ "We couldn't find what you were looking for." ]
+          ]
+        , c
+        ]
+      ]
+
+notFound nm = problems nm $ Div <||>
+  [ P <||> [ "Please contact the owner of the site that linked you to the original URL and let them know their link is broken." ]
+  , P <||> 
+    [ "If an internal link brought you here, please file a bug report "
+    , A <| Rel "noopener" . Attribute "target" "_blank" . Href "https://github.com/grumply/purehs.org/issues/new" |> [ "here" ]
+    , "."
+    ]
+  ]
+
+loading = 
+    View (ChasingDots :: ChasingDots 2000 40 40 40 "#333")
+
+data ButtonT
+instance Theme ButtonT where
+  theme c = void $ is c .> do
+    display          =: inline-block
+    margin           =* [0px,16px]
+    height           =: 44px
+    line-height      =: 44px
+    padding          =* [0,14px]
+    box-shadow       =: buttonBoxShadow 4 6 (toTxt lavender) 1 3 (rgba(0,0,0,0.13))
+    border-radius    =: 5px
+    font-weight      =: 600
+    text-transform   =: uppercase
+    letter-spacing   =: 0.025em
+    text-decoration  =: none
+    white-space      =: nowrap
+
+data PlaceholderT
+instance Theme PlaceholderT
+
+data LatestT
+instance Theme LatestT
+data VersionT
+instance Theme VersionT
+data VersionsT
+instance Theme VersionsT where
+  theme c = void $ do
+    is (subtheme @PlaceholderT) . has c $ do
+      has (tag A) .> do
+        pointer-events =: none
+        filter_ =: blur(8px)
+
+    is c . has (subtheme @VersionT) $ do
+      apply $ 
+        color =: toTxt gray
+
+      is (subtheme @LatestT) .> 
+          color =: toTxt black
+   
+      is hover $ do
+        apply $ 
+          color =: toTxt green
+
+        is ":visited" $ do
+          apply $
+            color =: toTxt green
+
+          is (subtheme @LatestT) .> 
+            color =: toTxt green
+
+      is ":visited" $ do
+        apply $
+          color =: toTxt gray
+
+        is (subtheme @LatestT) .> 
+          color =: toTxt black
+
+
+data HeaderT
+instance Theme HeaderT where
+  theme c = void $ do
+    is (subtheme @PlaceholderT) . has c .> do
+      pointer-events =: none
+      filter_        =: blur(12px)
+
+    is c $ do
+      apply $ do
+        text-align =: center
+        width      =: (100%)
+        max-width  =: (100%)
+        margin     =* [0,auto,40px]
+
+      mediumScreens <%> do
+        width =: 700px
+
+      largeScreens <%> do
+        width =: 800px
+
+      hugeScreens <%> do
+        width =: 900px
+
+data SectionTitleT
+instance Theme SectionTitleT where
+  theme c = void $ do
+    is (subtheme @PlaceholderT) . has c .> do
+      pointer-events =: none
+      filter_ =: blur(10px)
+
+    is c .> do
+      font-family =: titleFont
+      font-size =: 1.2em
+      font-weight =: 400
+      color =: toTxt base
+
+buttonBoxShadow vOff blur color vOff' blur' color' =
+  customBoxShadow 0 vOff blur 0 color <> ", " <>
+  customBoxShadow 0 vOff' blur' 0 color'
+
+customBoxShadow hOff vOff blur spread color = 
+  pxs hOff <<>> pxs vOff <<>> pxs blur <<>> pxs spread <<>> color
+
+data PageHeaderT
+instance Theme PageHeaderT where
+  theme c = void $ 
+    is c $ do
+      apply $ do
+        width           =: (90%)
+        height          =: 80px
+        margin          =* [0,auto]
+        display         =: flex
+        justify-content =: space-between
+        margin-bottom   =: 30px
+
+      mediumScreens <%> do
+        width =: 720px
+
+      largeScreens <%> do
+        width =: 900px
+
+      has (tag Nav) $ do
+        apply $ do
+          margin-top  =: 30px
+          font-size   =: 1.7em
+          color       =: toTxt black
+          font-weight =: 300
+
+        is lastChild .> do
+          margin-left =: 16px
+
+        has (tag A) $ do
+          apply $ do
+            margin-top   =: 50px
+            font-family  =: titleFont
+            margin-right =: 8px
+            margin-left  =: 8px
+            color        =: toTxt gray
+            white-space  =: nowrap
+          
+          is firstChild .> do
+            margin-left =: 0
+
+          is lastChild .> do
+            margin-right =: 0
+
+          is hover .>
+            color =: toTxt green
+
+          is hover . is visited .>
+            color =: toTxt green
+
+          is visited .>
+            color =: toTxt gray
+    

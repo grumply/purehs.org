@@ -1,0 +1,7 @@
+name: Pure.Data.View.Patterns
+synopsis: |
+  Core patterns and methods for manipulating Pure.hs contexts
+description: |
+  Documentation for patterns and methods for constructing hierarchical computational contexts and views. 
+excerpt: |
+  `Pure.Data.View.Patterns` exports patterns, classes, and combinators for `View` construction.

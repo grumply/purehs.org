@@ -1,0 +1,21 @@
+title: Pure.hs Quickstart
+slug: quickstart
+series: Quickstart
+published: 2020-05-01
+authors:
+  - Sean Hickman
+editors: []
+tags:
+  - beginner
+  - quickstart
+  - install
+packages:
+  - pure
+synopsis: |
+  Get up and running with a Pure.hs in just a few minutes.
+description: |
+  Installation takes only a few minutes, and you'll be ready to develop expressive and performant applications with Pure.hs.
+excerpt: |
+  Install Pure.hs and optionally set up a development IDE.
+
+  In just a few minutes, and you'll be ready to develop expressive and performant applications with Pure.hs.

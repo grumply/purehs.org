@@ -1,0 +1,23 @@
+name: pure-core
+author: Sean Hickman
+latest: 0.8.0.0
+published: 2020-05-01
+license: BSD3
+repository: github.com/grumply/pure-core.git
+homepage: purehs.org/packages/pure-core
+collaborators: []
+tags:
+  - core
+  - internal
+synopsis: |
+  Core Pure.hs types and patterns.
+description: |
+  The core types and methods used to implement all higher-level abstractions for server, service, and interface development. 
+excerpt: |
+  The core types and methods used to implement all higher-level abstractions for server, service, and interface development. 
+  
+  See, for example, [pure-html](/doc/pure-html/latest), [pure-svg](/doc/pure-svg/latest), or [pure-events](/doc/pure-events/latest).
+    
+  For a driver that manages instances of these types, see [pure-dom](/doc/pure-dom/latest).
+
+  > Warning: This is an internal package. Consider starting with one of the [tutorials](/tutorials).

@@ -6,10 +6,10 @@ import Network.Wai.Handler.Warp
 
 import Options.Applicative
 
--- import qualified Data.ByteString.Char8          as S8
--- import qualified Data.ByteString.Lazy           as L
--- import           Network.HTTP.Types
--- import           Network.Wai.Middleware.Gzip
+import qualified Data.ByteString.Char8          as S8
+import qualified Data.ByteString.Lazy           as L
+import           Network.HTTP.Types
+import           Network.Wai.Middleware.Gzip
 
 data Opts = Opts
   { root :: FilePath
@@ -39,7 +39,7 @@ main = execParser optsParser >>= staticHTML5Server
 staticHTML5Server :: Opts -> IO ()
 staticHTML5Server os = run 80 app -- (compressing app)
   where
-    -- compressing = gzip def { gzipFiles = GzipCacheFolder "/cache" }
+    -- compressing = gzip def { gzipFiles = GzipCacheFolder "cache" }
     app req send =
       case pathInfo req of
         ["robots.txt"]  -> fileServer req send

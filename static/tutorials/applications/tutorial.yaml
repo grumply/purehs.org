@@ -1,0 +1,22 @@
+title: Applications in 5 Minutes
+slug: applications
+series: 5-Minute Series
+episode: 3
+published: 2020-05-30
+authors:
+  - Sean Hickman
+editors: []
+tags:
+  - beginner
+  - applications
+  - 5 minutes
+packages:
+  - pure
+synopsis: |
+  Pure.hs Applications in 5 Minutes
+description: |
+  Learn Pure.hs application development in 5 minutes.
+excerpt: |
+  In part 3 of the [5-Minute Series](./5-minute), we'll learn how to integrate dynamic views into a cohesive whole using *The Elm Architecture*.
+
+  If you're ready, we'll follow up our doomsday button and countdown timer with an application that does both and switches between them as necessary. Let's get started!

@@ -11,6 +11,9 @@ in
         , "wai-app-static"
         , "warp"
         , "optparse-applicative"
+        , "http-types"
+        , "bytestring"
+        , "wai-extra"
         ]
     , executables = 
         { server = 

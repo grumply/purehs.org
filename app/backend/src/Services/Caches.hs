@@ -1,163 +1,690 @@
+{-# language QuasiQuotes, DuplicateRecordFields #-}
 module Services.Caches where
 
-import Data.Cached
-import Services.Utils
+import Pure hiding (name,Left,Right)
 
-import qualified Shared.Tutorial as Tutorial
-import qualified Shared.Doc as Doc
-import qualified Shared.Page as Page
-import qualified Shared.Post as Post
-import qualified Shared.Package as Package
-import qualified Shared.Cache as Cache
+import Shared (compileAPI,compile)
 
-import Pure.Data.JSON (encodeBS)
+import Shared.Author as Author
+import Shared.Blog as Blog
+import Shared.Package as Package
+import Shared.Page as Page
+import Shared.Tutorial as Tutorial
+import Shared.Types as Types
+
+import Pure.Cached
+import Pure.Data.JSON (encodeBS,FromJSON)
 import Pure.Data.Time
-import Pure.Data.Try as Try
-import Pure.Data.Txt as Txt
-import Pure.Elm (pattern H1)
+import Pure.Data.Render ()
+import Pure.Data.View (View)
+import Pure.Data.Txt as Txt hiding (concat)
+import Pure.Data.Txt.Interpolate
+import Pure.TagSoup
+import Pure.WebSocket as WS
 
+import Control.Concurrent
+import Control.Exception (bracket,SomeException(..),handle,throw)
+import Data.Char
 import qualified Data.ByteString.Lazy as BS
+import qualified Data.Text.IO as T
 import qualified Data.Map as Map
 import Data.Map (Map)
 
-import Data.Ord (Down(..))
-import Data.List as List
+import Data.Yaml as Yaml
+
+import Text.Pandoc.Class
+import Text.Pandoc.Readers.Markdown
+import Text.Pandoc.Writers.HTML
+import qualified Text.Pandoc.Options as Pandoc
+
+import System.FilePath.Glob as Glob (glob)
+
+import Control.Arrow
+import qualified Data.List as List
+import Data.Maybe
+import Data.Ord
+import Data.Function
+import Data.Traversable
+import System.IO
 import System.IO.Unsafe
 
-epoch = Seconds 10 0
+import GHC.Exts (IsList(..))
 
-{-# NOINLINE packages #-}
-packages :: Cached [Package.Package]
-packages = unsafePerformIO $ forkCache epoch $ do
-  ps <- load "packages" $ \package md ->
-    let (synopsis,content) = List.break h1 md
-        h1 H1 = True
-        h1 _ = False
-        meta = Package.Meta {..}
-     in Package.Package {..}
-  pure (sort ps)
+epoch :: Time
+epoch = Seconds 30 0
 
-{-# NOINLINE rawPackage #-}
-rawPackage :: Cached (Map Txt BS.ByteString)
-rawPackage = unsafePerformIO $ forkCache epoch $ do
-  ps <- cached packages
-  pure $ Map.fromList
-    [ (k,encodeBS p)
-    | p <- ps
-    , let
-        pm = Package.meta p
-        k = Package.package pm
-    ]
+{-# NOINLINE authors #-}
+authors :: Cached (Map Name (AuthorView,AuthorContentView))
+authors = unsafePerformIO $ 
+  forkCache epoch $
+    build <$>
+      loadAuthors
+  where
+    build = Map.fromList . fmap process
+      where
+        nm :: Author Txt -> Name
+        nm = name
 
-{-# NOINLINE docs #-}
-docs :: Cached [Doc.Doc]
-docs = unsafePerformIO $ forkCache epoch $ do
-  ds <- load "docs" $ \fn ->
-    let (Txt.reverse -> version) `Dash` (Txt.reverse -> package) = Txt.reverse fn
-    in Doc.Doc Doc.Meta {..}
-  pure (sort ds)
+        process (ay,v) = (nm ay,(fmap parseMarkdown ay,v))
 
-{-# NOINLINE rawDoc #-}
-rawDoc :: Cached (Map (Txt,Txt) BS.ByteString)
-rawDoc = unsafePerformIO $ forkCache epoch $ do
-  ds <- cached docs
-  pure $ Map.fromList
-    [ (k,encodeBS d)
-    | d <- ds
-    , let
-        dm = Doc.meta d
-        k = (Doc.package dm,Doc.version dm)
-    ]
+    loadAuthors = catMaybes <$> do
+      globs             [i|static/authors/*/|] $ \a ->
+        withYamlFile    [i|#{a}author.yaml|]  $ \ay -> do
+          m <- markdown [i|#{a}author.md|]
+          pure (ay,m)
 
-{-# NOINLINE rawDocMetas #-}
-rawDocMetas :: Cached BS.ByteString
-rawDocMetas = unsafePerformIO $ forkCache epoch ((encodeBS . fmap Doc.meta) <$> cached docs)
+{-# NOINLINE rawAuthors #-}
+rawAuthors :: Cached (Map Name BS.ByteString)
+rawAuthors = unsafePerformIO $ 
+  forkCache epoch $
+    fmap (encodeBS . fst) <$> 
+      cached Services.Caches.authors
 
-{-# NOINLINE posts #-}
-posts :: Cached [Post.Post]
-posts = unsafePerformIO $ forkCache epoch $ do
-  ps <- load "posts" $ \fn ->
-    let year `Dash` (month `Dash` (day `Dash` slug_)) = fn
-        slug = Txt.replace "_" "-" slug_
-        title = Txt.toTitle . Txt.replace "_" "-"  . Txt.replace "-" " " $ slug_
-    in Post.Post Post.Meta {..}
-  pure $ sortOn Data.Ord.Down ps
+{-# NOINLINE authorsList #-}
+authorsList :: Cached [AuthorView]
+authorsList = unsafePerformIO $ 
+  forkCache epoch $
+    fmap fst . Map.elems <$> 
+      cached Services.Caches.authors
 
-{-# NOINLINE rawPost #-}
-rawPost :: Cached (Map Txt BS.ByteString)
-rawPost = unsafePerformIO $ forkCache epoch $ do
-  ps <- cached posts
-  pure $ Map.fromList
-    [ (k,encodeBS p)
-    | p <- ps
-    , let
-        pm = Post.meta p
-        k = Post.slug pm
-    ]
+{-# NOINLINE rawAuthorsList #-}
+rawAuthorsList :: Cached BS.ByteString
+rawAuthorsList = unsafePerformIO $ 
+  forkCache epoch $
+    encodeBS <$> 
+      cached authorsList
 
-{-# NOINLINE rawPostMetas #-}
-rawPostMetas :: Cached BS.ByteString
-rawPostMetas = unsafePerformIO $ forkCache epoch ((encodeBS . fmap Post.meta) <$> cached posts)
+{-# NOINLINE authorsContent #-}
+authorsContent :: Cached (Map Name AuthorContentView)
+authorsContent = unsafePerformIO $ 
+  forkCache epoch $
+    fmap snd <$> 
+      cached Services.Caches.authors
 
-{-# NOINLINE tutorials #-}
-tutorials :: Cached [Tutorial.Tutorial]
-tutorials = unsafePerformIO $ forkCache epoch $ do
-  ts <- load "tutorials" $ \fn ->
-    let number `Dash` slug = fn
-        title = Txt.toTitle slug
-    in Tutorial.Tutorial Tutorial.Meta {..}
-  pure (sort ts)
+{-# NOINLINE rawAuthorsContent #-}
+rawAuthorsContent :: Cached (Map Name BS.ByteString)
+rawAuthorsContent = unsafePerformIO $ 
+  forkCache epoch $
+    fmap encodeBS <$> 
+      cached authorsContent
 
-{-# NOINLINE rawTutorial #-}
-rawTutorial :: Cached (Map Txt BS.ByteString)
-rawTutorial = unsafePerformIO $ forkCache epoch $ do
-  ts <- cached tutorials
-  pure $ Map.fromList
-    [ (k,encodeBS t)
-    | t <- ts
-    , let
-        tm = Tutorial.meta t
-        k = Tutorial.slug tm
-    ]
+{-# NOINLINE authorPosts #-}
+authorPosts :: Cached (Map Name [PostView])
+authorPosts = unsafePerformIO $
+  forkCache epoch $
+    fmap rebuild (cached posts)
+  where
+    rebuild :: Map Slug (PostView,PostContentView) -> Map Name [PostView]
+    rebuild = reorganize (\_ (pv,_) -> fmap (\a -> (a,pv)) (toList ((Blog.authors :: PostView -> Authors) pv)))
 
-{-# NOINLINE rawTutorialMetas #-}
-rawTutorialMetas :: Cached BS.ByteString
-rawTutorialMetas = unsafePerformIO $ forkCache epoch ((encodeBS . fmap Tutorial.meta) <$> cached tutorials)
+{-# NOINLINE rawAuthorPosts #-}
+rawAuthorPosts :: Cached (Map Name BS.ByteString)
+rawAuthorPosts = unsafePerformIO $
+  forkCache epoch $
+    fmap encodeBS <$>
+      cached authorPosts
+
+{-# NOINLINE authorTutorials #-}
+authorTutorials :: Cached (Map Name [TutorialView])
+authorTutorials = unsafePerformIO $
+  forkCache epoch $
+    fmap rebuild (cached tutorials)
+  where
+    rebuild :: Map Slug (TutorialView,TutorialContentView) -> Map Name [TutorialView]
+    rebuild = reorganize (\_ (tv,_) -> fmap (\a -> (a,tv)) (toList ((Tutorial.authors :: TutorialView -> Authors) tv)))
+
+{-# NOINLINE rawAuthorTutorials #-}
+rawAuthorTutorials :: Cached (Map Name BS.ByteString)
+rawAuthorTutorials = unsafePerformIO $
+  forkCache epoch $
+    fmap encodeBS <$>
+      cached authorTutorials
 
 {-# NOINLINE pages #-}
-pages :: Cached [Page.Page]
-pages = unsafePerformIO $ forkCache epoch $ do
-  ps <- load "pages" $ \fn -> Page.Page (Page.Meta fn)
-  pure (sort ps)
+pages :: Cached (Map Slug (PageView,PageContentView))
+pages = unsafePerformIO $ 
+  forkCache epoch $
+    fmap build loadPages
+  where
+    build = Map.fromList . fmap process
+      where
+        slg :: Page Txt -> Slug
+        slg = slug
 
-{-# NOINLINE rawPage #-}
-rawPage :: Cached (Map Txt BS.ByteString)
-rawPage = unsafePerformIO $ forkCache epoch $ do
-  ps <- cached pages
-  pure $ Map.fromList
-    [ (k,encodeBS p)
-    | p <- ps
-    , let
-        pm = Page.meta p
-        k = Page.slug pm
-    ]
+        process (py,pc) = (key,value)
+          where
+            key = slg py
+            value = (fmap parseMarkdown py,pc)
 
-{-# NOINLINE rawCache #-}
-rawCache :: Cached BS.ByteString
-rawCache = unsafePerformIO $ forkCache epoch $ do
-  pkgs <- cached packages
-  ps <- cached posts
-  ds <- cached docs
-  ts <- cached tutorials
-  pgs <- cached pages
-  pure $ encodeBS $
-    Cache.Cache
-      (Package.meta <$> pkgs)
-      (Post.meta <$> ps)
-      (Doc.meta <$> ds)
-      (Tutorial.meta <$> ts)
-      []
-      []
-      []
-      []
-      (fmap (\p -> (Page.slug (Page.meta p),Done p)) pgs)
+    loadPages = catMaybes <$> do
+      globs             [i|static/pages/*/|] $ \d  ->
+        withYamlFile    [i|#{d}/page.yaml|]  $ \py -> do
+          m <- markdown [i|#{d}/page.md|]
+          pure (py,m)
+
+{-# NOINLINE rawPages #-}
+rawPages :: Cached (Map Slug BS.ByteString)
+rawPages = unsafePerformIO $ 
+  forkCache epoch $
+    fmap (encodeBS . fst) <$> 
+      cached pages
+
+{-# NOINLINE pagesList #-}
+pagesList :: Cached [PageView]
+pagesList = unsafePerformIO $ 
+  forkCache epoch $
+    fmap fst . Map.elems <$> 
+      cached pages
+
+{-# NOINLINE rawPagesList #-}
+rawPagesList :: Cached BS.ByteString
+rawPagesList = unsafePerformIO $ 
+  forkCache epoch $
+    encodeBS <$> 
+      cached pagesList
+
+{-# NOINLINE pagesContent #-}
+pagesContent :: Cached (Map Slug PageContentView)
+pagesContent = unsafePerformIO $ 
+  forkCache epoch $
+    fmap snd <$> 
+      cached pages
+
+{-# NOINLINE rawPagesContent #-}
+rawPagesContent :: Cached (Map Slug BS.ByteString)
+rawPagesContent = unsafePerformIO $ 
+  forkCache epoch $
+    fmap encodeBS <$> 
+      cached pagesContent
+
+{-# NOINLINE posts #-}
+posts :: Cached (Map Slug (PostView,PostContentView))
+posts = unsafePerformIO $ 
+  forkCache epoch $
+    build <$>
+      loadPosts
+  where
+    build = Map.fromList . fmap process
+      where
+        slg :: Post Txt -> Slug
+        slg = slug
+
+        process (py,m) = (slg py,(fmap parseMarkdown py,m))
+
+
+    loadPosts = catMaybes <$> do
+      globs             [i|static/blog/*/|] $ \d  ->
+        withYamlFile    [i|#{d}post.yaml|] $ \py -> do
+          m <- markdown [i|#{d}post.md|]
+          pure (py,m)
+
+{-# NOINLINE rawPosts #-}
+rawPosts :: Cached (Map Slug BS.ByteString)
+rawPosts = unsafePerformIO $ 
+  forkCache epoch $
+    fmap (encodeBS . fst) <$> 
+      cached posts
+
+{-# NOINLINE postsList #-}
+postsList :: Cached [PostView]
+postsList =
+  unsafePerformIO $ forkCache epoch $
+    fmap fst . Map.elems <$> 
+      cached posts
+
+{-# NOINLINE rawPostsList #-}
+rawPostsList :: Cached BS.ByteString
+rawPostsList = unsafePerformIO $ 
+  forkCache epoch $
+    encodeBS <$> 
+      cached postsList 
+
+{-# NOINLINE postsContent #-}
+postsContent :: Cached (Map Slug PostContentView)
+postsContent = unsafePerformIO $ 
+  forkCache epoch $
+    fmap snd <$> 
+      cached posts
+
+{-# NOINLINE rawPostsContent #-}
+rawPostsContent :: Cached (Map Slug BS.ByteString)
+rawPostsContent = unsafePerformIO $ 
+  forkCache epoch $
+    fmap encodeBS <$> 
+      cached postsContent
+
+{-# NOINLINE tutorials #-}
+tutorials :: Cached (Map Slug (TutorialView,TutorialContentView))
+tutorials = unsafePerformIO $ 
+  forkCache epoch $
+    build <$> 
+      loadTutorials
+  where
+    build = Map.fromList . fmap process
+      where
+        process (ty,m) = (key,value)
+          where
+            slg :: Tutorial Txt -> Slug
+            slg = slug
+
+            key = slg ty
+            value = (fmap parseMarkdown ty,m)
+
+    loadTutorials = catMaybes <$> do
+      globs             [i|static/tutorials/*/|] $ \d  ->
+        withYamlFile    [i|#{d}tutorial.yaml|] $ \ty -> do
+          m <- markdown [i|#{d}tutorial.md|]
+          pure (ty,m)
+
+{-# NOINLINE rawTutorials #-}
+rawTutorials :: Cached (Map Slug BS.ByteString)
+rawTutorials = unsafePerformIO $ 
+  forkCache epoch $
+    fmap (encodeBS . fst) <$> 
+      cached tutorials
+
+{-# NOINLINE rawTutorialsList #-}
+rawTutorialsList :: Cached BS.ByteString
+rawTutorialsList = unsafePerformIO $ 
+  forkCache epoch $
+    encodeBS . fmap fst . Map.elems <$> 
+      cached tutorials
+
+{-# NOINLINE tutorialsContent #-}
+tutorialsContent :: Cached (Map Slug TutorialContentView)
+tutorialsContent = unsafePerformIO $
+  forkCache epoch $
+    fmap snd <$>
+      cached tutorials
+
+{-# NOINLINE rawTutorialsContent #-}
+rawTutorialsContent :: Cached (Map Slug BS.ByteString)
+rawTutorialsContent = unsafePerformIO $
+  forkCache epoch $
+    fmap encodeBS <$>
+      cached tutorialsContent
+
+{-# NOINLINE packages #-}
+packages :: Cached (Map PackageName PackageView)
+packages = unsafePerformIO $ 
+  forkCache epoch $
+    fmap build loadPackages
+  where
+    build = Map.fromList  . fmap process
+      where
+        nm :: Package.Package Txt -> PackageName
+        nm = name
+
+        process py = (nm py,fmap parseMarkdown py)
+
+    loadPackages = catMaybes <$> do
+      globs          [i|static/packages/*/|] $ \p ->
+        withYamlFile [i|#{p}package.yaml|] pure
+
+{-# NOINLINE rawPackages #-}
+rawPackages :: Cached (Map PackageName BS.ByteString)
+rawPackages = unsafePerformIO $ 
+  forkCache epoch $
+    fmap encodeBS <$> 
+      cached Services.Caches.packages
+
+{-# NOINLINE packagesList #-}
+packagesList :: Cached [PackageView]
+packagesList = unsafePerformIO $ 
+  forkCache epoch $
+    Map.elems <$> 
+      cached Services.Caches.packages
+
+{-# NOINLINE rawPackagesList #-}
+rawPackagesList :: Cached BS.ByteString
+rawPackagesList = unsafePerformIO $ 
+  forkCache epoch $
+    encodeBS <$> 
+      cached packagesList
+
+{-# NOINLINE authorPackages #-}
+authorPackages :: Cached (Map Name [PackageView])
+authorPackages = unsafePerformIO $ 
+  forkCache epoch $ do
+    as :: [AuthorView] <- cached authorsList
+    ps :: Map PackageName PackageView <- cached Services.Caches.packages
+    aps <- for as $ \a -> 
+      let nm = Author.name a
+      in pure (nm,Map.elems $ Map.filter ((nm ==) . author) ps)
+    pure (Map.fromList aps)
+
+{-# NOINLINE rawAuthorPackages #-}
+rawAuthorPackages :: Cached (Map Name BS.ByteString)
+rawAuthorPackages = unsafePerformIO $ 
+  forkCache epoch $
+    fmap encodeBS <$> 
+      cached authorPackages
+
+{-# NOINLINE packageVersions #-}
+packageVersions :: Cached (Map (PackageName,Types.Version) VersionView)
+packageVersions = unsafePerformIO $ 
+  forkCache epoch $
+    build <$>
+      loadVersions
+  where
+    build = Map.fromList . fmap process
+      where
+        process (pkgy,py) = (key,value) 
+          where
+            nm :: Package.Package Txt -> PackageName
+            nm = name
+
+            ver :: Package.Version Txt -> Types.Version
+            ver = version
+
+            key = (nm pkgy,ver py)
+            value = fmap parseMarkdown py
+
+    loadVersions = catMaybes . concat . catMaybes <$> do
+      globs                 [i|static/packages/*/|] $ \p  ->
+        withYamlFile        [i|#{p}package.yaml|]  $ \pkgy ->
+          globs             [i|#{p}versions/*/|]   $ \d ->
+            withYamlFile    [i|#{d}version.yaml|]  $ \vy ->
+              pure (pkgy,vy)
+
+{-# NOINLINE rawPackageVersions #-}
+rawPackageVersions :: Cached (Map (PackageName,Types.Version) BS.ByteString)
+rawPackageVersions = unsafePerformIO $
+  forkCache epoch $
+    fmap encodeBS <$>
+      cached packageVersions
+
+{-# NOINLINE packageVersionsList #-}
+packageVersionsList :: Cached (Map PackageName [VersionView])
+packageVersionsList = unsafePerformIO $
+  forkCache epoch $
+    fmap (fmap snd) . pushdown id <$>
+      cached packageVersions
+
+{-# NOINLINE rawPackageVersionsList #-}
+rawPackageVersionsList :: Cached (Map PackageName BS.ByteString)
+rawPackageVersionsList = unsafePerformIO $
+  forkCache epoch $
+    fmap encodeBS <$>
+      cached packageVersionsList
+
+{-# NOINLINE packagePosts #-}
+packagePosts :: Cached (Map (PackageName,Slug) (PostView,PostContentView))
+packagePosts = unsafePerformIO $ 
+  forkCache epoch $
+    build <$>
+      loadPosts
+  where
+    build = Map.fromList . fmap process
+      where
+        process (pkgy,psty,m) = (key,value) 
+          where
+            nm :: Package.Package Txt -> PackageName
+            nm = name
+
+            slg :: Post Txt -> Slug
+            slg = slug
+
+            key = (nm pkgy,slg psty)
+            value = (fmap parseMarkdown psty,m)
+
+    loadPosts = catMaybes . concat . catMaybes <$> do
+      globs                 [i|static/packages/*/|] $ \p  ->
+        withYamlFile        [i|#{p}package.yaml|]  $ \pkgy ->
+          globs             [i|#{p}blog/*/|]       $ \d ->
+            withYamlFile    [i|#{d}post.yaml|]     $ \psty -> do
+              m <- markdown [i|#{d}post.md|]
+              pure (pkgy,psty,m)
+
+{-# NOINLINE rawPackagePosts #-}
+rawPackagePosts :: Cached (Map (PackageName,Slug) BS.ByteString)
+rawPackagePosts = unsafePerformIO $ 
+  forkCache epoch $
+    fmap (encodeBS . fst) <$> 
+      cached packagePosts
+
+{-# NOINLINE packagePostsList #-}
+packagePostsList :: Cached (Map PackageName [PostView])
+packagePostsList = unsafePerformIO $ 
+  forkCache epoch $
+    fmap (fmap (fst . snd)) . pushdown id <$> 
+      cached packagePosts
+
+{-# NOINLINE rawPackagePostsList #-}
+rawPackagePostsList :: Cached (Map PackageName BS.ByteString)
+rawPackagePostsList = unsafePerformIO $ 
+  forkCache epoch $
+    fmap encodeBS <$> 
+      cached packagePostsList
+
+{-# NOINLINE packagePostsContent #-}
+packagePostsContent :: Cached (Map (PackageName,Slug) PostContentView)
+packagePostsContent = unsafePerformIO $
+  forkCache epoch $
+    fmap snd <$>
+      cached packagePosts
+
+{-# NOINLINE rawPackagePostsContent #-}
+rawPackagePostsContent :: Cached (Map (PackageName,Slug) BS.ByteString)
+rawPackagePostsContent = unsafePerformIO $
+  forkCache epoch $
+    fmap encodeBS <$>
+      cached packagePostsContent
+
+{-# NOINLINE packageTutorials #-}
+packageTutorials :: Cached (Map (PackageName,Types.Version,Slug) (TutorialView,TutorialContentView))
+packageTutorials = unsafePerformIO $ 
+  forkCache epoch $
+    build <$>
+      loadPackageTutorials
+  where
+    build = Map.fromList . fmap process
+      where
+        process (py,vy,ty,t) = (key,value)
+          where
+            nm :: Package.Package Txt -> PackageName
+            nm = name
+
+            slg :: Tutorial Txt -> Slug
+            slg = slug
+
+            ver :: Package.Version Txt -> Types.Version
+            ver = version
+
+            key = (nm py,ver vy,slg ty)
+            value = (fmap parseMarkdown ty,t)
+
+    loadPackageTutorials = catMaybes . concat . catMaybes . concat . catMaybes <$> do
+      globs                     [i|static/packages/*/|] $ \p  ->
+        withYamlFile            [i|#{p}package.yaml|]  $ \py ->
+          globs                 [i|#{p}versions/*/|]   $ \v  ->
+            withYamlFile        [i|#{v}version.yaml|]  $ \vy ->
+              globs             [i|#{v}tutorials/*/|]  $ \t  ->
+                withYamlFile    [i|#{t}tutorial.yaml|] $ \ty -> do
+                  m <- markdown [i|#{t}tutorial.md|]
+                  pure (py,vy,ty,m)
+
+{-# NOINLINE rawPackageTutorials #-}
+rawPackageTutorials :: Cached (Map (PackageName,Types.Version,Slug) BS.ByteString)
+rawPackageTutorials = unsafePerformIO $ 
+  forkCache epoch $
+    fmap (encodeBS . fst) <$> 
+      cached packageTutorials
+
+{-# NOINLINE packageTutorialsList #-}
+packageTutorialsList :: Cached (Map (PackageName,Types.Version) [TutorialView])
+packageTutorialsList = unsafePerformIO $ 
+  forkCache epoch $
+    fmap (fmap (fst . snd)) . pushdown (\(a,b,c) -> ((a,b),c)) <$> 
+      cached packageTutorials
+
+{-# NOINLINE rawPackageTutorialsList #-}
+rawPackageTutorialsList :: Cached (Map (PackageName,Types.Version) BS.ByteString)
+rawPackageTutorialsList = unsafePerformIO $ 
+  forkCache epoch $
+    fmap encodeBS <$> 
+      cached packageTutorialsList
+
+{-# NOINLINE packageTutorialsContent #-}
+packageTutorialsContent :: Cached (Map (PackageName,Types.Version,Slug) TutorialContentView)
+packageTutorialsContent = unsafePerformIO $
+  forkCache epoch $
+    fmap snd <$>
+      cached packageTutorials
+
+{-# NOINLINE rawPackageTutorialsContent #-}
+rawPackageTutorialsContent :: Cached (Map (PackageName,Types.Version,Slug) BS.ByteString)
+rawPackageTutorialsContent = unsafePerformIO $
+  forkCache epoch $
+    fmap encodeBS <$>
+      cached packageTutorialsContent
+
+-- implementation at bottom of file for parsing reasons
+{-# NOINLINE modules #-}
+modules :: Cached (Map (PackageName,Types.Version,ModuleName) (ModuleView,ModuleContentView))
+
+{-# NOINLINE rawModules #-}
+rawModules :: Cached (Map (PackageName,Types.Version,ModuleName) BS.ByteString)
+rawModules = unsafePerformIO $ 
+  forkCache epoch $
+    fmap (encodeBS . fst) <$> 
+      cached modules
+
+{-# NOINLINE modulesList #-}
+modulesList :: Cached (Map (PackageName,Types.Version) [ModuleView])
+modulesList = unsafePerformIO $ 
+  forkCache epoch $
+    fmap (fmap (fst . snd)) . pushdown (\(a,b,c) -> ((a,b),c)) <$> 
+      cached modules
+
+{-# NOINLINE rawModulesList #-}
+rawModulesList :: Cached (Map (PackageName,Types.Version) BS.ByteString)
+rawModulesList = unsafePerformIO $ 
+  forkCache epoch $
+    fmap encodeBS <$> 
+      cached modulesList
+
+{-# NOINLINE rawModulesContent #-}
+rawModulesContent :: Cached (Map (PackageName,Types.Version,ModuleName) BS.ByteString)
+rawModulesContent = unsafePerformIO $
+  forkCache epoch $
+    fmap (encodeBS . snd) <$>
+      cached modules
+
+{-# NOINLINE modulesContentList #-}
+modulesContentList :: Cached (Map (PackageName,Types.Version) [(ModuleView,ModuleContentView)])
+modulesContentList = unsafePerformIO $
+  forkCache epoch $
+    fmap (fmap snd) . pushdown (\(a,b,c) -> ((a,b),c)) <$>
+      cached modules
+
+{-# NOINLINE rawModulesContentList #-}
+rawModulesContentList :: Cached (Map (PackageName,Types.Version) BS.ByteString)
+rawModulesContentList = unsafePerformIO $
+  forkCache epoch $
+    fmap encodeBS <$>
+      cached modulesContentList
+
+-- Helpers
+
+withYamlFile :: (FromJSON a) => FilePath -> (a -> IO b) -> IO (Maybe b)
+withYamlFile fp f = do
+  y <- Yaml.decodeFileEither fp
+  case y of
+    Left e ->
+      putStrLn [i|Bad yaml file at #{fp} with error #{show e}|]
+        *> hFlush stdout
+        *> pure Nothing
+    Right a ->
+      Just <$> f a
+
+parseMarkdown :: Txt -> Markdown
+parseMarkdown cnt =
+    let Right result = Text.Pandoc.Class.runPure $ do
+          !md <- readMarkdown
+                   Pandoc.def
+                     { Pandoc.readerExtensions = Pandoc.pandocExtensions }
+                   (Txt.repack cnt)
+          !str <- writeHtml5String Pandoc.def md
+          let !view = parseView str
+          pure view
+    in Markdown result
+
+markdown :: (FromTxt (f Txt), Functor f, Foldable f) => FilePath -> IO (f Markdown)
+markdown fp = do
+  f <- T.readFile fp
+  Txt.length f `seq` do
+    let md = fmap parseMarkdown (fromTxt f)
+    traverse_ processExamples md
+    pure md 
+
+globs :: FilePath -> (FilePath -> IO a) -> IO [a]
+globs p f = do
+  xs <- Glob.glob p
+  ys <- for xs f
+  Prelude.length ys `seq` 
+    pure ys
+
+-- interesting helper; not a fan of the (++), but otherwise, interesting.
+-- surprisingly good theoretical runtime characteristics
+{-# INLINE pushdown #-}
+pushdown :: Ord l => (k -> (l,w)) -> Map k v -> Map l [(w,v)]
+pushdown f = Map.fromAscListWith (flip (++)) . fmap go . Map.toAscList
+  where go (k,v) = let (l,w) = f k in (l,[(w,v)])
+
+{-# INLINE reorganize #-}
+reorganize :: Ord l => (k -> v -> [(l,w)]) -> Map k v -> Map l [w]
+reorganize f = Map.fromListWith (flip (++)) . List.concatMap go . Map.toAscList
+  where go (k,v) = fmap (fmap (\x -> [x])) (f k v)
+
+-- type and pragma above for parsing reasons
+-- modules :: Cached (Map (PackageName,Types.Version,ModuleName) (ModuleView,ModuleContentView))
+modules =
+  unsafePerformIO $ forkCache epoch $
+    fmap build loadModules
+  where
+    build = Map.fromList . fmap process
+      where
+        process (py,vy,my,md) = (key,value) 
+          where
+            nm :: Package.Package Txt -> PackageName
+            nm = name
+
+            mdl :: Module Txt -> ModuleName
+            mdl = name
+
+            ver :: Package.Version Txt -> Types.Version
+            ver = version
+
+            key   = (nm py,ver vy,mdl my)
+            value = (fmap parseMarkdown my,md)
+
+    loadModules = catMaybes . concat . catMaybes . concat . catMaybes <$> do
+      globs                     [i|static/packages/*/|] $ \p  ->
+        withYamlFile            [i|#{p}package.yaml|]  $ \py ->
+          globs                 [i|#{p}versions/*/|]   $ \v  ->
+            withYamlFile        [i|#{v}version.yaml|]  $ \vy ->
+              globs             [i|#{v}modules/*/|]    $ \m  ->
+                -- syntax parser don't like `module` inside quasi-quotes
+                withYamlFile    [i|#{m}module.yaml|]  $ \my -> do
+                  md <- markdown [i|#{m}module.md|]
+                  pure (py,vy,my,md)
+
+{-# NOINLINE tryWS #-}
+tryWS :: WebSocket
+tryWS = unsafePerformIO $ clientWS "204.48.20.19" 8080
+
+processExamples :: Markdown -> IO ()
+processExamples (Markdown md) = traverse_ example md
+  where
+    example :: View -> IO ()
+    example (Children (texts -> t) (Attributes as Pre)) 
+      | Just _ <- List.lookup "data-try" as = void $
+        remote compileAPI tryWS compile (Txt.dropWhile isSpace t,True) print
+    example v = traverse_ example (getChildren v)
+
+texts :: [View] -> Txt
+texts = Txt.dropWhile isSpace . List.foldl' append ""
+  where
+    append t (TextView _ a) = t <> "\n" <> (Txt.dropWhileEnd isSpace a)
+    append t _ = t

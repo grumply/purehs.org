@@ -1,56 +1,85 @@
 {-# language ConstraintKinds #-}
 module App where
 
-import Control.Sync
 import Data.Route as Route
 
 import qualified Shared as API
-import Shared.Cache as Cache
-import qualified Shared.Page as Page
-import qualified Shared.Post as Post
-import qualified Shared.Doc as Doc
-import qualified Shared.Tutorial as Tutorial
-import qualified Shared.Package as Package
 
-import Pure.Data.JSON as JSON
-import qualified Pure.Data.Try as Try
-import Pure.Data.Txt (Txt)
+import Pure.Data.JSON (ToJSON,FromJSON)
+import Pure.Data.Time
 import qualified Pure.WebSocket as WS
 import qualified Pure.Elm.Application as Elm
 
 import Data.Map as Map
 
-import Control.Lens as Lens
-import Data.List as List
-import Data.Maybe 
+import Control.Concurrent
+import Control.Concurrent.Async (Async,async)
+import Data.IORef
 import Data.Proxy
-import Data.Functor.Identity
+import Data.Typeable
+import System.IO.Unsafe
+import Unsafe.Coerce
 
 data Settings = Settings
 
-data Message = Startup | Routed Route | RestoreScrollPosition | UpdateSession (Session -> Session) 
+data Message = Routed Route | UpdateSession (Session -> Session) 
 
 type App = (Elm.Session Session, Elm.Settings Settings, Elm.Elm Message Route) 
 
 type Page = Elm.Page Settings Session Message Route.Route
 
 data Session = Session
-  { cache  :: Cache.Cache
-  , socket :: WS.WebSocket
+  { socket :: WS.WebSocket
   }
 
-emptySession :: Session
-emptySession = Session mempty (error "Session socket not initialized")
+mkSession :: WS.WebSocket -> Session
+mkSession = Session
 
-traverseCache :: Lens.Traversal' Session Cache.Cache
-traverseCache f (Session c r) = Session <$> f c <*> pure r
+-- traverseCache :: Lens.Traversal' Session Cache.Cache
+-- traverseCache f (Session c r) = Session <$> f c <*> pure r
+
+data RequestMap
+  = forall rq pl. (WS.Request rq, WS.Req rq ~ (Int,pl), Ord pl) 
+  => RequestMap (Proxy rq) (Map pl (WS.Rsp rq))
+
+{-# NOINLINE cache #-}
+cache :: IORef (Map TypeRep RequestMap)
+cache = unsafePerformIO (newIORef mempty)
+
+addToCache :: forall rq pl. (WS.Request rq, WS.Req rq ~ (Int,pl), Ord pl) 
+           => Proxy rq -> pl -> WS.Rsp rq -> IO ()
+addToCache p rq rsp = modifyIORef' cache (Map.alter alt (typeRep (Proxy :: Proxy rq)))
+  where
+    alt Nothing = Just (RequestMap p $ Map.singleton rq rsp)
+    alt (Just (RequestMap _ rm)) = Just (RequestMap p $ Map.insert rq rsp $ unsafeCoerce rm)
+
+lookupInCache :: forall rq pl. (WS.Request rq, WS.Req rq ~ (Int,pl), Ord pl) 
+              => Proxy rq -> pl -> IO (Maybe (WS.Rsp rq))
+lookupInCache _ rq = do
+  c <- readIORef cache
+  pure $
+    case Map.lookup (typeOf (undefined :: rq)) c of
+      Just (RequestMap _ rm) -> Map.lookup rq $ unsafeCoerce rm
+      _                      -> Nothing
 
 -- Little sneaky here with the wildcard constraint while keeping a signature. 
 -- GHC can fill in the rest; this is just what's necessary for comprehension.
-req :: ( WS.Request request, ToJSON payload, FromJSON response, _) 
-    => Session -> Proxy request -> payload -> IO response
-req ses rq pl = sync (WS.remote API.api (App.socket ses) rq pl)
+req :: ( Ord payload, WS.Request request, ToJSON payload, FromJSON response, _) 
+    => Session -> Proxy request -> payload -> IO (Either response (Async response))
+req ses rq pl = do
+  mrsp <- lookupInCache rq pl
+  case mrsp of
+    Nothing -> Right <$> do
+      async $ do
+        mv <- newEmptyMVar
+        WS.remote API.api (App.socket ses) rq pl $ \rsp -> do
+          forkIO (addToCache rq pl rsp)
+          putMVar mv rsp
+        takeMVar mv
+    Just r ->
+      pure (Left r)
 
+{-
 load :: (WS.Request request, ToJSON payload, FromJSON response, WS.Rsp request ~ Maybe response, _) 
      => App 
      => Lens.Traversal' Cache.Cache (Map payload (Try.Try response))
@@ -98,3 +127,4 @@ latest p
   , versions <- List.filter ((== p) . Doc.package) docMetas
   , latest   <- fmap Doc.version (listToMaybe (List.reverse versions))
   = latest
+-}
