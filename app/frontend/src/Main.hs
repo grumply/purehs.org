@@ -48,8 +48,6 @@ main :: IO ()
 main = do
   hSetBuffering stdout LineBuffering
   ws <- WS.clientWS Shared.host Shared.port
-  start <- time
-  start `seq` WS.remote responseTimeAPI ws responseTest () (\_ -> time >>= \end -> print (end - start))
   inject body (Div <| Themed @AppT |> [ run (app ws) App.Settings ])
   where
     app ws = App [] [] [App.Routed] [] (App.mkSession ws) update Main.view

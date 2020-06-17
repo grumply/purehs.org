@@ -180,11 +180,3 @@ compileAPI = WS.api msgs reqs
   where
     msgs = none
     reqs = compile <:> readModule <:> none
-
-mkRequest "ResponseTest" [t|() -> ()|]
-
-responseTimeAPI :: WS.FullAPI '[] '[ResponseTest]
-responseTimeAPI = WS.api msgs reqs
-  where
-    msgs = none
-    reqs = responseTest <:> none

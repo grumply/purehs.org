@@ -41,7 +41,6 @@ update msg ws mdl =
       enact ws packageBlogImpl
       enact ws packageTutorialImpl
       enact ws packageModuleImpl
-      enact ws responseTimeImpl
       activate ws
       -- c <- cached rawCache
       -- sendRaw ws (buildEncodedDispatchByteString (messageHeader setCache) c)
@@ -326,15 +325,3 @@ handleGetPackageVersionModuleContent = respondWithRaw $ \(pn,v0,mn) -> do
     Just v  -> do
       pvms <- cached rawModulesContent
       pure $ fromMaybe "null" (Map.lookup (pn,v,mn) pvms)
-
-responseTimeImpl = Impl Shared.responseTimeAPI msgs reqs
-  where
-    msgs = WS.none
-    reqs = handleResponseTest <:> WS.none
-
-handleResponseTest :: RequestHandler Shared.ResponseTest
-handleResponseTest = responding $ do
-  start <- liftIO micros
-  start `seq` replyRaw "[]"
-  end <- liftIO micros
-  end `seq` liftIO (print (end - start))
