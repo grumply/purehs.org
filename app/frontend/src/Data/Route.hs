@@ -7,12 +7,7 @@ import Pure.Router (path,dispatch)
 import qualified Pure.Data.URI as URI (decodeURI,encodeURI)
 
 import Pure.Data.Txt
-import Pure.Data.Txt.Interpolate
-import Pure.Data.Txt.Search
-import Pure.Data.JSON
 import Pure.Elm.Application (Routes(..),URL(..))
-
-import GHC.Generics
 
 data Route
   = NoR
@@ -41,7 +36,7 @@ data Route
   | VersionTutorialR PackageName Version Slug
   | ModuleR PackageName Version ModuleName
   | EntityR PackageName Version ModuleName Txt -- pkg,maybe ver,module,entity
-  deriving (Generic,Eq,ToJSON,Search)
+  deriving (Eq)
 
 instance Routes Route where
   home = NoR
@@ -49,7 +44,7 @@ instance Routes Route where
   title NoR = Nothing
   title HomeR = Just "Pure.hs"
 
-  title (PageR s) = Just [i|#{s}|]
+  title (PageR s) = Just (toTxt s)
 
   title BlogR = Just "Blog"
   title (PostR _) = Nothing
@@ -58,20 +53,20 @@ instance Routes Route where
   title (TutorialR _) = Nothing
 
   title AuthorsR = Just "Authors"
-  title (AuthorR n) = Just [i|#{n}|]
-  title (AuthorPostsR n) = Just [i|#{n} - Posts|]
-  title (AuthorTutorialsR n) = Just [i|#{n} - Tutorials|]
-  title (AuthorPackagesR n) = Just [i|#{n} - Packages|]
+  title (AuthorR n) = Just (toTxt n)
+  title (AuthorPostsR n) = Just (toTxt n <> " - Posts")
+  title (AuthorTutorialsR n) = Just (toTxt n <> " - Tutorials")
+  title (AuthorPackagesR n) = Just (toTxt n <> " - Packages")
 
   title PackagesR = Just "Packages"
-  title (PackageR p) = Just [i|#{p}|]
-  title (PackageBlogR p) = Just [i|#{p} - Blog|]
+  title (PackageR p) = Just (toTxt p)
+  title (PackageBlogR p) = Just (toTxt p <> " - Blog")
   title (PackagePostR p s) = Nothing
-  title (VersionR p v) = Just [i|#{p}/#{v} - Documentation|]
-  title (VersionTutorialsR p v) = Just [i|#{p}/#{v} - Tutorials|]
+  title (VersionR p v) = Just (toTxt p <> "/" <> toTxt v <> " - Documentation")
+  title (VersionTutorialsR p v) = Just (toTxt p <> "/" <> toTxt v <> " - Tutorials")
   title (VersionTutorialR p v s) = Nothing
-  title (ModuleR p v m) = Just [i|#{m}|]
-  title (EntityR p v m e) = Just [i|#{e}|]
+  title (ModuleR p v m) = Just (toTxt m)
+  title (EntityR p v m e) = Just (toTxt e )
 
   location = Internal . loc
     where
@@ -81,26 +76,26 @@ instance Routes Route where
       loc (PageR s) = "/" <> toTxt s
 
       loc BlogR = "/blog"
-      loc (PostR s) = [i|/blog/#{s}|]
+      loc (PostR s) = "/blog/" <> toTxt s
 
       loc TutorialsR = "/tutorials"
-      loc (TutorialR t) = [i|/tutorials/#{t}|]
+      loc (TutorialR t) = "/tutorials/" <> toTxt t
 
       loc AuthorsR = "/authors"
-      loc (AuthorR (Name a)) = [i|/authors/#{URI.encodeURI a}|]
-      loc (AuthorPostsR (Name a)) = [i|/authors/#{URI.encodeURI a}/blog|]
-      loc (AuthorTutorialsR (Name a)) = [i|/authors/#{URI.encodeURI a}/tutorials|]
-      loc (AuthorPackagesR (Name a)) = [i|/authors/#{URI.encodeURI a}/packages|]
+      loc (AuthorR (Name a)) = "/authors/" <> URI.encodeURI a 
+      loc (AuthorPostsR (Name a)) = "/authors/" <> URI.encodeURI a <> "/blog"
+      loc (AuthorTutorialsR (Name a)) = "/authors/" <> URI.encodeURI a <> "/tutorials"
+      loc (AuthorPackagesR (Name a)) = "/authors/" <> URI.encodeURI a <> "/packages"
 
       loc PackagesR = "/packages"
-      loc (PackageR p) = [i|/packages/#{p}|]
-      loc (PackageBlogR p) = [i|/packages/#{p}/blog|]
-      loc (PackagePostR p s) = [i|/packages/#{p}/blog/#{s}|]
-      loc (VersionR p v) = [i|/packages/#{p}/#{v}|]
-      loc (VersionTutorialsR p v) = [i|/packages/#{p}/#{v}/tutorials|]
-      loc (VersionTutorialR p v s) = [i|/packages/#{p}/#{v}/tutorials/#{s}|]
-      loc (ModuleR p v m) = [i|/packages/#{p}/#{v}/#{m}|]
-      loc (EntityR p v m e) = [i|/packages/#{p}/#{v}/#{m}/#{e}|]
+      loc (PackageR p) = "/packages/" <> toTxt p
+      loc (PackageBlogR p) = "/packages/" <> toTxt p <> "/blog"
+      loc (PackagePostR p s) = "/packages/" <> toTxt p <> "/blog/" <> toTxt s
+      loc (VersionR p v) = "/packages/" <> toTxt p <> "/" <> toTxt v
+      loc (VersionTutorialsR p v) = "/packages/" <> toTxt p <> "/" <> toTxt v <> "/tutorials"
+      loc (VersionTutorialR p v s) = "/packages/" <> toTxt p <> "/" <> toTxt v <> "/tutorials/" <> toTxt s
+      loc (ModuleR p v m) = "/packages/" <> toTxt p <> "/" <> toTxt v <> "/" <> toTxt m
+      loc (EntityR p v m e) = "/packages/" <> toTxt p <> "/" <> toTxt v <> "/" <> toTxt m <> "/" <> toTxt e
 
   routes = do
     blog 
