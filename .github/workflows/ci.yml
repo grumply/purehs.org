@@ -17,16 +17,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: cachix/install-nix-action@v8
-    - uses: cachix/cachix-action@v5
+    - uses: cachix/cachix-action@v6
       with:
         name: purehs
 
-    - name: optimized build
+    - name: build
       run: |
-        nix-env -iA nixpkgs.pkgs.closurecompiler
-        ./ghc npm run prod:backend
-        ./ghcjs npm run prod:frontend
-        du -sh ./dist/ghc/build/*/ghc-*/backend-*/x/backend/opt/build/backend/backend
-        du -sh ./dist/site/main.js
-        du -sh ./dist/site/main.js.min
-        du -sh ./dist/site/main.js.min.gz
+        nix-build -o result -A ghc.backend
+        nix-build -o result -A ghc.server
+        nix-build -o result -A ghcjs.frontend
