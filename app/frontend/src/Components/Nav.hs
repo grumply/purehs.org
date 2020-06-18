@@ -399,6 +399,7 @@ instance Theme CardT where
   theme c = void $ 
     is c $ do
       apply $ do
+        background-color =: toTxt base
         min-width        =: 300px
         min-height       =: 170px
         max-width        =: 93vw

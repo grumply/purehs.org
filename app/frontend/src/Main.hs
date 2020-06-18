@@ -57,15 +57,6 @@ update _rt (App.UpdateSession f) _ ses =
   pure (f ses)
 
 update _old (App.Routed _new) _ ses = do
-  -- preload about/install
-  case _new of
-    HomeR -> void $ forkIO $ void $ do
-      delay (Millisecond * 150)
-      req ses getPage "about" 
-      req ses getPageContent "about" 
-      req ses getTutorial "install"
-      req ses getTutorialContent "install"
-    _ -> pure ()
   -- delay the restoration by a few frames
   async (delay (Millisecond * 100) >> addAnimation restoreScrollPosition) $> ses
 
