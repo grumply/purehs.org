@@ -80,7 +80,7 @@ counter = run (App [] [] [] (Counter 0) update view) ()
     update Increment _ c = pure (c + 1)
     update Decrement _ c = pure (c - 1)
 
-    view :: () -> Counter -> View
+    view :: Elm Msg => () -> Counter -> View
     view _ (Counter c) = 
       Div <||>
         [ Button <| OnClick (\_ -> command Decrement) |> [ "-" ]
