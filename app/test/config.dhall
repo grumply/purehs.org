@@ -16,15 +16,11 @@ let deps = (../shared/config.dhall).dependencies
 in
   test //
     { dependencies = deps
-    , library =
-        { source-dirs = [ "src" ]
-        , other-modules = [] : List Text
-        }
     , executables = 
         { test = 
-          { source-dirs = [ "src" ] 
+          { source-dirs = ["src"] 
           , main = "Main.hs" 
-          , dependencies = [ "test" ] # deps
+          , dependencies = deps
           }
         }
     }

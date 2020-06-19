@@ -4,14 +4,14 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f65359cc86184837b2fc058e87258a089c3adb04d5b14fbb08fde9e49dad5b36
+-- hash: 6ad5e8525f2dd6ac905a06a8989003073b49caac9a532c1d69731981028f99f3
 
 name:           backend
 version:        0.1.0.0
 synopsis:       backend server
 category:       Web
-author:         <Author>
-maintainer:     <Author>
+author:         Sean Hickman
+maintainer:     Sean Hickman
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -71,7 +71,6 @@ executable backend
   ghcjs-options: -O -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=3000000 -DGHCJS_BUSY_YIELD=20
   build-depends:
       Glob
-    , backend
     , base
     , bytestring
     , containers

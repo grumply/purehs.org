@@ -4,14 +4,14 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b036f0c845c085e39d186d7f0b53a90e0f46bcf540cd2911fa64e0a9977c7f92
+-- hash: 29ccb21e0c64637da10a7671927317801a60127a3dedd80e96e291756a7b57ff
 
 name:           frontend
 version:        0.1.0.0
 synopsis:       frontend client
 category:       Web
-author:         <Author>
-maintainer:     <Author>
+author:         Sean Hickman
+maintainer:     Sean Hickman
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -133,7 +133,6 @@ executable frontend
       async
     , base
     , containers
-    , frontend
     , lens
     , pure
     , pure-css

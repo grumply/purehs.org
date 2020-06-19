@@ -13,7 +13,7 @@ import Shared
 import Shared.Blog
 import Shared.Package
 import Shared.Tutorial as Tutorial
-import Shared.Types (Episode)
+import Shared.Types (Episode,Rendered)
 
 import Pure.Elm hiding (Command,Open,target,name,link,url,menu,delay,wait,Left,Right,green,blue,black,gray,lavender,touch)
 import Pure.Elm.Application (link,goto,location,url,session)
@@ -181,7 +181,7 @@ aboutMenu ses =
           [ H2 <||> [ "From the blog" ] 
           , -- Pull most recent so it's programatically updated; 
             -- I don't want to be manually updating this
-            producing @[PostView] (App.req ses Shared.listPosts () >>= either pure wait) $ consuming $ \ps ->
+            producing @[Post Rendered] (App.req ses Shared.listPosts () >>= either pure wait) $ consuming $ \ps ->
               Ul <||> 
                 [ Li <||>
                   [ A <| link (PostR slug) |>
@@ -234,7 +234,7 @@ documentationMenu ses =
               s <- newSeed
               ps <- either pure wait r
               pure (List.take 3 $ List.cycle $ shuffle ps s)
-          in producing @[PackageView] rq $ consuming $ \ps ->
+          in producing @[Package Rendered] rq $ consuming $ \ps ->
               Ul <||> 
                 [ Li <||>
                   [ A <| link (PackageR name) |>
@@ -267,7 +267,7 @@ tutorialsMenu ses =
                 let notEpisode Tutorial {..} = isNothing episode
                 ts <- List.filter notEpisode <$> either pure wait r
                 pure (List.take 4 $ List.cycle $ shuffle ts s)
-            in producing @[TutorialView] rq $ consuming $ \ts ->
+            in producing @[Tutorial Rendered] rq $ consuming $ \ts ->
                 Ul <||> 
                   [ Li <||>
                     [ A <| link (TutorialR slug) |>

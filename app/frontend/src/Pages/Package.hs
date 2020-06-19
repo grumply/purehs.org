@@ -31,7 +31,7 @@ import Control.Monad (join,(>=>))
 import Data.List as List
 import GHC.Exts (IsList(..))
 
-instance Render (ListItem PackageView) where
+instance Render (ListItem (Package Rendered)) where
   render (ListItem _ b p@Package {..}) =
     article b (render (p,[latest])) (render excerpt) Null
 
@@ -51,7 +51,7 @@ instance Render RelativeVersions  where
       | v <- vs
       ]
 
-instance Render (PackageView,[Types.Version]) where
+instance Render (Package Rendered,[Types.Version]) where
   render (p@Package {..},vs) = 
     Header <| Themed @HeaderT |>
       [ render (Avatar.Avatars (author : toList collaborators))
@@ -62,14 +62,14 @@ instance Render (PackageView,[Types.Version]) where
       , render (RelativeVersions name latest vs)
       ]
 
-instance Render (PackageName,VersionView) where
+instance Render (PackageName,Package.Version Rendered) where
   render (pn,Package.Version {..}) =
     Header <||> 
       [ render $ Title.Title (VersionR pn version) (toTxt version) ]
 
-instance Render (Route,Request [VersionView]) where
+instance Render (Route,Request [Package.Version Rendered]) where
   render (PackageR pn,vs) =
-    producing @[VersionView] (either pure wait vs) 
+    producing @[Package.Version Rendered] (either pure wait vs) 
       (consumingWith options (consumer True id))
     where
       consumer b f ms = Div <| Themed @SubarticlesT |> 
@@ -83,9 +83,9 @@ instance Render (Route,Request [VersionView]) where
               & suspense (Milliseconds 500 0)
                   (consumer False (Themed @PlaceholderT) [placeholderVersionView])
 
-instance Render (Route,(Request (Maybe PackageView),Request [VersionView])) where
-  render (rt,(p,vs)) =
-    producing @(Maybe PackageView) (either titled (wait >=> titled) p) 
+instance Render (Route,(Request (Maybe (Package Rendered)),Request (Maybe (PackageContent Rendered)),Request [Package.Version Rendered])) where
+  render (rt,(p,pc,vs)) =
+    producing @(Maybe (Package Rendered)) (either titled (wait >=> titled) p) 
       (consumingWith options (consumer True id))
     where
       titled Nothing = retitle "Not Found" >> pure Nothing
@@ -94,7 +94,7 @@ instance Render (Route,(Request (Maybe PackageView),Request [VersionView])) wher
       consumer _ _ Nothing = notFound "Package"
       consumer b f (Just p@Package {..}) = 
         Div <||>
-          [ article b (render (p,[latest])) (render excerpt) Null <| f
+          [ article b (render (p,[latest])) (render (rt,pc)) Null <| f
           , render (rt,vs)
           ]
 
@@ -102,9 +102,22 @@ instance Render (Route,(Request (Maybe PackageView),Request [VersionView])) wher
               & suspense (Milliseconds 500 0) 
                   (consumer False (Themed @PlaceholderT) (Just placeholderPackageView))
 
-instance Render (Route,Request [PackageView]) where
+instance Render (Route,Request (Maybe (PackageContent Rendered))) where
+  render (_,pcv) = 
+    producing @(Maybe (PackageContent Rendered)) (either pure wait pcv) 
+      (consumingWith options consumer)
+    where
+      consumer Nothing = Null
+      consumer (Just (PackageContent md)) = render md 
+
+      options = defaultOptions
+              & suspense (Milliseconds 500 0) 
+                  (consumer (Just placeholderPackageContentView) <| Themed @PlaceholderT)
+
+
+instance Render (Route,Request [Package Rendered]) where
   render (rt,pvs) = 
-    producing @[PackageView] (either pure wait pvs) 
+    producing @[Package Rendered] (either pure wait pvs) 
       (consumingWith options (consumer True id))
     where
       consumer b f = render . Listing b rt f (const Null)
@@ -113,14 +126,14 @@ instance Render (Route,Request [PackageView]) where
               & suspense (Milliseconds 500 0) 
                   (consumer False (Themed @PlaceholderT) [placeholderPackageView])
 
-instance Render (PackageName,Types.Version,ModuleView) where
+instance Render (PackageName,Types.Version,Module Rendered) where
   render (pn,v,Module {..}) =
     Header <||> 
       [ render $ Title.Title (ModuleR pn v name) (toTxt name) ]
 
-instance Render (Route,Request [(ModuleView,ModuleContentView)]) where
+instance Render (Route,Request [(Module Rendered,ModuleContent Rendered)]) where
   render (VersionR pn v,mvs) =
-    producing @[(ModuleView,ModuleContentView)] (either pure wait mvs) 
+    producing @[(Module Rendered,ModuleContent Rendered)] (either pure wait mvs) 
       (consumingWith options (consumer True id . fmap fst))
     where
       consumer b f ms = Div <| Themed @SubarticlesT |> 
@@ -136,9 +149,9 @@ instance Render (Route,Request [(ModuleView,ModuleContentView)]) where
 
   render _ = Null
 
-instance Render (PackageName,Request (Maybe VersionView)) where
+instance Render (PackageName,Request (Maybe (Package.Version Rendered))) where
   render (pn,vv) =
-    producing @(Maybe VersionView) (either titled (wait >=> titled) vv) 
+    producing @(Maybe (Package.Version Rendered)) (either titled (wait >=> titled) vv) 
       (consumingWith options (consumer True id))
     where
       titled Nothing = retitle "Not Found" >> pure Nothing
@@ -152,9 +165,9 @@ instance Render (PackageName,Request (Maybe VersionView)) where
               & suspense (Milliseconds 500 0)
                   (consumer False (Themed @PlaceholderT) (Just placeholderVersionView))
 
-instance Render (Route,(Request (Maybe PackageView),Request (Maybe VersionView),Request [(ModuleView,ModuleContentView)])) where
+instance Render (Route,(Request (Maybe (Package Rendered)),Request (Maybe (Package.Version Rendered)),Request [(Module Rendered,ModuleContent Rendered)])) where
   render (r@(VersionR pn v),(pv,vv,mvs)) =
-    producing @(Maybe PackageView) (either titled (wait >=> titled) pv) 
+    producing @(Maybe (Package Rendered)) (either titled (wait >=> titled) pv) 
       (consumingWith options (consumer True id))
     where
       titled Nothing = retitle "Not Found" >> pure Nothing
@@ -172,10 +185,10 @@ instance Render (Route,(Request (Maybe PackageView),Request (Maybe VersionView),
                   (consumer False (Themed @PlaceholderT) (Just placeholderPackageView))
 
   render (ModuleR pn v mn,(pv,vv,mvs)) = 
-    producing @[(ModuleView,ModuleContentView)] (either pure wait mvs)
+    producing @[(Module Rendered,ModuleContent Rendered)] (either pure wait mvs)
       (consumingWith options (consumer True id . findModule))
     where
-      findModule :: [(ModuleView,ModuleContentView)] -> Maybe [Entity]
+      findModule :: [(Module Rendered,ModuleContent Rendered)] -> Maybe [Entity]
       findModule = fmap (entities pn v) . List.find (\(Module {..},_) -> mn == name) 
 
       consumer :: Bool -> (View -> View) -> Maybe [Entity] -> View
@@ -190,10 +203,10 @@ instance Render (Route,(Request (Maybe PackageView),Request (Maybe VersionView),
                   (consumer False (Themed @PlaceholderT) (Just placeholderEntities))
 
   render (EntityR pn v mn e,(pv,vv,mvs)) =
-    producing @[(ModuleView,ModuleContentView)] (either pure wait mvs)
+    producing @[(Module Rendered,ModuleContent Rendered)] (either pure wait mvs)
       (consumingWith options (consumer True id . findEntity . findModule))
     where
-      findModule :: [(ModuleView,ModuleContentView)] -> Maybe [Entity]
+      findModule :: [(Module Rendered,ModuleContent Rendered)] -> Maybe [Entity]
       findModule = fmap (entities pn v) . List.find (\(Module {..},_) -> mn == name) 
 
       findEntity :: Maybe [Entity] -> Maybe Entity
@@ -214,14 +227,21 @@ instance Render (PackageName,Types.Version,ModuleName,Entity) where
   render (pn,v,mn,Entity ety en (EntityView vs)) = 
     let vs' = linkEntities pn v mn vs
         more = [ Div <| Themed @MoreT |> [ A <| url Href Href (location (EntityR pn v mn en)) |> [ "See More >" ]] ]
-    in article True (render (pn,v,mn,en)) (render $ Markdown (vs' ++ more)) Null
+    in article True (render (pn,v,mn,en)) (render $ Rendered (vs' ++ more)) Null
 
 instance Render (PackageName,Types.Version,ModuleName,[Entity]) where
   render (pn,v,mn,es) = Div <||> fmap (\e -> render (pn,v,mn,e)) es
 
 instance Render (ListItem Entity) where
-  render (ListItem (ModuleR pn v mn) _ e) = render (pn,v,mn,e)
-  render (ListItem (EntityR pn v mn _) _ e) = render (pn,v,mn,e)
+  render (ListItem (ModuleR pn v mn) _ (Entity ety en (EntityView vs))) =
+    let vs' = linkEntities pn v mn vs
+        more = [ Div <| Themed @MoreT |> [ A <| url Href Href (location (EntityR pn v mn en)) |> [ "See More >" ]] ]
+    in article True (render (pn,v,mn,en)) (render $ Rendered (vs' ++ more)) Null
+
+  render (ListItem (EntityR pn v mn _) _ e) =
+    let Entity ety en (EntityView vs') = rebaseEntityLinks pn v mn e
+    in article True (render (pn,v,mn,en)) (render $ Rendered vs') Null
+
   render _ = Null
 
 instance Render (PackageName,Types.Version,ModuleName,Txt) where

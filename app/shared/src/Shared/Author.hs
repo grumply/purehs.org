@@ -8,7 +8,6 @@ import Shared.Types
   , Email
   , Company
   , Excerpt
-  , Markdown
   , Description
   , Synopsis
   )
@@ -39,13 +38,7 @@ instance Ord (Author view) where
 instance Eq (Author view) where
   (==) = (==) `on` name
 
-type AuthorYaml = Author Txt
-type AuthorView = Author Markdown
-
 newtype AuthorContent content = AuthorContent content
   deriving (Functor,Foldable)
   deriving (ToTxt,ToJSON,FromTxt,FromJSON)
     via content
-
-type AuthorContentMarkdown = AuthorContent Txt
-type AuthorContentView = AuthorContent Markdown

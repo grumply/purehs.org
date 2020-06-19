@@ -9,7 +9,6 @@ import Shared.Types
   , Changes
   , Description
   , Name
-  , Markdown
   , Published
   , Tags
   , License
@@ -49,8 +48,10 @@ instance Eq (Package format) where
 instance Ord (Package format) where
   compare = compare `on` ((name :: Package format -> PackageName) &&& latest)
 
-type PackageYaml = Package Txt
-type PackageView = Package Markdown
+newtype PackageContent content = PackageContent content
+  deriving (Functor,Foldable)
+  deriving (Generic,ToTxt,ToJSON,FromTxt,FromJSON)
+    via content
 
 data Version format = Version
   { version :: Types.Version
@@ -61,9 +62,6 @@ instance Eq (Version format) where
   (==) = (==) `on` (version :: Version format -> Types.Version)
 
 -- Ord on version is a little funky, so omitted
-
-type VersionYaml = Version Txt
-type VersionView = Version Markdown
 
 data Module format = Module
   { name :: ModuleName
@@ -78,13 +76,7 @@ instance Eq (Module format) where
 instance Ord (Module format) where
   compare = compare `on` (name :: Module format -> ModuleName)
 
-type ModuleYaml = Module Txt
-type ModuleView = Module Markdown
-
 newtype ModuleContent content = ModuleContent content
   deriving (Functor,Foldable)
   deriving (Generic,ToTxt,ToJSON,FromTxt,FromJSON)
     via content
-
-type ModuleContentMarkdown = ModuleContent Txt
-type ModuleContentView = ModuleContent Markdown

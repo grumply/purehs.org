@@ -148,7 +148,11 @@ newtype Collaborators = Collaborators [Name]
   deriving (ToJSON,FromJSON,Eq,Search,IsList)
     via [Name]
 
-newtype Markdown = Markdown [View]
+newtype Unrendered = Unrendered Txt
+  deriving (ToTxt,FromTxt,ToJSON,FromJSON,Eq,IsString,Search)
+    via Txt
+
+newtype Rendered = Rendered [View]
   deriving (ToJSON,FromJSON,Search,IsList)
     via [View]
 

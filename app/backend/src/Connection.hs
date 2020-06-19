@@ -170,6 +170,7 @@ packageImpl = Impl Shared.packageAPI msgs reqs
     msgs = WS.none
     reqs = handleListPackages
        <:> handleGetPackage
+       <:> handleGetPackageContent
        <:> WS.none
 
 handleListPackages :: RequestHandler Shared.ListPackages
@@ -181,7 +182,10 @@ handleGetPackage = respondWithRaw $ \p -> do
   ps <- cached rawPackages
   pure $ fromMaybe "null" (Map.lookup p ps)
 
-
+handleGetPackageContent :: RequestHandler Shared.GetPackageContent
+handleGetPackageContent = respondWithRaw $ \p -> do
+  ps <- cached rawPackageContents
+  pure $ fromMaybe "null" (Map.lookup p ps)
 
 packageVersionImpl :: Implementation '[] _ '[] _
 packageVersionImpl = Impl Shared.packageVersionAPI msgs reqs
@@ -247,7 +251,7 @@ normalizeVersion pn v = do
   case v of
     Version "latest" -> do
       pvs <- cached packageVersionsList
-      pure $ fmap (maximum . fmap (Package.version :: Package.VersionView -> Types.Version)) (Map.lookup pn pvs)
+      pure $ fmap (maximum . fmap (Package.version :: Package.Version Rendered -> Types.Version)) (Map.lookup pn pvs)
     _ -> 
       pure (Just v)
 

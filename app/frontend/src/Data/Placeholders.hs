@@ -14,7 +14,7 @@ import Pure.Elm
 
 import GHC.Exts (IsList(..))
 
-placeholderPackageView :: PackageView
+placeholderPackageView :: Package Rendered
 placeholderPackageView = Package
   { name = fromTxt "Placeholder"
   , author = fromTxt "Placeholder"
@@ -31,7 +31,11 @@ placeholderPackageView = Package
       [ P <||> [ fromTxt $ Txt.take 300 lorem_ipsum ] ]
   }
 
-placeholderVersionView :: VersionView
+placeholderPackageContentView :: PackageContent Rendered
+placeholderPackageContentView = PackageContent $ fromList
+  [ P <||> [ fromTxt lorem_ipsum ]]
+
+placeholderVersionView :: Package.Version Rendered
 placeholderVersionView = Package.Version
   { version = fromTxt "0.0.0.0"
   , changes = Changes $ fromList 
@@ -39,7 +43,7 @@ placeholderVersionView = Package.Version
       ]
   }
 
-placeholderTutorialView :: TutorialView
+placeholderTutorialView :: Tutorial Rendered
 placeholderTutorialView = Tutorial
   { title = fromTxt "Placeholder"
   , subtitle = Nothing
@@ -58,11 +62,11 @@ placeholderTutorialView = Tutorial
       [ P <||> [ fromTxt $ Txt.take 300 lorem_ipsum ] ]
   }
 
-placeholderTutorialContentView :: TutorialContentView
+placeholderTutorialContentView :: TutorialContent Rendered
 placeholderTutorialContentView = TutorialContent $ fromList
   [ P <||> [ fromTxt lorem_ipsum ]]
 
-placeholderPostView :: PostView
+placeholderPostView :: Post Rendered
 placeholderPostView = Post
   { title = fromTxt "Placeholder"
   , subtitle = Nothing
@@ -79,11 +83,11 @@ placeholderPostView = Post
       [ P <||> [ fromTxt $ Txt.take 300 lorem_ipsum ] ]
   }
 
-placeholderPostContentView :: PostContentView
+placeholderPostContentView :: PostContent Rendered
 placeholderPostContentView = PostContent $ fromList
   [ P <||> [ fromTxt lorem_ipsum ]]
 
-placeholderAuthorView :: AuthorView
+placeholderAuthorView :: Author Rendered
 placeholderAuthorView = Author.Author
   { name = fromTxt "Placeholder"
   , github = Just $ fromTxt "Placeholder"
@@ -96,11 +100,11 @@ placeholderAuthorView = Author.Author
       [ P <||> [ fromTxt $ Txt.take 300 lorem_ipsum ] ]
   }
 
-placeholderAuthorContentView :: AuthorContentView
+placeholderAuthorContentView :: AuthorContent Rendered
 placeholderAuthorContentView = AuthorContent $ fromList
   [ P <||> [ fromTxt lorem_ipsum ]]
 
-placeholderModuleView :: ModuleView
+placeholderModuleView :: Module Rendered
 placeholderModuleView = Module
   { name = fromTxt "Placeholder"
   , synopsis = Txt.take 250 lorem_ipsum
@@ -120,7 +124,7 @@ placeholderEntities =
     nm = fromTxt "Placeholder"
     v  = EntityView [ P <||> [ fromTxt $ Txt.take 300 lorem_ipsum ] ]
 
-placeholderPageView :: PageView
+placeholderPageView :: Page Rendered
 placeholderPageView = Page
   { slug = fromTxt "placeholder"
   , title = fromTxt "Placeholder" 
@@ -130,7 +134,7 @@ placeholderPageView = Page
       [ P <||> [ fromTxt $ Txt.take 300 lorem_ipsum ] ]
   }
 
-placeholderPageContentView :: PageContentView
+placeholderPageContentView :: PageContent Rendered
 placeholderPageContentView = PageContent $ fromList
   [ P <||> [ fromTxt lorem_ipsum ] ]
 

@@ -13,7 +13,6 @@ import Shared.Types
   , Tags
   , Excerpt
   , Description
-  , Markdown
   , Synopsis
   )
 
@@ -47,13 +46,7 @@ instance Ord (Post format) where
 instance Eq (Post format) where
   (==) = (==) `on` (published &&& slug)
 
-type PostYaml = Post Txt
-type PostView = Post Markdown
-
 newtype PostContent content = PostContent content
   deriving (Functor,Foldable)
   deriving (ToTxt,ToJSON,FromTxt,FromJSON)
     via content
-
-type PostContentMarkdown = PostContent Txt
-type PostContentView = PostContent Markdown

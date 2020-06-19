@@ -14,6 +14,7 @@ import Data.Route
 import Styles.Themes hiding (wait)
 
 import Shared.Author as Author
+import Shared.Types (Rendered)
 
 import Pure.Elm.Application hiding (render,wait)
 import Pure.Maybe
@@ -22,7 +23,7 @@ import Control.Concurrent.Async (wait)
 
 import Control.Monad
 
-newtype AuthorHeader = AuthorHeader AuthorView
+newtype AuthorHeader = AuthorHeader (Author.Author Rendered)
 instance Render (Route,AuthorHeader) where
   render (rt,AuthorHeader Author.Author {..}) =
     Header <| Themed @HeaderT |> 
@@ -34,9 +35,9 @@ instance Render (Route,AuthorHeader) where
         , maybe Null render company
         ]
 
-instance Render (Route,(Request (Maybe AuthorView),Request (Maybe AuthorContentView))) where
+instance Render (Route,(Request (Maybe (Author.Author Rendered)),Request (Maybe (AuthorContent Rendered)))) where
   render (rt,(a,acv)) =
-    producing @(Maybe AuthorView) (either titled (wait >=> titled) a) 
+    producing @(Maybe (Author.Author Rendered)) (either titled (wait >=> titled) a) 
       (consumingWith options (consumer True))
     where
       titled Nothing = retitle "Not Found" >> pure Nothing
@@ -50,9 +51,9 @@ instance Render (Route,(Request (Maybe AuthorView),Request (Maybe AuthorContentV
               & suspense (Milliseconds 500 0) 
                   (consumer False (Just placeholderAuthorView) <| Themed @PlaceholderT)
 
-instance Render (Route,Request (Maybe AuthorContentView)) where
+instance Render (Route,Request (Maybe (AuthorContent Rendered))) where
   render (rt,pcv) = 
-    producing @(Maybe AuthorContentView) (either pure wait pcv) 
+    producing @(Maybe (AuthorContent Rendered)) (either pure wait pcv) 
       (consumingWith options consumer)
     where
       consumer Nothing = Null
@@ -62,13 +63,13 @@ instance Render (Route,Request (Maybe AuthorContentView)) where
               & suspense (Milliseconds 500 0) 
                   (consumer (Just placeholderAuthorContentView) <| Themed @PlaceholderT)
 
-instance Render (ListItem AuthorView) where
+instance Render (ListItem (Author.Author Rendered)) where
   render (ListItem rt b a@Author.Author {..}) = 
     article b (render (rt,AuthorHeader a)) (render excerpt) Null
 
-instance Render (Route,Request [AuthorView]) where
+instance Render (Route,Request [Author.Author Rendered]) where
   render (rt,as) = 
-    producing @[AuthorView] (either pure wait as) 
+    producing @[Author.Author Rendered] (either pure wait as) 
       (consumingWith options (consumer True id))
     where
       consumer b f = render . Listing b rt f (const Null)

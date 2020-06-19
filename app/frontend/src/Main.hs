@@ -90,7 +90,7 @@ instance Render (Route,Resource) where
       PageResource pv pcv        -> render (rt,(pv,pcv))
 
       PackagesResource pvs       -> render (rt,pvs)
-      PackageResource pv vs      -> render (rt,(pv,vs))
+      PackageResource pv pc vs   -> render (rt,(pv,pc,vs))
 
       TutorialsResource tvs      -> render (rt,tvs)
       TutorialResource tv tcv    -> render (rt,(tv,tcv))

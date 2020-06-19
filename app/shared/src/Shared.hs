@@ -14,17 +14,18 @@ import Pure.WebSocket (mkRequest,(<:>),none,(<:+:>))
 import qualified Pure.WebSocket as WS (FullAPI,api)
 
 host :: String
-host = "159.65.79.222"
+-- host = "159.65.79.222"
+host = "192.168.1.8"
 
 port :: Int
 port = 8081
 
-mkRequest "ListAuthors" [t|() -> [Author.AuthorView]|]
-mkRequest "GetAuthor" [t|Name -> Maybe Author.AuthorView|]
-mkRequest "GetAuthorContent" [t|Name -> Maybe Author.AuthorContentView|]
-mkRequest "ListAuthorPackages" [t|Name -> [Package.PackageView]|]
-mkRequest "ListAuthorPosts" [t|Name -> [Blog.PostView]|]
-mkRequest "ListAuthorTutorials" [t|Name -> [Tutorial.TutorialView]|]
+mkRequest "ListAuthors" [t|() -> [Author.Author Rendered]|]
+mkRequest "GetAuthor" [t|Name -> Maybe (Author.Author Rendered)|]
+mkRequest "GetAuthorContent" [t|Name -> Maybe (Author.AuthorContent Rendered)|]
+mkRequest "ListAuthorPackages" [t|Name -> [Package.Package Rendered]|]
+mkRequest "ListAuthorPosts" [t|Name -> [Blog.Post Rendered]|]
+mkRequest "ListAuthorTutorials" [t|Name -> [Tutorial.Tutorial Rendered]|]
 
 authorAPI :: WS.FullAPI '[] _
 authorAPI = WS.api msgs reqs
@@ -40,9 +41,9 @@ authorAPI = WS.api msgs reqs
 
 
 
-mkRequest "ListPages" [t|() -> [Page.PageView]|] -- probably not used
-mkRequest "GetPage" [t|Slug -> Maybe Page.PageView|]
-mkRequest "GetPageContent" [t|Slug -> Maybe Page.PageContentView|]
+mkRequest "ListPages" [t|() -> [Page.Page Rendered]|] -- probably not used
+mkRequest "GetPage" [t|Slug -> Maybe (Page.Page Rendered)|]
+mkRequest "GetPageContent" [t|Slug -> Maybe (Page.PageContent Rendered)|]
 
 pagesAPI :: WS.FullAPI '[] _
 pagesAPI = WS.api msgs reqs
@@ -55,9 +56,9 @@ pagesAPI = WS.api msgs reqs
 
 
 
-mkRequest "ListPosts" [t|() -> [Blog.PostView]|]
-mkRequest "GetPost" [t|Slug -> Maybe Blog.PostView|]
-mkRequest "GetPostContent" [t|Slug -> Maybe Blog.PostContentView|]
+mkRequest "ListPosts" [t|() -> [Blog.Post Rendered]|]
+mkRequest "GetPost" [t|Slug -> Maybe (Blog.Post Rendered)|]
+mkRequest "GetPostContent" [t|Slug -> Maybe (Blog.PostContent Rendered)|]
 
 blogAPI :: WS.FullAPI '[] _
 blogAPI = WS.api msgs reqs
@@ -70,9 +71,9 @@ blogAPI = WS.api msgs reqs
 
 
 
-mkRequest "ListTutorials" [t|() -> [Tutorial.TutorialView]|]
-mkRequest "GetTutorial" [t|Slug -> Maybe Tutorial.TutorialView|]
-mkRequest "GetTutorialContent" [t|Slug -> Maybe Tutorial.TutorialContentView|]
+mkRequest "ListTutorials" [t|() -> [Tutorial.Tutorial Rendered]|]
+mkRequest "GetTutorial" [t|Slug -> Maybe (Tutorial.Tutorial Rendered)|]
+mkRequest "GetTutorialContent" [t|Slug -> Maybe (Tutorial.TutorialContent Rendered)|]
 
 tutorialAPI :: WS.FullAPI '[] _
 tutorialAPI = WS.api msgs reqs
@@ -85,8 +86,9 @@ tutorialAPI = WS.api msgs reqs
 
 
 
-mkRequest "ListPackages" [t|() -> [Package.PackageView]|]
-mkRequest "GetPackage" [t|PackageName -> Maybe Package.PackageView|]
+mkRequest "ListPackages" [t|() -> [Package.Package Rendered]|]
+mkRequest "GetPackage" [t|PackageName -> Maybe (Package.Package Rendered)|]
+mkRequest "GetPackageContent" [t|PackageName -> Maybe (Package.PackageContent Rendered)|]
 
 packageAPI :: WS.FullAPI '[] _
 packageAPI = WS.api msgs reqs
@@ -94,12 +96,13 @@ packageAPI = WS.api msgs reqs
     msgs = none
     reqs = listPackages
        <:> getPackage
+       <:> getPackageContent
        <:> none
 
 
 
-mkRequest "ListPackageVersions" [t|PackageName -> [Package.VersionView]|]
-mkRequest "GetPackageVersion" [t|(PackageName,Version) -> Maybe Package.VersionView|]
+mkRequest "ListPackageVersions" [t|PackageName -> [Package.Version Rendered]|]
+mkRequest "GetPackageVersion" [t|(PackageName,Version) -> Maybe (Package.Version Rendered)|]
 
 packageVersionAPI :: WS.FullAPI '[] _
 packageVersionAPI = WS.api msgs reqs
@@ -111,9 +114,9 @@ packageVersionAPI = WS.api msgs reqs
 
 
 
-mkRequest "ListPackagePosts" [t|PackageName -> [Blog.PostView]|]
-mkRequest "GetPackagePost" [t|(PackageName,Slug) -> Maybe Blog.PostView|]
-mkRequest "GetPackagePostContent" [t|(PackageName,Slug) -> Maybe Blog.PostContentView|]
+mkRequest "ListPackagePosts" [t|PackageName -> [Blog.Post Rendered]|]
+mkRequest "GetPackagePost" [t|(PackageName,Slug) -> Maybe (Blog.Post Rendered)|]
+mkRequest "GetPackagePostContent" [t|(PackageName,Slug) -> Maybe (Blog.PostContent Rendered)|]
 
 packageBlogAPI :: WS.FullAPI '[] _
 packageBlogAPI = WS.api msgs reqs
@@ -126,9 +129,9 @@ packageBlogAPI = WS.api msgs reqs
 
 
 
-mkRequest "ListPackageVersionTutorials" [t|(PackageName,Version) -> [Tutorial.TutorialView]|]
-mkRequest "GetPackageVersionTutorial" [t|(PackageName,Version,Slug) -> Maybe Tutorial.TutorialView|]
-mkRequest "GetPackageVersionTutorialContent" [t|(PackageName,Version,Slug) -> Maybe Tutorial.TutorialContentView|]
+mkRequest "ListPackageVersionTutorials" [t|(PackageName,Version) -> [Tutorial.Tutorial Rendered]|]
+mkRequest "GetPackageVersionTutorial" [t|(PackageName,Version,Slug) -> Maybe (Tutorial.Tutorial Rendered)|]
+mkRequest "GetPackageVersionTutorialContent" [t|(PackageName,Version,Slug) -> Maybe (Tutorial.TutorialContent Rendered)|]
 
 packageTutorialAPI :: WS.FullAPI '[] _
 packageTutorialAPI = WS.api msgs reqs
@@ -141,10 +144,10 @@ packageTutorialAPI = WS.api msgs reqs
 
 
 
-mkRequest "ListPackageVersionModules" [t|(PackageName,Version) -> [Package.ModuleView]|]
-mkRequest "ListPackageVersionModulesContent" [t|(PackageName,Version) -> [(Package.ModuleView,Package.ModuleContentView)]|]
-mkRequest "GetPackageVersionModule" [t|(PackageName,Version,ModuleName) -> Maybe Package.ModuleView|]
-mkRequest "GetPackageVersionModuleContent" [t|(PackageName,Version,ModuleName) -> Maybe Package.ModuleContentView|]
+mkRequest "ListPackageVersionModules" [t|(PackageName,Version) -> [Package.Module Rendered]|]
+mkRequest "ListPackageVersionModulesContent" [t|(PackageName,Version) -> [(Package.Module Rendered,Package.ModuleContent Rendered)]|]
+mkRequest "GetPackageVersionModule" [t|(PackageName,Version,ModuleName) -> Maybe (Package.Module Rendered)|]
+mkRequest "GetPackageVersionModuleContent" [t|(PackageName,Version,ModuleName) -> Maybe (Package.ModuleContent Rendered)|]
 
 packageModuleAPI :: WS.FullAPI '[] _
 packageModuleAPI = WS.api msgs reqs
@@ -171,7 +174,7 @@ api = authorAPI <:+:>
 
 -- This is a bit naughty; I've inlined the API from try.purehs.org
 -- without importing the package and the request type will match
--- up because the module name is the same `Shared`.
+-- up because the module name is the same `Shared`. Donn't do this!
 mkRequest "Compile" [t|(Txt,Bool) -> Either Txt String|]
 mkRequest "ReadModule" [t|String -> Maybe Txt|]
 

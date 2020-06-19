@@ -24,8 +24,8 @@ import Data.List as List (lookup,length,foldl')
 import Pure.WebSocket hiding (none)
 import System.IO.Unsafe
 
-instance Render Markdown where
-  render (Markdown md) = 
+instance Render Rendered where
+  render (Rendered md) = 
     Section <| Themed @ContentT |>
       [ Div <| Themed @MarkdownT |> 
         [ processTry (processCopyable (processLinks v))
@@ -50,10 +50,10 @@ texts = Txt.dropWhile isSpace . List.foldl' append ""
     append t (TextView _ a) = t <> "\n" <> Txt.dropWhileEnd isSpace a
     append t _ = t
 
-instance Render (Excerpt Markdown) where
+instance Render (Excerpt Rendered) where
   render (Excerpt md) = render md
 
-instance Render (Changes Markdown) where
+instance Render (Changes Rendered) where
   render (Changes md) = render md
 
 data ContentT

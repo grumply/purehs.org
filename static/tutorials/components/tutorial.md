@@ -230,7 +230,7 @@ import Pure
 
 main = do
   let Just safe = fromPrettyDate @Txt "May 29, 2113"
-  inject body (countdown safe)
+  inject body (clock safe)
 
 clock :: Time -> View
 clock = Component $ \self ->

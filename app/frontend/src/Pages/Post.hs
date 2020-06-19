@@ -27,7 +27,7 @@ import Control.Concurrent.Async (wait)
 import Control.Monad
 import GHC.Exts (IsList(..))
 
-newtype PostHeader = PostHeader PostView
+newtype PostHeader = PostHeader (Post Rendered)
 
 toSpecificPost BlogR s = PostR s
 toSpecificPost rt@PostR {} _ = rt
@@ -47,18 +47,18 @@ instance Render (Route,PostHeader) where
       , render tags
       ]
 
-instance Render (ListItem PostView) where
+instance Render (ListItem (Post Rendered)) where
   render (ListItem rt b p@Post {..}) =
     let 
       more = 
           [ Div <| Class "hide" 
           , Div <| Themed @MoreT |> [ A <| url Href Href (location (toSpecificPost rt slug)) |> [ "Read More >" ]]
           ]
-    in article b (render (rt,PostHeader p)) (render excerpt) (render $ Markdown more)
+    in article b (render (rt,PostHeader p)) (render excerpt) (render $ Rendered more)
 
-instance Render (Route,(Request (Maybe PostView),Request (Maybe PostContentView))) where
+instance Render (Route,(Request (Maybe (Post Rendered)),Request (Maybe (PostContent Rendered)))) where
   render (rt,(p,pcv)) =
-    producing @(Maybe PostView) (either titled (wait >=> titled) p) 
+    producing @(Maybe (Post Rendered)) (either titled (wait >=> titled) p) 
       (consumingWith options (consumer True))
     where
       titled p = do
@@ -75,9 +75,9 @@ instance Render (Route,(Request (Maybe PostView),Request (Maybe PostContentView)
               & suspense (Milliseconds 500 0) 
                   (consumer False (Just placeholderPostView) <| Themed @PlaceholderT)
 
-instance Render (Route,Request (Maybe PostContentView)) where
+instance Render (Route,Request (Maybe (PostContent Rendered))) where
   render (_,pcv) = 
-    producing @(Maybe PostContentView) (either pure wait pcv) 
+    producing @(Maybe (PostContent Rendered)) (either pure wait pcv) 
       (consumingWith options consumer)
     where
       consumer Nothing = Null
@@ -87,9 +87,9 @@ instance Render (Route,Request (Maybe PostContentView)) where
               & suspense (Milliseconds 500 0) 
                   (consumer (Just placeholderPostContentView) <| Themed @PlaceholderT)
 
-instance Render (Route,Request [PostView]) where
+instance Render (Route,Request [Post Rendered]) where
   render (rt,ps) = 
-    producing @[PostView] (either pure wait ps) 
+    producing @[Post Rendered] (either pure wait ps) 
       (consumingWith options (consumer True id))
     where
       consumer b f ps = 

@@ -1,7 +1,7 @@
 {-# language DeriveAnyClass, DerivingVia, DuplicateRecordFields #-}
 module Shared.Page where
 
-import Shared.Types (Description,Excerpt,Slug,Markdown,Title,Synopsis)
+import Shared.Types (Description,Excerpt,Slug,Title,Synopsis)
 
 import Pure.Data.JSON (ToJSON,FromJSON)
 import Pure.Data.Txt (Txt,ToTxt,FromTxt)
@@ -18,12 +18,7 @@ data Page content = Page
   , excerpt :: Excerpt content
   } deriving (Generic,ToJSON,FromJSON,Functor,Foldable,Search)
 
-type PageView = Page Markdown
-
 newtype PageContent content = PageContent content
   deriving (Functor,Foldable)
   deriving (ToTxt,ToJSON,FromTxt,FromJSON)
     via content
-
-type PageContentMarkdown = PageContent Txt
-type PageContentView = PageContent Markdown

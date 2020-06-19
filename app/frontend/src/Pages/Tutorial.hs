@@ -31,7 +31,7 @@ import Data.List as List
 import Data.Maybe
 import GHC.Exts (IsList(..))
 
-newtype TutorialHeader = TutorialHeader TutorialView
+newtype TutorialHeader = TutorialHeader (Tutorial Rendered)
 
 toSpecificTutorial TutorialsR s = TutorialR s
 toSpecificTutorial TutorialR {} s = TutorialR s
@@ -51,7 +51,7 @@ instance Render (Route,TutorialHeader) where
       , render tags
       ]
 
-instance Render (ListItem TutorialView) where
+instance Render (ListItem (Tutorial Rendered)) where
   render (ListItem rt b t@Tutorial {..}) =
     let 
       more = 
@@ -59,11 +59,11 @@ instance Render (ListItem TutorialView) where
           , Div <| Themed @MoreT |> [ A <| url Href Href (location (toSpecificTutorial rt slug)) |> [ "Read More >" ]]
           ]
     in
-      article b (render (rt,TutorialHeader t)) (render excerpt) (render $ Markdown more)
+      article b (render (rt,TutorialHeader t)) (render excerpt) (render $ Rendered more)
 
-instance Render (Route,(Request (Maybe TutorialView),Request (Maybe TutorialContentView))) where
+instance Render (Route,(Request (Maybe (Tutorial Rendered)),Request (Maybe (TutorialContent Rendered)))) where
   render (rt,(t,tcv)) =
-    producing @(Maybe TutorialView) (either titled (wait >=> titled) t) 
+    producing @(Maybe (Tutorial Rendered)) (either titled (wait >=> titled) t) 
       (consumingWith options (consumer True))
     where
       titled t = do
@@ -76,8 +76,8 @@ instance Render (Route,(Request (Maybe TutorialView),Request (Maybe TutorialCont
       consumer b (Just tv)
         = Div <||> 
           [ article b (render (rt,TutorialHeader tv)) (render (rt,tcv)) Null
-          , case series (tv :: TutorialView) of
-              Just s | Nothing <- episode (tv :: TutorialView) -> 
+          , case series (tv :: Tutorial Rendered) of
+              Just s | Nothing <- episode (tv :: Tutorial Rendered) -> 
                 render (rt,s,App.req session Shared.listTutorials ())
               _ -> Null 
           ]
@@ -87,9 +87,9 @@ instance Render (Route,(Request (Maybe TutorialView),Request (Maybe TutorialCont
                   (consumer False (Just placeholderTutorialView) <| Themed @PlaceholderT)
 
 
-instance Render (Route,Request (Maybe TutorialContentView)) where
+instance Render (Route,Request (Maybe (TutorialContent Rendered))) where
   render (_,tcv) = 
-    producing @(Maybe TutorialContentView) (either pure wait tcv) 
+    producing @(Maybe (TutorialContent Rendered)) (either pure wait tcv) 
       (consumingWith options consumer)
     where
       consumer Nothing = Null 
@@ -99,23 +99,23 @@ instance Render (Route,Request (Maybe TutorialContentView)) where
               & suspense (Milliseconds 500 0) 
                   (consumer (Just placeholderTutorialContentView) <| Themed @PlaceholderT)
 
-instance Render (Route,Request [TutorialView]) where
+instance Render (Route,Request [Tutorial Rendered]) where
   render (rt,tvs) = 
-    producing @[TutorialView] (either pure wait tvs) 
+    producing @[Tutorial Rendered] (either pure wait tvs) 
       (consumingWith options (consumer True id))
     where
       consumer b f ts = 
         Div <| Themed @HideT . Themed @TutorialsT |>
-          [ render (Listing b rt f (const Null) (List.filter (\t -> isNothing (episode (t :: TutorialView))) ts)) 
+          [ render (Listing b rt f (const Null) (List.filter (\t -> isNothing (episode (t :: Tutorial Rendered))) ts)) 
           ]
 
       options = defaultOptions 
               & suspense (Milliseconds 500 0) 
                   (consumer False (Themed @PlaceholderT) [placeholderTutorialView])
 
-instance Render (Route,Series,IO (Request [TutorialView])) where
+instance Render (Route,Series,IO (Request [Tutorial Rendered])) where
   render (rt,s,tvs) =
-    producing @[TutorialView] (tvs >>= either pure wait)
+    producing @[Tutorial Rendered] (tvs >>= either pure wait)
       (consumingWith options (consumer True))
     where
       consumer b ts = 

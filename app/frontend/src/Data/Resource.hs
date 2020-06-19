@@ -3,13 +3,14 @@ module Data.Resource where
 import qualified App
 import Data.Route
 import Shared
-import Shared.Author (AuthorView,AuthorContentView)
-import Shared.Blog (PostView,PostContentView)
-import Shared.Package (PackageView,VersionView,ModuleView,ModuleContentView)
-import Shared.Page (PageView,PageContentView)
-import Shared.Tutorial (TutorialView,TutorialContentView)
+import Shared.Author (Author,AuthorContent)
+import Shared.Blog (Post,PostContent)
+import Shared.Package (Package,PackageContent,Version,Module,ModuleContent)
+import Shared.Page (Page,PageContent)
+import Shared.Tutorial (Tutorial,TutorialContent)
+import Shared.Types (Rendered)
 
-import Pure.Elm.Application hiding (Async)
+import Pure.Elm.Application hiding (Async,Page)
 
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Async (Async,async,wait)
@@ -20,48 +21,49 @@ data Resource
   = NoResource
 
   | PageResource
-    (Request (Maybe PageView))
-    (Request (Maybe PageContentView))
+    (Request (Maybe (Page Rendered)))
+    (Request (Maybe (PageContent Rendered)))
   
   -- PackageBlogResource == BlogResource
   -- AuthorPostsResource == BlogResource
   | BlogResource 
-    (Request [PostView])
+    (Request [(Post Rendered)])
 
   -- PackagePostResource == PostResource
   | PostResource 
-    (Request (Maybe PostView)) 
-    (Request (Maybe PostContentView))
+    (Request (Maybe (Post Rendered))) 
+    (Request (Maybe (PostContent Rendered)))
 
   -- PackageTutorialsResource == TutorialsResource 
   -- AuthorTutorialsResource == TutorialsResource
   | TutorialsResource 
-    (Request [TutorialView])
+    (Request [(Tutorial Rendered)])
 
   -- PackageTutorialResource == TutorialResource
   | TutorialResource 
-    (Request (Maybe TutorialView)) 
-    (Request (Maybe TutorialContentView))
+    (Request (Maybe (Tutorial Rendered))) 
+    (Request (Maybe (TutorialContent Rendered)))
 
   | AuthorsResource 
-    (Request [AuthorView])
+    (Request [(Author Rendered)])
 
   | AuthorResource 
-    (Request (Maybe AuthorView)) 
-    (Request (Maybe AuthorContentView))
+    (Request (Maybe (Author Rendered))) 
+    (Request (Maybe (AuthorContent Rendered)))
 
   -- AuthorPackagesResource == PackagesResource
   | PackagesResource 
-    (Request [PackageView])
+    (Request [(Package Rendered)])
 
   | PackageResource 
-    (Request (Maybe PackageView)) 
-    (Request [VersionView])
+    (Request (Maybe (Package Rendered))) 
+    (Request (Maybe (PackageContent Rendered)))
+    (Request [(Version Rendered)])
 
   | ModulesResource 
-    (Request (Maybe PackageView)) 
-    (Request (Maybe VersionView)) 
-    (Request [(ModuleView,ModuleContentView)])
+    (Request (Maybe (Package Rendered))) 
+    (Request (Maybe (Version Rendered))) 
+    (Request [((Module Rendered),(ModuleContent Rendered))])
 
 resource :: App.App => Route -> IO Resource
 resource rt = do
@@ -113,6 +115,7 @@ resource rt = do
 
       PackageR pn -> PackageResource 
         <$> (App.req session Shared.getPackage pn)
+        <*> (App.req session Shared.getPackageContent pn)
         <*> (App.req session Shared.listPackageVersions pn)
 
       PackageBlogR pn -> BlogResource

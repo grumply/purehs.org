@@ -21,7 +21,6 @@ library
     Shared
     Shared.Author
     Shared.Blog
-    Shared.Database
     Shared.Package
     Shared.Page
     Shared.Tutorial

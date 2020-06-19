@@ -1,4 +1,4 @@
-email: <Email>
+email: sean@grump.ly
 library:
   source-dirs:
   - src
@@ -84,7 +84,7 @@ default-extensions:
 name: backend
 version: 0.1.0.0
 synopsis: backend server
-author: <Author>
+author: Sean Hickman
 ghcjs-options: -O -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=3000000 -DGHCJS_BUSY_YIELD=20
 license: BSD3
 executables:
@@ -93,7 +93,6 @@ executables:
     - src
     main: Main.hs
     dependencies:
-    - backend
     - base
     - bytestring
     - containers

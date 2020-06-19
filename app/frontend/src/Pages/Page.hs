@@ -13,7 +13,7 @@ import Styles.Themes hiding (wait)
 import Shared.Page as Page
 import Shared.Types
 
-import Pure.Elm.Application hiding (render,wait)
+import Pure.Elm.Application hiding (render,wait,Page)
 import Pure.Maybe
 
 import Control.Concurrent.Async (wait)
@@ -21,9 +21,9 @@ import Control.Concurrent.Async (wait)
 import Control.Monad
 import GHC.Exts (IsList(..))
 
-instance Render (Route, (Request (Maybe PageView), Request (Maybe PageContentView))) where
+instance Render (Route, (Request (Maybe (Page Rendered)), Request (Maybe (PageContent Rendered)))) where
   render (rt,(pv,pcv)) =
-    producing @(Maybe PageView) (either titled (wait >=> titled) pv) 
+    producing @(Maybe (Page Rendered)) (either titled (wait >=> titled) pv) 
       (consumingWith options (consumer True))
     where
       titled Nothing = retitle "Not Found" >> pure Nothing
@@ -36,9 +36,9 @@ instance Render (Route, (Request (Maybe PageView), Request (Maybe PageContentVie
               & suspense (Milliseconds 500 0) 
                   (consumer False (Just placeholderPageView) <| Themed @PlaceholderT)
 
-instance Render (Route,Request (Maybe PageContentView)) where
+instance Render (Route,Request (Maybe (PageContent Rendered))) where
   render (_,pcv) = 
-    producing @(Maybe PageContentView) (either pure wait pcv) 
+    producing @(Maybe (PageContent Rendered)) (either pure wait pcv) 
       (consumingWith options consumer)
     where
       consumer Nothing = Null

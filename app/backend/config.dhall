@@ -36,15 +36,15 @@ let deps =
 in
   backend //
     { dependencies = deps
-    , library =
-        { source-dirs = [ "src" ]
+    , library = 
+        { source-dirs = ["src"]
         , other-modules = [] : List Text
         }
     , executables =
         { backend =
           { source-dirs = [ "src" ]
           , main = "Main.hs"
-          , dependencies = [ "backend" ] # deps
+          , dependencies = deps
           } 
         }
     }

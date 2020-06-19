@@ -51,10 +51,10 @@ import System.IO.Unsafe
 import GHC.Exts (IsList(..))
 
 epoch :: Time
-epoch = Minutes 30 0
+epoch = Seconds 30 0
 
 {-# NOINLINE authors #-}
-authors :: Cached (Map Name (AuthorView,AuthorContentView))
+authors :: Cached (Map Name (Author Rendered,AuthorContent Rendered))
 authors = unsafePerformIO $ 
   forkCache epoch $
     build <$>
@@ -81,7 +81,7 @@ rawAuthors = unsafePerformIO $
       cached Services.Caches.authors
 
 {-# NOINLINE authorsList #-}
-authorsList :: Cached [AuthorView]
+authorsList :: Cached [Author Rendered]
 authorsList = unsafePerformIO $ 
   forkCache epoch $
     fmap fst . Map.elems <$> 
@@ -95,7 +95,7 @@ rawAuthorsList = unsafePerformIO $
       cached authorsList
 
 {-# NOINLINE authorsContent #-}
-authorsContent :: Cached (Map Name AuthorContentView)
+authorsContent :: Cached (Map Name (AuthorContent Rendered))
 authorsContent = unsafePerformIO $ 
   forkCache epoch $
     fmap snd <$> 
@@ -109,13 +109,13 @@ rawAuthorsContent = unsafePerformIO $
       cached authorsContent
 
 {-# NOINLINE authorPosts #-}
-authorPosts :: Cached (Map Name [PostView])
+authorPosts :: Cached (Map Name [Post Rendered])
 authorPosts = unsafePerformIO $
   forkCache epoch $
     fmap rebuild (cached posts)
   where
-    rebuild :: Map Slug (PostView,PostContentView) -> Map Name [PostView]
-    rebuild = reorganize (\_ (pv,_) -> fmap (\a -> (a,pv)) (toList ((Blog.authors :: PostView -> Authors) pv)))
+    rebuild :: Map Slug (Post Rendered,PostContent Rendered) -> Map Name [Post Rendered]
+    rebuild = reorganize (\_ (pv,_) -> fmap (\a -> (a,pv)) (toList ((Blog.authors :: Post Rendered -> Authors) pv)))
 
 {-# NOINLINE rawAuthorPosts #-}
 rawAuthorPosts :: Cached (Map Name BS.ByteString)
@@ -125,13 +125,13 @@ rawAuthorPosts = unsafePerformIO $
       cached authorPosts
 
 {-# NOINLINE authorTutorials #-}
-authorTutorials :: Cached (Map Name [TutorialView])
+authorTutorials :: Cached (Map Name [Tutorial Rendered])
 authorTutorials = unsafePerformIO $
   forkCache epoch $
     fmap rebuild (cached tutorials)
   where
-    rebuild :: Map Slug (TutorialView,TutorialContentView) -> Map Name [TutorialView]
-    rebuild = reorganize (\_ (tv,_) -> fmap (\a -> (a,tv)) (toList ((Tutorial.authors :: TutorialView -> Authors) tv)))
+    rebuild :: Map Slug (Tutorial Rendered,TutorialContent Rendered) -> Map Name [Tutorial Rendered]
+    rebuild = reorganize (\_ (tv,_) -> fmap (\a -> (a,tv)) (toList ((Tutorial.authors :: Tutorial Rendered -> Authors) tv)))
 
 {-# NOINLINE rawAuthorTutorials #-}
 rawAuthorTutorials :: Cached (Map Name BS.ByteString)
@@ -141,7 +141,7 @@ rawAuthorTutorials = unsafePerformIO $
       cached authorTutorials
 
 {-# NOINLINE pages #-}
-pages :: Cached (Map Slug (PageView,PageContentView))
+pages :: Cached (Map Slug (Page Rendered,PageContent Rendered))
 pages = unsafePerformIO $ 
   forkCache epoch $
     fmap build loadPages
@@ -170,7 +170,7 @@ rawPages = unsafePerformIO $
       cached pages
 
 {-# NOINLINE pagesList #-}
-pagesList :: Cached [PageView]
+pagesList :: Cached [Page Rendered]
 pagesList = unsafePerformIO $ 
   forkCache epoch $
     fmap fst . Map.elems <$> 
@@ -184,7 +184,7 @@ rawPagesList = unsafePerformIO $
       cached pagesList
 
 {-# NOINLINE pagesContent #-}
-pagesContent :: Cached (Map Slug PageContentView)
+pagesContent :: Cached (Map Slug (PageContent Rendered))
 pagesContent = unsafePerformIO $ 
   forkCache epoch $
     fmap snd <$> 
@@ -198,7 +198,7 @@ rawPagesContent = unsafePerformIO $
       cached pagesContent
 
 {-# NOINLINE posts #-}
-posts :: Cached (Map Slug (PostView,PostContentView))
+posts :: Cached (Map Slug (Post Rendered,PostContent Rendered))
 posts = unsafePerformIO $ 
   forkCache epoch $
     build <$>
@@ -226,7 +226,7 @@ rawPosts = unsafePerformIO $
       cached posts
 
 {-# NOINLINE postsList #-}
-postsList :: Cached [PostView]
+postsList :: Cached [Post Rendered]
 postsList =
   unsafePerformIO $ forkCache epoch $
     fmap fst . Map.elems <$> 
@@ -240,7 +240,7 @@ rawPostsList = unsafePerformIO $
       cached postsList 
 
 {-# NOINLINE postsContent #-}
-postsContent :: Cached (Map Slug PostContentView)
+postsContent :: Cached (Map Slug (PostContent Rendered))
 postsContent = unsafePerformIO $ 
   forkCache epoch $
     fmap snd <$> 
@@ -254,7 +254,7 @@ rawPostsContent = unsafePerformIO $
       cached postsContent
 
 {-# NOINLINE tutorials #-}
-tutorials :: Cached (Map Slug (TutorialView,TutorialContentView))
+tutorials :: Cached (Map Slug (Tutorial Rendered,TutorialContent Rendered))
 tutorials = unsafePerformIO $ 
   forkCache epoch $
     build <$> 
@@ -291,7 +291,7 @@ rawTutorialsList = unsafePerformIO $
       cached tutorials
 
 {-# NOINLINE tutorialsContent #-}
-tutorialsContent :: Cached (Map Slug TutorialContentView)
+tutorialsContent :: Cached (Map Slug (TutorialContent Rendered))
 tutorialsContent = unsafePerformIO $
   forkCache epoch $
     fmap snd <$>
@@ -305,34 +305,44 @@ rawTutorialsContent = unsafePerformIO $
       cached tutorialsContent
 
 {-# NOINLINE packages #-}
-packages :: Cached (Map PackageName PackageView)
+packages :: Cached (Map PackageName (Package Rendered,PackageContent Rendered))
 packages = unsafePerformIO $ 
   forkCache epoch $
     fmap build loadPackages
   where
-    build = Map.fromList  . fmap process
+    build = Map.fromList . fmap process
       where
         nm :: Package.Package Txt -> PackageName
         nm = name
 
-        process py = (nm py,fmap parseMarkdown py)
+        process (py,pm) = (nm py,(fmap parseMarkdown py,pm))
 
     loadPackages = catMaybes <$> do
-      globs          [i|static/packages/*/|] $ \p ->
-        withYamlFile [i|#{p}package.yaml|] pure
+      globs          [i|static/packages/*/|] $ \p -> do
+        withYamlFile [i|#{p}package.yaml|] $ \yml -> do
+          md  <- markdown [i|#{p}package.md|] 
+          pure (yml,md)
+
 
 {-# NOINLINE rawPackages #-}
 rawPackages :: Cached (Map PackageName BS.ByteString)
 rawPackages = unsafePerformIO $ 
   forkCache epoch $
-    fmap encodeBS <$> 
+    fmap (encodeBS . fst) <$> 
+      cached Services.Caches.packages
+
+{-# NOINLINE rawPackageContents #-}
+rawPackageContents :: Cached (Map PackageName BS.ByteString)
+rawPackageContents = unsafePerformIO $
+  forkCache epoch $
+    fmap (encodeBS . snd) <$>
       cached Services.Caches.packages
 
 {-# NOINLINE packagesList #-}
-packagesList :: Cached [PackageView]
+packagesList :: Cached [Package Rendered]
 packagesList = unsafePerformIO $ 
   forkCache epoch $
-    Map.elems <$> 
+    (fmap fst . Map.elems) <$> 
       cached Services.Caches.packages
 
 {-# NOINLINE rawPackagesList #-}
@@ -343,14 +353,14 @@ rawPackagesList = unsafePerformIO $
       cached packagesList
 
 {-# NOINLINE authorPackages #-}
-authorPackages :: Cached (Map Name [PackageView])
+authorPackages :: Cached (Map Name [Package Rendered])
 authorPackages = unsafePerformIO $ 
   forkCache epoch $ do
-    as :: [AuthorView] <- cached authorsList
-    ps :: Map PackageName PackageView <- cached Services.Caches.packages
+    as :: [Author Rendered] <- cached authorsList
+    ps :: Map PackageName (Package Rendered,PackageContent Rendered) <- cached Services.Caches.packages
     aps <- for as $ \a -> 
       let nm = Author.name a
-      in pure (nm,Map.elems $ Map.filter ((nm ==) . author) ps)
+      in pure (nm,fmap fst $ Map.elems $ Map.filter ((nm ==) . author . fst) ps)
     pure (Map.fromList aps)
 
 {-# NOINLINE rawAuthorPackages #-}
@@ -361,7 +371,7 @@ rawAuthorPackages = unsafePerformIO $
       cached authorPackages
 
 {-# NOINLINE packageVersions #-}
-packageVersions :: Cached (Map (PackageName,Types.Version) VersionView)
+packageVersions :: Cached (Map (PackageName,Types.Version) (Package.Version Rendered))
 packageVersions = unsafePerformIO $ 
   forkCache epoch $
     build <$>
@@ -395,7 +405,7 @@ rawPackageVersions = unsafePerformIO $
       cached packageVersions
 
 {-# NOINLINE packageVersionsList #-}
-packageVersionsList :: Cached (Map PackageName [VersionView])
+packageVersionsList :: Cached (Map PackageName [Package.Version Rendered])
 packageVersionsList = unsafePerformIO $
   forkCache epoch $
     fmap (fmap snd) . pushdown id <$>
@@ -409,7 +419,7 @@ rawPackageVersionsList = unsafePerformIO $
       cached packageVersionsList
 
 {-# NOINLINE packagePosts #-}
-packagePosts :: Cached (Map (PackageName,Slug) (PostView,PostContentView))
+packagePosts :: Cached (Map (PackageName,Slug) (Post Rendered,PostContent Rendered))
 packagePosts = unsafePerformIO $ 
   forkCache epoch $
     build <$>
@@ -444,7 +454,7 @@ rawPackagePosts = unsafePerformIO $
       cached packagePosts
 
 {-# NOINLINE packagePostsList #-}
-packagePostsList :: Cached (Map PackageName [PostView])
+packagePostsList :: Cached (Map PackageName [Post Rendered])
 packagePostsList = unsafePerformIO $ 
   forkCache epoch $
     fmap (fmap (fst . snd)) . pushdown id <$> 
@@ -458,7 +468,7 @@ rawPackagePostsList = unsafePerformIO $
       cached packagePostsList
 
 {-# NOINLINE packagePostsContent #-}
-packagePostsContent :: Cached (Map (PackageName,Slug) PostContentView)
+packagePostsContent :: Cached (Map (PackageName,Slug) (PostContent Rendered))
 packagePostsContent = unsafePerformIO $
   forkCache epoch $
     fmap snd <$>
@@ -472,7 +482,7 @@ rawPackagePostsContent = unsafePerformIO $
       cached packagePostsContent
 
 {-# NOINLINE packageTutorials #-}
-packageTutorials :: Cached (Map (PackageName,Types.Version,Slug) (TutorialView,TutorialContentView))
+packageTutorials :: Cached (Map (PackageName,Types.Version,Slug) (Tutorial Rendered,TutorialContent Rendered))
 packageTutorials = unsafePerformIO $ 
   forkCache epoch $
     build <$>
@@ -512,7 +522,7 @@ rawPackageTutorials = unsafePerformIO $
       cached packageTutorials
 
 {-# NOINLINE packageTutorialsList #-}
-packageTutorialsList :: Cached (Map (PackageName,Types.Version) [TutorialView])
+packageTutorialsList :: Cached (Map (PackageName,Types.Version) [Tutorial Rendered])
 packageTutorialsList = unsafePerformIO $ 
   forkCache epoch $
     fmap (fmap (fst . snd)) . pushdown (\(a,b,c) -> ((a,b),c)) <$> 
@@ -526,7 +536,7 @@ rawPackageTutorialsList = unsafePerformIO $
       cached packageTutorialsList
 
 {-# NOINLINE packageTutorialsContent #-}
-packageTutorialsContent :: Cached (Map (PackageName,Types.Version,Slug) TutorialContentView)
+packageTutorialsContent :: Cached (Map (PackageName,Types.Version,Slug) (TutorialContent Rendered))
 packageTutorialsContent = unsafePerformIO $
   forkCache epoch $
     fmap snd <$>
@@ -541,7 +551,7 @@ rawPackageTutorialsContent = unsafePerformIO $
 
 -- implementation at bottom of file for parsing reasons
 {-# NOINLINE modules #-}
-modules :: Cached (Map (PackageName,Types.Version,ModuleName) (ModuleView,ModuleContentView))
+modules :: Cached (Map (PackageName,Types.Version,ModuleName) (Module Rendered,ModuleContent Rendered))
 
 {-# NOINLINE rawModules #-}
 rawModules :: Cached (Map (PackageName,Types.Version,ModuleName) BS.ByteString)
@@ -551,7 +561,7 @@ rawModules = unsafePerformIO $
       cached modules
 
 {-# NOINLINE modulesList #-}
-modulesList :: Cached (Map (PackageName,Types.Version) [ModuleView])
+modulesList :: Cached (Map (PackageName,Types.Version) [Module Rendered])
 modulesList = unsafePerformIO $ 
   forkCache epoch $
     fmap (fmap (fst . snd)) . pushdown (\(a,b,c) -> ((a,b),c)) <$> 
@@ -572,7 +582,7 @@ rawModulesContent = unsafePerformIO $
       cached modules
 
 {-# NOINLINE modulesContentList #-}
-modulesContentList :: Cached (Map (PackageName,Types.Version) [(ModuleView,ModuleContentView)])
+modulesContentList :: Cached (Map (PackageName,Types.Version) [(Module Rendered,ModuleContent Rendered)])
 modulesContentList = unsafePerformIO $
   forkCache epoch $
     fmap (fmap snd) . pushdown (\(a,b,c) -> ((a,b),c)) <$>
@@ -598,7 +608,7 @@ withYamlFile fp f = do
     Right a ->
       Just <$> f a
 
-parseMarkdown :: Txt -> Markdown
+parseMarkdown :: Txt -> Rendered
 parseMarkdown cnt =
     let Right result = Text.Pandoc.Class.runPure $ do
           !md <- readMarkdown
@@ -608,9 +618,9 @@ parseMarkdown cnt =
           !str <- writeHtml5String Pandoc.def md
           let !view = parseView str
           pure view
-    in Markdown result
+    in Rendered result
 
-markdown :: (FromTxt (f Txt), Functor f, Foldable f) => FilePath -> IO (f Markdown)
+markdown :: (FromTxt (f Txt), Functor f, Foldable f) => FilePath -> IO (f Rendered)
 markdown fp = do
   f <- T.readFile fp
   Txt.length f `seq` do
@@ -638,7 +648,7 @@ reorganize f = Map.fromListWith (flip (++)) . List.concatMap go . Map.toAscList
   where go (k,v) = fmap (fmap (\x -> [x])) (f k v)
 
 -- type and pragma above for parsing reasons
--- modules :: Cached (Map (PackageName,Types.Version,ModuleName) (ModuleView,ModuleContentView))
+-- modules :: Cached (Map (PackageName,Types.Version,ModuleName) (Module Rendered,ModuleContent Rendered))
 modules =
   unsafePerformIO $ forkCache epoch $
     fmap build loadModules
@@ -674,8 +684,8 @@ modules =
 tryWS :: WebSocket
 tryWS = unsafePerformIO $ clientWS "204.48.20.19" 8080
 
-processExamples :: Markdown -> IO ()
-processExamples (Markdown md) = traverse_ example md
+processExamples :: Rendered -> IO ()
+processExamples (Rendered md) = traverse_ example md
   where
     example :: View -> IO ()
     example (Children (texts -> t) (Attributes as Pre)) 

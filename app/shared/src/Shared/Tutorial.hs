@@ -15,7 +15,6 @@ import Shared.Types
   , Excerpt
   , Packages
   , Description
-  , Markdown
   , Synopsis
   )
 
@@ -52,13 +51,7 @@ instance Eq (Tutorial format) where
 instance Ord (Tutorial format) where
   compare = compare `on` (series &&& episode &&& published)
 
-type TutorialYaml = Tutorial Txt
-type TutorialView = Tutorial Markdown
-
 newtype TutorialContent content = TutorialContent content
   deriving (Functor,Foldable)
   deriving (ToTxt,ToJSON,FromTxt,FromJSON)
     via content
-
-type TutorialContentMarkdown = TutorialContent Txt
-type TutorialContentView = TutorialContent Markdown
