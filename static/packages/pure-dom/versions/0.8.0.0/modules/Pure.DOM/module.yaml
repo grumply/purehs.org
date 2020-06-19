@@ -1,0 +1,7 @@
+name: Pure.DOM
+synopsis: |
+  Construct and automatically manage and reconcile Pure.hs applications
+description: |
+  Documentation for Pure.DOM which exports the core `inject` function for managing applications written in Pure.hs
+excerpt: |
+  `Pure.DOM` includes functionality for constructing and automatically managing not only DOM-based Pure.hs applications in the browser, but also server, service, and non-browser client applications.

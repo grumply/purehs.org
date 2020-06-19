@@ -1,0 +1,19 @@
+name: pure
+author: Sean Hickman
+latest: 0.8.0.0
+published: 2020-06-18
+license: BSD3
+repository: github.com/grumply/pure.git
+homepage: purehs.org/packages/pure
+collaborators: []
+tags:
+  - core
+  - internal
+  - dom
+synopsis: |
+  A library that re-exports much of the Pure.hs ecosystem for easy import.
+description: |
+  A library that re-exports much of the Pure.hs ecosystem for easy import.
+excerpt: |
+  `pure` is a frontend-focused development meta-library that re-exports common functionality from many common core Pure.hs libraries.
+

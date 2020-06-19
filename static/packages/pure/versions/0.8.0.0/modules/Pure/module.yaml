@@ -1,0 +1,23 @@
+name: Pure
+synopsis: |
+  Meta-module re-exporting much of the core Pure.hs ecosystem.
+description: |
+  Meta-module re-exporting much of the core Pure.hs ecosystem.
+excerpt: |
+  `Pure` is a meta-module that re-exports the core Pure.hs ecosystem.
+
+  Exported modules include those from
+
+    * [pure-core](/packages/pure-core/latest)
+    * [pure-default](/packages/pure-default/latest)
+    * [pure-dom](/packages/pure-dom/latest)
+    * [pure-events](/packages/pure-events/latest)
+    * [pure-html](/packages/pure-html/latest)
+    * [pure-lifted](/packages/pure-lifted/latest)
+    * [pure-state](/packages/pure-state/latest)
+    * [pure-styles](/packages/pure-styles/latest)
+    * [pure-time](/packages/pure-time/latest)
+    * [pure-txt](/packages/pure-txt/latest)
+
+
+
