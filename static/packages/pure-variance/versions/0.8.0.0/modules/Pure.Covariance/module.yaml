@@ -1,0 +1,8 @@
+name: Pure.Covariance
+synopsis: |
+  Covariance algorithms 
+description: |
+  Functional and generic algorithms for covariance calculation.
+excerpt: |
+  Utilites for two approaches to covariance determination, a [functional approach](0.8.0.0/Pure.Covariance/covaries) and a [generic, class-based approach](0.8.0.0/Pure.Covariance/covariances).
+

@@ -77,6 +77,9 @@ instance Theme WithHeaderT where
   theme c = void $ do
     is c $ do
       apply $ do 
+        padding-top =: 40px
+
+      mediumScreens <%> do
         padding-top =: 64px
 
       child (tag Div) . child (tag Div) .> do
@@ -230,6 +233,17 @@ notFound nm = problems nm $ Div <||>
     ]
   ]
 
+emptyList h1 h2 = 
+  Div <||>
+    [ Div <| Themed @ErrorT |>
+      [ Header <||> 
+        [ H1 <||> [ h1 ]
+        , H2 <||> [ h2 ]
+        ]
+      ]
+    ]
+
+
 loading = 
     View (ChasingDots :: ChasingDots 2000 40 40 40 "#333")
 
@@ -338,15 +352,18 @@ instance Theme PageHeaderT where
   theme c = void $ 
     is c $ do
       apply $ do
-        width           =: (90%)
-        height          =: 80px
+        font-size       =: 18px
+        width           =: (100%)
         margin          =* [0,auto]
-        display         =: flex
-        justify-content =: space-between
+        height          =: 80px
         margin-bottom   =: 30px
 
-      mediumScreens <%> do
+      smallScreens <%> do
+        display         =: flex
+        justify-content =: space-between
+        font-size =: 24px
         width =: 720px
+        margin-bottom =: 45px
 
       largeScreens <%> do
         width =: 900px
@@ -354,22 +371,34 @@ instance Theme PageHeaderT where
       has (tag Nav) $ do
         apply $ do
           margin-top  =: 30px
-          font-size   =: 1.7em
           color       =: toTxt black
           font-weight =: 300
+          width       =: (100%)
 
-        is lastChild .> do
-          margin-left =: 16px
+        is lastChild $ do
+          apply $ do
+            font-size =: 24px
+            display =: flex
+            justify-content =: space-around
+            margin-right =: 16px
+            margin-top =: (-30)px
+
+          smallScreens <%> do
+            display =: block
+            margin-right =: 0
+            width =: auto
+            margin-top =: 30px
+
 
         has (tag A) $ do
           apply $ do
             margin-top   =: 50px
             font-family  =: titleFont
-            margin-right =: 8px
-            margin-left  =: 8px
+            margin-right =: 5px
+            margin-left  =: 5px
             color        =: toTxt gray
             white-space  =: nowrap
-          
+
           is firstChild .> do
             margin-left =: 0
 

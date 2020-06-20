@@ -50,16 +50,24 @@ breadcrumbs r =
 sublinks :: App.App => Route -> [View]
 sublinks r =
   case r of
-    AuthorR n          -> ps n : pkgs n : ts n : []
-    AuthorPackagesR n  -> ps n : pkgs n : ts n : []
-    AuthorTutorialsR n -> ps n : pkgs n : ts n : []
-    AuthorPostsR n     -> ps n : pkgs n : ts n : []
-    EntityR pn v mn _  -> m pn v mn : []
-    _                  -> []
+    AuthorR n               -> ps n : pkgs n : ts n : []
+    AuthorPackagesR n       -> ps n : pkgs n : ts n : []
+    AuthorTutorialsR n      -> ps n : pkgs n : ts n : []
+    AuthorPostsR n          -> ps n : pkgs n : ts n : []
+    EntityR pn v mn _       -> m pn v mn : []
+    PackageR pn             -> pb pn : []
+    PackagePostR pn _       -> pb pn : []
+    PackageBlogR pn         -> pb pn : []
+    VersionTutorialsR pn v  -> pb pn : pts pn v : []
+    VersionTutorialR pn v _ -> pb pn : pts pn v : []
+    VersionR pn v           -> pb pn : pts pn v : []
+    _                       -> []
   where
     ps n      = A <| link (AuthorPostsR n)     |> [ "Posts" ]
     pkgs n    = A <| link (AuthorPackagesR n)  |> [ "Packages" ]
     ts n      = A <| link (AuthorTutorialsR n) |> [ "Tutorials" ]
+    pb pn     = A <| link (PackageBlogR pn)    |> [ "Blog" ]
+    pts pn v  = A <| link (VersionTutorialsR pn v) |> [ "Tutorials" ]
     m pn v mn = A <| Themed @Hideable . link (ModuleR pn v mn) |> [ txt mn ]
 
 data Hideable

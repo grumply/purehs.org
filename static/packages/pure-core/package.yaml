@@ -1,7 +1,7 @@
 name: pure-core
 author: Sean Hickman
 latest: 0.8.0.0
-published: 2020-05-01
+published: 2020-06-17
 license: BSD3
 repository: github.com/grumply/pure-core.git
 homepage: purehs.org/packages/pure-core
@@ -10,9 +10,9 @@ tags:
   - core
   - internal
 synopsis: |
-  Core Pure.hs types and patterns.
+  Core Pure.hs types and patterns
 description: |
-  The core types and methods used to implement all higher-level abstractions for server, service, and interface development. 
+  Core types, methods, and patterns used to implement all higher-level abstractions for server, service, and interface development in Pure.hs. 
 excerpt: |
   The core types and methods used to implement all higher-level abstractions for server, service, and interface development. 
   

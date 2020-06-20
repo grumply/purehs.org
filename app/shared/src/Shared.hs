@@ -10,12 +10,10 @@ import qualified Shared.Package as Package
 import qualified Shared.Page as Page
 import qualified Shared.Tutorial as Tutorial
 
-import Pure.WebSocket (mkRequest,(<:>),none,(<:+:>))
-import qualified Pure.WebSocket as WS (FullAPI,api)
+import Pure.WebSocket (API,api,mkRequest,(<:>),none,(<:+:>))
 
 host :: String
--- host = "159.65.79.222"
-host = "192.168.1.8"
+host = "159.65.79.222"
 
 port :: Int
 port = 8081
@@ -27,8 +25,8 @@ mkRequest "ListAuthorPackages" [t|Name -> [Package.Package Rendered]|]
 mkRequest "ListAuthorPosts" [t|Name -> [Blog.Post Rendered]|]
 mkRequest "ListAuthorTutorials" [t|Name -> [Tutorial.Tutorial Rendered]|]
 
-authorAPI :: WS.FullAPI '[] _
-authorAPI = WS.api msgs reqs
+authorAPI :: API '[] _
+authorAPI = api msgs reqs
   where
     msgs = none
     reqs = listAuthors
@@ -45,8 +43,8 @@ mkRequest "ListPages" [t|() -> [Page.Page Rendered]|] -- probably not used
 mkRequest "GetPage" [t|Slug -> Maybe (Page.Page Rendered)|]
 mkRequest "GetPageContent" [t|Slug -> Maybe (Page.PageContent Rendered)|]
 
-pagesAPI :: WS.FullAPI '[] _
-pagesAPI = WS.api msgs reqs
+pagesAPI :: API '[] _
+pagesAPI = api msgs reqs
   where
     msgs = none
     reqs = listPages
@@ -60,8 +58,8 @@ mkRequest "ListPosts" [t|() -> [Blog.Post Rendered]|]
 mkRequest "GetPost" [t|Slug -> Maybe (Blog.Post Rendered)|]
 mkRequest "GetPostContent" [t|Slug -> Maybe (Blog.PostContent Rendered)|]
 
-blogAPI :: WS.FullAPI '[] _
-blogAPI = WS.api msgs reqs
+blogAPI :: API '[] _
+blogAPI = api msgs reqs
   where
     msgs = none
     reqs = listPosts
@@ -75,8 +73,8 @@ mkRequest "ListTutorials" [t|() -> [Tutorial.Tutorial Rendered]|]
 mkRequest "GetTutorial" [t|Slug -> Maybe (Tutorial.Tutorial Rendered)|]
 mkRequest "GetTutorialContent" [t|Slug -> Maybe (Tutorial.TutorialContent Rendered)|]
 
-tutorialAPI :: WS.FullAPI '[] _
-tutorialAPI = WS.api msgs reqs
+tutorialAPI :: API '[] _
+tutorialAPI = api msgs reqs
   where
     msgs = none
     reqs = listTutorials
@@ -90,8 +88,8 @@ mkRequest "ListPackages" [t|() -> [Package.Package Rendered]|]
 mkRequest "GetPackage" [t|PackageName -> Maybe (Package.Package Rendered)|]
 mkRequest "GetPackageContent" [t|PackageName -> Maybe (Package.PackageContent Rendered)|]
 
-packageAPI :: WS.FullAPI '[] _
-packageAPI = WS.api msgs reqs
+packageAPI :: API '[] _
+packageAPI = api msgs reqs
   where
     msgs = none
     reqs = listPackages
@@ -104,8 +102,8 @@ packageAPI = WS.api msgs reqs
 mkRequest "ListPackageVersions" [t|PackageName -> [Package.Version Rendered]|]
 mkRequest "GetPackageVersion" [t|(PackageName,Version) -> Maybe (Package.Version Rendered)|]
 
-packageVersionAPI :: WS.FullAPI '[] _
-packageVersionAPI = WS.api msgs reqs
+packageVersionAPI :: API '[] _
+packageVersionAPI = api msgs reqs
   where
     msgs = none
     reqs = listPackageVersions
@@ -118,8 +116,8 @@ mkRequest "ListPackagePosts" [t|PackageName -> [Blog.Post Rendered]|]
 mkRequest "GetPackagePost" [t|(PackageName,Slug) -> Maybe (Blog.Post Rendered)|]
 mkRequest "GetPackagePostContent" [t|(PackageName,Slug) -> Maybe (Blog.PostContent Rendered)|]
 
-packageBlogAPI :: WS.FullAPI '[] _
-packageBlogAPI = WS.api msgs reqs
+packageBlogAPI :: API '[] _
+packageBlogAPI = api msgs reqs
   where
     msgs = none
     reqs = listPackagePosts
@@ -133,8 +131,8 @@ mkRequest "ListPackageVersionTutorials" [t|(PackageName,Version) -> [Tutorial.Tu
 mkRequest "GetPackageVersionTutorial" [t|(PackageName,Version,Slug) -> Maybe (Tutorial.Tutorial Rendered)|]
 mkRequest "GetPackageVersionTutorialContent" [t|(PackageName,Version,Slug) -> Maybe (Tutorial.TutorialContent Rendered)|]
 
-packageTutorialAPI :: WS.FullAPI '[] _
-packageTutorialAPI = WS.api msgs reqs
+packageTutorialAPI :: API '[] _
+packageTutorialAPI = api msgs reqs
   where
     msgs = none
     reqs = listPackageVersionTutorials
@@ -149,8 +147,8 @@ mkRequest "ListPackageVersionModulesContent" [t|(PackageName,Version) -> [(Packa
 mkRequest "GetPackageVersionModule" [t|(PackageName,Version,ModuleName) -> Maybe (Package.Module Rendered)|]
 mkRequest "GetPackageVersionModuleContent" [t|(PackageName,Version,ModuleName) -> Maybe (Package.ModuleContent Rendered)|]
 
-packageModuleAPI :: WS.FullAPI '[] _
-packageModuleAPI = WS.api msgs reqs
+packageModuleAPI :: API '[] _
+packageModuleAPI = api msgs reqs
   where
     msgs = none
     reqs = listPackageVersionModules
@@ -160,16 +158,16 @@ packageModuleAPI = WS.api msgs reqs
        <:> none
 
 
-
-api = authorAPI <:+:> 
-      pagesAPI <:+:> 
-      blogAPI <:+:> 
-      tutorialAPI <:+:> 
-      packageAPI <:+:> 
-      packageVersionAPI <:+:> 
-      packageBlogAPI <:+:> 
-      packageTutorialAPI <:+:> 
-      packageModuleAPI
+backend = 
+  authorAPI <:+:> 
+  pagesAPI <:+:> 
+  blogAPI <:+:> 
+  tutorialAPI <:+:> 
+  packageAPI <:+:> 
+  packageVersionAPI <:+:> 
+  packageBlogAPI <:+:> 
+  packageTutorialAPI <:+:> 
+  packageModuleAPI
 
 
 -- This is a bit naughty; I've inlined the API from try.purehs.org
@@ -178,8 +176,8 @@ api = authorAPI <:+:>
 mkRequest "Compile" [t|(Txt,Bool) -> Either Txt String|]
 mkRequest "ReadModule" [t|String -> Maybe Txt|]
 
-compileAPI :: WS.FullAPI '[] '[Compile,ReadModule]
-compileAPI = WS.api msgs reqs
+compileAPI :: API '[] '[Compile,ReadModule]
+compileAPI = api msgs reqs
   where
     msgs = none
     reqs = compile <:> readModule <:> none

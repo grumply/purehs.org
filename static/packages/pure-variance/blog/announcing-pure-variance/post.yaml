@@ -1,0 +1,16 @@
+title: Announcing pure-variance
+slug: announcing-pure-variance
+published: 2020-06-19
+authors:
+  - Sean Hickman
+editors: []
+tags:
+  - announcing
+  - pure-variance
+  - statistics
+synopsis: |
+  The first public release of pure-variance
+description: |
+  Announcing the first release of pure-variance, a library for simplifying calculation of variance and covariance.
+excerpt: |
+  Announcing the pure-variance library with online and parallel-online variance and covariance algorithms with a convenient interface.

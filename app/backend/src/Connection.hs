@@ -32,22 +32,22 @@ update :: Elm Msg => Msg -> WebSocket -> Model -> IO Model
 update msg ws mdl =
   case msg of
     Startup -> do
-      enact ws authorImpl
-      enact ws pagesImpl
-      enact ws blogImpl
-      enact ws tutorialImpl
-      enact ws packageImpl
-      enact ws packageVersionImpl
-      enact ws packageBlogImpl
-      enact ws packageTutorialImpl
-      enact ws packageModuleImpl
+      enact ws authorEndpoints
+      enact ws pagesEndpoints
+      enact ws blogEndpoints
+      enact ws tutorialEndpoints
+      enact ws packageEndpoints
+      enact ws packageVersionEndpoints
+      enact ws packageBlogEndpoints
+      enact ws packageTutorialEndpoints
+      enact ws packageModuleEndpoints
       activate ws
       -- c <- cached rawCache
       -- sendRaw ws (buildEncodedDispatchByteString (messageHeader setCache) c)
       pure mdl
 
-authorImpl :: Implementation '[] _ '[] _
-authorImpl = Impl Shared.authorAPI msgs reqs
+authorEndpoints :: Endpoints '[] _ '[] _
+authorEndpoints = Endpoints Shared.authorAPI msgs reqs
   where
     msgs = WS.none
     reqs = handleListAuthors
@@ -89,8 +89,8 @@ handleListAuthorTutorials = respondWithRaw $ \n -> do
 
 
 
-pagesImpl :: Implementation '[] _ '[] _
-pagesImpl = Impl Shared.pagesAPI msgs reqs
+pagesEndpoints :: Endpoints '[] _ '[] _
+pagesEndpoints = Endpoints Shared.pagesAPI msgs reqs
   where
     msgs = WS.none
     reqs = handleListPages
@@ -114,8 +114,8 @@ handleGetPageContent = respondWithRaw $ \s -> do
 
 
 
-blogImpl :: Implementation '[] _ '[] _
-blogImpl = Impl Shared.blogAPI msgs reqs
+blogEndpoints :: Endpoints '[] _ '[] _
+blogEndpoints = Endpoints Shared.blogAPI msgs reqs
   where
     msgs = WS.none
     reqs = handleListPosts
@@ -139,8 +139,8 @@ handleGetPostContent = respondWithRaw $ \s -> do
 
 
 
-tutorialImpl :: Implementation '[] _ '[] _
-tutorialImpl = Impl Shared.tutorialAPI msgs reqs
+tutorialEndpoints :: Endpoints '[] _ '[] _
+tutorialEndpoints = Endpoints Shared.tutorialAPI msgs reqs
   where
     msgs = WS.none
     reqs = handleListTutorials
@@ -164,8 +164,8 @@ handleGetTutorialContent = respondWithRaw $ \s -> do
 
 
 
-packageImpl :: Implementation '[] _ '[] _
-packageImpl = Impl Shared.packageAPI msgs reqs
+packageEndpoints :: Endpoints '[] _ '[] _
+packageEndpoints = Endpoints Shared.packageAPI msgs reqs
   where
     msgs = WS.none
     reqs = handleListPackages
@@ -187,8 +187,8 @@ handleGetPackageContent = respondWithRaw $ \p -> do
   ps <- cached rawPackageContents
   pure $ fromMaybe "null" (Map.lookup p ps)
 
-packageVersionImpl :: Implementation '[] _ '[] _
-packageVersionImpl = Impl Shared.packageVersionAPI msgs reqs
+packageVersionEndpoints :: Endpoints '[] _ '[] _
+packageVersionEndpoints = Endpoints Shared.packageVersionAPI msgs reqs
   where
     msgs = WS.none
     reqs = handleListPackageVersions
@@ -211,8 +211,8 @@ handleGetPackageVersion = respondWithRaw $ \(pn,v0) -> do
 
 
 
-packageBlogImpl :: Implementation '[] _ '[] _
-packageBlogImpl = Impl Shared.packageBlogAPI msgs reqs
+packageBlogEndpoints :: Endpoints '[] _ '[] _
+packageBlogEndpoints = Endpoints Shared.packageBlogAPI msgs reqs
   where
     msgs = WS.none
     reqs = handleListPackagePosts
@@ -237,8 +237,8 @@ handleGetPackagePostContent = respondWithRaw $ \ps -> do
 
 
 
-packageTutorialImpl :: Implementation '[] _ '[] _
-packageTutorialImpl = Impl Shared.packageTutorialAPI msgs reqs
+packageTutorialEndpoints :: Endpoints '[] _ '[] _
+packageTutorialEndpoints = Endpoints Shared.packageTutorialAPI msgs reqs
   where
     msgs = WS.none
     reqs = handleListPackageVersionTutorials
@@ -284,8 +284,8 @@ handleGetPackageVersionTutorialContent = respondWithRaw $ \(pn,v0,s) -> do
 
 
 
-packageModuleImpl :: Implementation '[] _ '[] _
-packageModuleImpl = Impl Shared.packageModuleAPI msgs reqs
+packageModuleEndpoints :: Endpoints '[] _ '[] _
+packageModuleEndpoints = Endpoints Shared.packageModuleAPI msgs reqs
   where
     msgs = WS.none
     reqs = handleListPackageVersionModules

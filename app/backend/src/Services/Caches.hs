@@ -51,7 +51,7 @@ import System.IO.Unsafe
 import GHC.Exts (IsList(..))
 
 epoch :: Time
-epoch = Seconds 30 0
+epoch = Minutes 30 0
 
 {-# NOINLINE authors #-}
 authors :: Cached (Map Name (Author Rendered,AuthorContent Rendered))

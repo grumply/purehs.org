@@ -92,6 +92,7 @@ instance Render (Route,Request [Post Rendered]) where
     producing @[Post Rendered] (either pure wait ps) 
       (consumingWith options (consumer True id))
     where
+      consumer b _ [] = emptyList "No Posts Yet" Null
       consumer b f ps = 
         Div <| Themed @HideT |>
           [ render (Listing b rt f (const Null) ps) 

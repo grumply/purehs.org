@@ -1,7 +1,7 @@
 name: pure-dom
 author: Sean Hickman
 latest: 0.8.0.0
-published: 2020-06-18
+published: 2020-06-19
 license: BSD3
 repository: github.com/grumply/pure-dom.git
 homepage: purehs.org/packages/pure-dom
@@ -11,14 +11,14 @@ tags:
   - internal
   - dom
 synopsis: |
-  Top-level renderer and reconciler for hosting and running Pure.hs applications.
+  Rendering algorithm for Pure.hs
 description: |
-  `pure-dom` supplies the functionality necessary for hosting and running Pure.hs applications on both servers and clients.
+  Rendering and reconciling Algorithm for Pure.hs applications 
 excerpt: |
   <div class="info">
   This is an internal package and not the best place to learn how to develop with Pure.hs. Consider starting with the [5-Minute Series](/tutorials/5-minute).
   </div>
 
-  This package implements core functionality for view injection and reconciliation, exporting a single function, [inject](/packages/pure-dom/latest/Pure.DOM/inject).
+  This package implements core functionality for view rendering and injection and reconciliation, exporting a single function, [inject](/packages/pure-dom/latest/Pure.DOM/inject).
 
   You probably don't need to include this package as a dependency of your project, as it is exported from the meta packages [pure](/packages/pure/latest) and [pure-elm](/packages/pure-elm/latest).>

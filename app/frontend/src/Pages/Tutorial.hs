@@ -104,6 +104,7 @@ instance Render (Route,Request [Tutorial Rendered]) where
     producing @[Tutorial Rendered] (either pure wait tvs) 
       (consumingWith options (consumer True id))
     where
+      consumer b _ [] = emptyList "No Tutorials Yet" Null
       consumer b f ts = 
         Div <| Themed @HideT . Themed @TutorialsT |>
           [ render (Listing b rt f (const Null) (List.filter (\t -> isNothing (episode (t :: Tutorial Rendered))) ts)) 
@@ -118,6 +119,7 @@ instance Render (Route,Series,IO (Request [Tutorial Rendered])) where
     producing @[Tutorial Rendered] (tvs >>= either pure wait)
       (consumingWith options (consumer True))
     where
+      consumer b [] = emptyList "No Tutorials Yet" Null
       consumer b ts = 
         let 
           match Tutorial {..} = series == Just s && isJust episode

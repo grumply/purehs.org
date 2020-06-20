@@ -1,0 +1,17 @@
+name: pure-variance
+author: Sean Hickman
+latest: 0.8.0.0
+published: 2020-06-20
+license: BSD3
+repository: github.com/grumply/pure-variance.git
+homepage: purehs.org/packages/pure-variance
+collaborators: []
+tags:
+  - variance
+  - statistics
+synopsis: |
+  Variance and covariance algorithms
+description: |
+  Online and parallel-online variance and covariance algorithms with and without generics.
+excerpt: |
+  Online and parallel-online variance and covariance algorithms with and without generics.

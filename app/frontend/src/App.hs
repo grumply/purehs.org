@@ -7,7 +7,7 @@ import qualified Shared as API
 
 import Pure.Data.JSON (ToJSON,FromJSON)
 import Pure.Data.Time
-import qualified Pure.WebSocket as WS
+import Pure.WebSocket as WS hiding (Message)
 import qualified Pure.Elm.Application as Elm
 
 import Data.Map as Map
@@ -72,7 +72,7 @@ req ses rq pl = do
     Nothing -> Right <$> do
       async $ do
         mv <- newEmptyMVar
-        WS.remote API.api (App.socket ses) rq pl $ \rsp -> do
+        remote API.backend (App.socket ses) rq pl $ \rsp -> do
           forkIO (addToCache rq pl rsp)
           putMVar mv rsp
         takeMVar mv

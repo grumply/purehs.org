@@ -23,6 +23,8 @@ data ListItem a = ListItem
   }
 
 instance (Search a,Render (ListItem a),Typeable a) => Render (Listing a) where
+  render (Listing _ _ _ _ []) =
+    Div
   render (Listing b rt f d as) =
     flip searcher as $ \_ search xs ->
       Div <| Themed @ListingT |>
@@ -34,6 +36,12 @@ data ListingT
 instance Theme ListingT where
   theme c = void $ 
     is c $ do
+      apply $ do
+        margin-top =: (-60)px
+
+      smallScreens <%> do
+        margin-top =: 0
+
       has (tag Input) $ do
         apply $ do
           display       =: block

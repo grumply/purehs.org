@@ -24,6 +24,7 @@ import Pure.Random (newSeed,shuffle)
 
 import Control.Concurrent.Async (wait)
 import Control.Monad
+import Data.Function (on)
 import Data.Maybe (isJust,isNothing)
 import Data.List as List (reverse,cycle,take,filter,sortBy)
 
@@ -227,13 +228,14 @@ documentationMenu ses =
         , P  <||> [ "Per-package documentation, blogs and tutorials." ]
         ]
       , Div <||>
-        [ H2 <||> [ "Featured Packages" ] 
+        [ H2 <||> [ "Newest Packages" ] 
         , let 
             rq = do
               r <- App.req ses Shared.listPackages () 
               s <- newSeed
               ps <- either pure wait r
-              pure (List.take 3 $ List.cycle $ shuffle ps s)
+              let pub Package {..} = published
+              pure (List.take 3 $ List.sortBy (flip compare `on` pub) ps)
           in producing @[Package Rendered] rq $ consuming $ \ps ->
               Ul <||> 
                 [ Li <||>

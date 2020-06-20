@@ -1,0 +1,8 @@
+name: Pure.Variance
+synopsis: |
+  Variance algorithms
+description: |
+  Functional and generic algorithms for variance calculation.
+excerpt: |
+  Utilites for two approaches to variance determination, a [functional approach](0.8.0.0/Pure.Variance/varies) and a [generic, class-based approach](0.8.0.0/Pure.Variance/variances).
+
