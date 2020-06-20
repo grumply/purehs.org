@@ -1,0 +1,7 @@
+name: Pure.Data.Events
+synopsis: |
+  Patterns and utilities for working with browser-based events in Pure.hs
+description: |
+  Patterns and utilities for working with browser-based events, like clicks, transitions, mouse moves, touches, and key presses, and input. 
+excerpt: |
+  Patterns and utilities for working with browser-based events, like clicks, transitions, mouse moves, touches, and key presses, and input. 

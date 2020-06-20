@@ -1,0 +1,18 @@
+name: pure-events
+author: Sean Hickman
+latest: 0.8.0.0
+published: 2020-06-20
+license: BSD3
+repository: github.com/grumply/pure-events.git
+homepage: purehs.org/packages/pure-events
+collaborators: []
+tags:
+  - core
+  - internal
+  - events
+synopsis: |
+  Event patterns and utilities
+description: |
+  Patterns and utilities for working with browser-based events in Pure.hs
+excerpt: |
+  This package implements patterns and utilities for dealing with browser-based events.
