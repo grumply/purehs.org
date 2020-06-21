@@ -1,10 +1,9 @@
 name: Sean Hickman
 github: http://github.com/grumply
 email: sean@grump.ly
-company: http://alogram.com
 synopsis: |
   Sean Hickman
 description: |
-  Sean Hickman - Author of the Pure.hs Haskell development framework.
+  Author of the Pure.hs Haskell development framework.
 excerpt: |
-  Sean Hickman lives in Wichita Falls, Texas and founded [alogram](alogram.com) and developed the Pure.hs framework. 
+  Sean Hickman lives in Wichita Falls, Texas and developed the Pure.hs framework. 
