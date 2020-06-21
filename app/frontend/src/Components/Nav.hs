@@ -129,7 +129,7 @@ links rt =
 
 menus :: Elm Msg => App.Session -> Model -> View
 menus ses mdl =
-  Div <| OnMouseLeave (const (command Blurred)) . Themed @HarnessT . vis |>
+  Div <| Themed @HarnessT . vis |>
     [ Div <| Themed @CardT . vis . activemenu |> 
       [ item m | m <- [AboutMenu ..] ]
     ]
@@ -157,7 +157,7 @@ menus ses mdl =
 
         vis
           | activeMenu mdl == Nothing = id
-          | activeMenu mdl == Just m  = Themed @ActiveT
+          | activeMenu mdl == Just m  = OnMouseLeave (const (command Blurred)) . Themed @ActiveT
           | activeMenu mdl  < Just m  = Themed @MenuRightT
           | activeMenu mdl  > Just m  = Themed @MenuLeftT
           | otherwise                 = id
