@@ -8,7 +8,7 @@ tags:
   - pure.hs
   - try
 synopsis: |
-  The first public release of try.purehs.org
+  Announcing the try.purehs.org in-browser editor
 description: |
   Announcing try.purehs.org, a tool for live development with Pure.hs.
 excerpt: |

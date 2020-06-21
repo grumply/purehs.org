@@ -10,4 +10,4 @@ main = inject body "Welcome to try.purehs.org"
 
 All packages available in the `pure-platform` `nix-shell` are available in the live editor  with `TemplateHaskell` disabled for security reasons. Compile times are limited to 30 seconds. If you think of any security issues I've missed, please let me know. 
 
-From a technical standpoint, the site was relatively simple to implement, but the server demands are rather steep. If you're interested in sponsoring `try.purehs.org`, or donating server space, please contact me <a href="mailto:sean@grump.ly">here</a>.
+From a technical standpoint, the site was relatively simple to implement, but the server demands are rather steep. If you're interested in sponsoring `purehs.org`, or donating server space, please contact me <a href="mailto:sean@grump.ly">here</a>.
