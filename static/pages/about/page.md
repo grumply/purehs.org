@@ -8,7 +8,7 @@ If you know HTML and Haskell, Elm, PureScript, or ReactJS, you'll be able to des
 
 Pure.hs offers simple declarative view primitives like HTML, SVG, and text nodes that make it easy to get started. When more power is required, Pure.hs offers keyed nodes, components, and first-class portals.
 
-Pure.hs also avoids complicated types, where possible, to simplify development experience and create a welcoming API for the unitiated. Tracing down the shape of a component isn't generally a good experience for new users.
+Pure.hs also avoids complicated types, where possible, to simplify development experience and create a welcoming API for the uninitiated. Tracing down the shape of a component isn't generally a good experience for new users.
 
 <pre data-try>
 import Pure
@@ -21,9 +21,9 @@ main = inject body $
 
 ## Functional
 
-Haskell's functional nature is a powerful tool for manipulation of declarative views. This page, in fact, is analyzed client-side to detect and transform the below code block into a live editor. Similarly, all links on this page are analyzed client-side and transformed to be in-app links when applicable, to avoid unnecessary page loads. All markdown code blocks are extended with click-to-copy functionality. These powerful transformations allow for expressive feature implementations with only a few lines of code.
+Haskell's functional nature is a powerful tool for manipulation of declarative views. This page, in fact, is analyzed client-side to detect and transform the code blocks into live editors. Similarly, all links on this page are analyzed client-side and transformed to be in-app links when applicable, to avoid unnecessary page loads. All markdown code blocks are extended with click-to-copy functionality. These powerful transformations allow for expressive feature implementations with only a few lines of code.
 
-The below example is the function used by this site to recursively analyze a tree of views for nodes containing the class `sourceCode`. If found, they're transformed into copy-to-clipboard examples. 
+The below example is the function used by this site to recursively analyze a tree of views for nodes containing the class `sourceCode`. If found, they're transformed into copy-to-clipboard examples.
 
 ```haskell
 transform :: View -> View

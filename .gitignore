@@ -1,8 +1,8 @@
-dist-newstyle
+.vscode/
+dist-newstyle/
 .dist-newstyle
 .dist
 result
-cabal.project.local
-cabal.project.local~
-cabal-ghcjs.project.local
+*.project.local*
 dist/*
+.DS_Store
