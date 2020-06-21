@@ -274,7 +274,7 @@ Equality implies that two components have the same type, but does not guarantee 
 
 ## data View
 
-The `View` data type is the unified core hierarchical type that Pure uses to implement interfaces, servers, services and computational contexts.
+The `View` data type is the unified core hierarchical type that Pure.hs uses to implement interfaces, servers, services and computational contexts.
 
 <div class="hide">
 The `ComponentView` constructor is used to implement web-based user interfaces, servers, services and computational contexts, but the other constructors are specific to web-based user interfaces.

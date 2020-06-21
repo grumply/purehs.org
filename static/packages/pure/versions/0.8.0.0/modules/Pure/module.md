@@ -12,7 +12,7 @@
 * [pure-time](/packges/pure-time/latest)
 * [pure-txt](/packges/pure-txt/latest)
 
-When developing a Pure application, most modules that use Pure functionality will import the `Pure` module. An alternative that re-exports much of this meta-library is [pure-elm](/packges/pure-elm/latest).
+When developing a Pure.hs application, most modules that use Pure.hs functionality will import the `Pure` module. An alternative that re-exports much of this meta-library is [pure-elm](/packges/pure-elm/latest).
 
 <pre data-try>
 import Pure
