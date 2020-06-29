@@ -9,7 +9,8 @@ defaultFont = "-apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto,
 -- familiar fonts for code
 defaultMonoFont :: Txt
 -- defaultMonoFont = "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace"
-defaultMonoFont = "Consolas, 'Andale Mono WT', 'Andale Mono', 'Lucida Console', 'Lucida Sans Typewriter', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Liberation Mono', 'Nimbus Mono L', Monaco, 'Courier New', Courier, monospace"
+-- defaultMonoFont = "Consolas, 'Andale Mono WT', 'Andale Mono', 'Lucida Console', 'Lucida Sans Typewriter', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Liberation Mono', 'Nimbus Mono L', Monaco, 'Courier New', Courier, monospace"
+defaultMonoFont = "'Fira Code', monospace"
 
 -- nice looking default for titles
 titleFont :: Txt

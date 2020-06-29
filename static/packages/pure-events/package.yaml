@@ -10,9 +10,9 @@ tags:
   - core
   - internal
   - events
-synopsis: |
+short: |
   Event patterns and utilities
 description: |
   Patterns and utilities for working with browser-based events in Pure.hs
 excerpt: |
-  This package implements patterns and utilities for dealing with browser-based events.
+  Patterns and utilities for working with browser-based events.

@@ -242,7 +242,7 @@ documentationMenu ses =
                   [ A <| link (PackageR name) |>
                     [ txt (toTxt name <> " ❯") ]
                   , P <||>
-                    [ txt synopsis ]
+                    [ txt short ]
                   ]
                 | Package {..} <- ps
                 ]
@@ -275,7 +275,7 @@ tutorialsMenu ses =
                     [ A <| link (TutorialR slug) |>
                       [ txt (toTxt title <> " ❯") ]
                     , P <||>
-                      [ txt synopsis ]
+                      [ txt short ]
                     ]
                   | Tutorial {..} <- ts
                   ]
@@ -329,6 +329,7 @@ instance Theme LinkT where
       align-items     =: center
       align-content   =: space-between
       padding-left    =: 10px
+      margin-left     =: 10px
       position        =: relative
       font-size       =: 18px
       font-weight     =: 200
@@ -478,12 +479,12 @@ instance Theme MenuT where
 data MenuLeftT
 instance Theme MenuLeftT where
   theme c = void $ is c .> do
-    transform =: translateX((-80)%)
+    transform =: translateX((-50)%)
 
 data MenuRightT
 instance Theme MenuRightT where
   theme c = void $ is c .> do
-    transform =: translateX(80%)
+    transform =: translateX(50%)
 
 data ActiveT
 instance Theme ActiveT where
@@ -572,7 +573,7 @@ instance Theme MenuBottomT where
       child (tag Div) $ do
         apply $ do
           display =: flex
-          justify-content =: center
+          justify-content =: space-evenly
           align-items =: center
 
       has (tag Ul) $ do

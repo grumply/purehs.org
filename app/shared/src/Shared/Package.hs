@@ -5,7 +5,7 @@ import qualified Shared.Types as Types
 import Shared.Types
   ( ModuleName
   , PackageName
-  , Synopsis
+  , Short
   , Changes
   , Description
   , Name
@@ -25,7 +25,7 @@ import Control.Arrow ((&&&))
 import Data.Function (on)
 import GHC.Generics (Generic)
 
-import Pure.Data.Txt.Search (Search)
+import Pure.Data.Txt.Search (Search(..))
 
 data Package format = Package
   { name :: PackageName
@@ -37,10 +37,14 @@ data Package format = Package
   , homepage :: Maybe Homepage
   , collaborators :: Collaborators
   , tags :: Tags
-  , synopsis :: Synopsis
+  , short :: Short
   , description :: Description
   , excerpt :: Excerpt format
-  } deriving (Generic,ToJSON,FromJSON,Functor,Search)
+  } deriving (Generic,ToJSON,FromJSON,Functor)
+
+instance Search (Package format) where
+  contains so t Package {..} =
+    contains so t (name,author,license,collaborators,tags,description)
 
 instance Eq (Package format) where
   (==) = (==) `on` ((name :: Package format -> PackageName) &&& latest)
@@ -65,8 +69,7 @@ instance Eq (Version format) where
 
 data Module format = Module
   { name :: ModuleName
-  , synopsis :: Synopsis 
-  , description :: Description
+  , description :: Description 
   , excerpt :: Excerpt format
   } deriving (Generic,ToJSON,FromJSON,Functor,Foldable,Search)
 

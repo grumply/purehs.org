@@ -15,7 +15,7 @@ import Shared.Types
   , Excerpt
   , Packages
   , Description
-  , Synopsis
+  , Short
   )
 
 import Pure.Data.JSON (ToJSON,FromJSON)
@@ -31,16 +31,14 @@ import Pure.Data.Txt.Search (Search)
 data Tutorial format = Tutorial
   { title :: Title
   , subtitle :: Maybe Subtitle
-  , series :: Maybe Series
-  , episode :: Maybe Episode
   , slug :: Slug
+  , episode :: Maybe Episode
+  , series :: Maybe Series
   , published :: Published
-  , edited :: Maybe Edited
   , authors :: Authors
-  , editors :: Editors
   , tags :: Tags
   , packages :: Packages
-  , synopsis :: Synopsis
+  , short :: Short
   , description :: Description
   , excerpt :: Excerpt format
   } deriving (Generic,ToJSON,FromJSON,Functor,Foldable,Search)

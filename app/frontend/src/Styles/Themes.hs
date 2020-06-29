@@ -362,8 +362,10 @@ instance Theme PageHeaderT where
         display         =: flex
         justify-content =: space-between
         font-size =: 24px
-        width =: 720px
         margin-bottom =: 45px
+
+      mediumScreens <%> do
+        width =: 720px
 
       largeScreens <%> do
         width =: 900px
@@ -372,7 +374,7 @@ instance Theme PageHeaderT where
         apply $ do
           margin-top  =: 30px
           color       =: toTxt black
-          font-weight =: 300
+          font-weight =: 400
           width       =: (100%)
 
         is lastChild $ do

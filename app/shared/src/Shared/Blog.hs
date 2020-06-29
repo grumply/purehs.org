@@ -13,7 +13,7 @@ import Shared.Types
   , Tags
   , Excerpt
   , Description
-  , Synopsis
+  , Short
   )
 
 import Pure.Data.JSON (ToJSON,FromJSON)
@@ -29,13 +29,10 @@ data Post format = Post
   { title :: Title
   , subtitle :: Maybe Subtitle
   , slug :: Slug
-  , episode :: Maybe Episode
   , published :: Published
-  , edited :: Maybe Edited
   , authors :: Authors
-  , editors :: Editors
   , tags :: Tags
-  , synopsis :: Synopsis
+  , short :: Short
   , description :: Description
   , excerpt :: Excerpt format
   } deriving (Generic,ToJSON,FromJSON,Functor,Foldable,Search)

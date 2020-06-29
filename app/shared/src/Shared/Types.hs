@@ -163,7 +163,7 @@ instance Ord Version where
       versionList = 
         catMaybes . fmap (readMaybe . fromTxt) . Txt.splitOn "." . toTxt
 
-newtype Synopsis = Synopsis Txt
+newtype Short = Short Txt
   deriving (ToTxt,FromTxt,ToJSON,FromJSON,Eq,IsString,Search)
     via Txt
   

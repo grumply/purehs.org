@@ -38,8 +38,7 @@ processTry (Children (texts -> t) (Attributes as Pre))
   | Just _ <- List.lookup "data-try" as 
   = let n = realToFrac (Txt.count "\n" t) + 1
         m = realToFrac (Txt.count "\n\n" t)
-        -- empty lines are 3px larger
-        y = 16 * n + 3 * m + 28
+        y = 20 * n + 46
     in Div <| Height (pxs y) . Themed @EditorT |>
          [ Editor.editor (Textarea <||> [ txt t ]) ]
 processTry v = setChildren (fmap processTry (getChildren v)) v
@@ -77,16 +76,38 @@ data EditorT deriving Theme
 data MarkdownT
 instance Theme MarkdownT where
   theme c = void $ is c $ do
-    is c .> do
+    apply $ do
       -- for inheriting
       color =: toTxt black
 
     has ".hide" .>
       display =: none
 
-    has (subtheme @EditorT) .> do
-      width  =: (100%)
-      border-radius =: 4px
+    has (subtheme @EditorT) $ do
+      apply $ 
+        width  =: (100%)
+
+      has (tag A) $ do
+        apply $ do
+          color           =: toTxt gray
+          text-decoration =: none
+          border          =: none
+          background      =: white
+
+        is hover .> do
+          color =: toTxt green
+          background      =: white
+          border          =: none
+
+        is hover . is visited .> do
+          color =: toTxt green
+          background      =: white
+          border          =: none
+
+        is visited .> do
+          color =: toTxt gray
+          background      =: white
+          border          =: none
 
     has (tag Figure) $ do
       apply $ do
@@ -113,7 +134,7 @@ instance Theme MarkdownT where
     has (tag P) .> do
       line-height =: 28px
       font-size   =: 16px
-      font-weight =: 300
+      font-weight =: 400
       color       =: toTxt black
       margin      =: 16px
 
@@ -136,7 +157,7 @@ instance Theme MarkdownT where
     has (tag Li) .> do
       line-height =: 20px
       font-size   =: 18px
-      font-weight =: 300
+      font-weight =: 400
       color       =: toTxt base { brightness = 25 }
       margin      =: 16px
 
@@ -228,7 +249,7 @@ instance Theme MarkdownT where
 
       has (tag P) .> do
         font-style =: italic
-        font-weight =: 300
+        font-weight =: 400
         font-family =: serifFont
         font-size   =: 18px
         color =: toTxt gray
@@ -394,7 +415,7 @@ instance Theme MarkdownT where
       margin-left           =: (-16)px
       margin-right          =: (-16)px
       font-family           =: defaultMonoFont
-      font-weight           =: 300
+      font-weight           =: 400
       webkit-font-smoothing =: auto
       background-color      =: toTxt black
       color                 =: mono1
@@ -415,7 +436,8 @@ instance Theme MarkdownT where
     has (tag Code) . is ".sourceCode" .> do
       font-family    =: inherit
       margin         =: 16px
-      line-height    =: 1.3em
+      font-height    =: 16px
+      line-height    =: 20.8px
       display        =: block
       padding-bottom =: 2px
 

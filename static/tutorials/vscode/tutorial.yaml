@@ -5,14 +5,13 @@ episode: 3
 published: 2020-05-01
 authors:
   - Sean Hickman
-editors: []
 tags:
   - beginner
   - install
   - IDE
 packages:
   - pure
-synopsis: |
+short: |
   Configure Visual Studio Code with a Pure.hs-compatible IDE.
 description: |
   Set up an IDE for Pure.hs development in Visual Studio Code to show type signatures on hover, pop-up completions, and other goodies.

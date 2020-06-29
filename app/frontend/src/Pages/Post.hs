@@ -36,29 +36,29 @@ toSpecificPost (PackageBlogR pn) s = PackagePostR pn s
 toSpecificPost rt@PackagePostR {} _ = rt
 toSpecificPost _ _ = BlogR
 
-instance Render (Route,PostHeader) where
-  render (rt,PostHeader Post {..}) =
+instance Render (Route,PostHeader,Maybe (Txt -> IO ())) where
+  render (rt,PostHeader Post {..},searcher) =
     Header <| Themed @HeaderT |> 
       [ render $ Avatar.Avatars (toList authors)
       , render $ Title.Title (toSpecificPost rt slug) (toTxt title)
       , render $ Subtitle.Subtitle subtitle 
       , render authors
       , render published
-      , render tags
+      , maybe (render tags) (\s -> render (tags,s)) searcher
       ]
 
 instance Render (ListItem (Post Rendered)) where
-  render (ListItem rt b p@Post {..}) =
+  render (ListItem rt b searcher p@Post {..}) =
     let 
       more = 
           [ Div <| Class "hide" 
           , Div <| Themed @MoreT |> [ A <| url Href Href (location (toSpecificPost rt slug)) |> [ "Read More >" ]]
           ]
-    in article b (render (rt,PostHeader p)) (render excerpt) (render $ Rendered more)
+    in article b (render (rt,PostHeader p,Just searcher)) (render excerpt) (render $ Rendered more)
 
 instance Render (Route,(Request (Maybe (Post Rendered)),Request (Maybe (PostContent Rendered)))) where
   render (rt,(p,pcv)) =
-    producing @(Maybe (Post Rendered)) (either titled (wait >=> titled) p) 
+    producing (either titled (wait >=> titled) p) 
       (consumingWith options (consumer True))
     where
       titled p = do
@@ -69,7 +69,7 @@ instance Render (Route,(Request (Maybe (Post Rendered)),Request (Maybe (PostCont
 
       consumer _ Nothing = notFound "Post"
       consumer b (Just p) = 
-        article b (render (rt,PostHeader p)) (render (rt,pcv)) Null
+        article b (render (rt,PostHeader p,Nothing @(Txt -> IO ()))) (render (rt,pcv)) Null
 
       options = defaultOptions
               & suspense (Milliseconds 500 0) 
@@ -77,7 +77,7 @@ instance Render (Route,(Request (Maybe (Post Rendered)),Request (Maybe (PostCont
 
 instance Render (Route,Request (Maybe (PostContent Rendered))) where
   render (_,pcv) = 
-    producing @(Maybe (PostContent Rendered)) (either pure wait pcv) 
+    producing (either pure wait pcv) 
       (consumingWith options consumer)
     where
       consumer Nothing = Null
@@ -89,13 +89,13 @@ instance Render (Route,Request (Maybe (PostContent Rendered))) where
 
 instance Render (Route,Request [Post Rendered]) where
   render (rt,ps) = 
-    producing @[Post Rendered] (either pure wait ps) 
+    producing (either pure wait ps) 
       (consumingWith options (consumer True id))
     where
       consumer b _ [] = emptyList "No Posts Yet" Null
       consumer b f ps = 
         Div <| Themed @HideT |>
-          [ render (Listing b rt f (const Null) ps) 
+          [ render (Listing b rt f (const Null) ps)
           ]
 
       options = defaultOptions

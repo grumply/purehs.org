@@ -39,8 +39,8 @@ authorAPI = api msgs reqs
 
 
 
-mkRequest "ListPages" [t|() -> [Page.Page Rendered]|] -- probably not used
-mkRequest "GetPage" [t|Slug -> Maybe (Page.Page Rendered)|]
+mkRequest "ListPages" [t|() -> [Page.Page]|]
+mkRequest "GetPage" [t|Slug -> Maybe Page.Page|]
 mkRequest "GetPageContent" [t|Slug -> Maybe (Page.PageContent Rendered)|]
 
 pagesAPI :: API '[] _

@@ -205,7 +205,7 @@ mkRequest "ListTutorials" [t|() -> [Tutorial Markdown]|]
 mkRequest "GetTutorial" [t|Slug -> Maybe (Tutorial Markdown)|]
 mkRequest "GetTutorialContent" [t|Slug -> Maybe (TutorialContent Markdown)|]
 
-tutorialAPI :: FullAPI '[] _
+tutorialAPI :: API '[] _
 tutorialAPI = api msgs reqs
   where
     msgs = none

@@ -21,9 +21,9 @@ import Control.Concurrent.Async (wait)
 import Control.Monad
 import GHC.Exts (IsList(..))
 
-instance Render (Route, (Request (Maybe (Page Rendered)), Request (Maybe (PageContent Rendered)))) where
+instance Render (Route, (Request (Maybe Page), Request (Maybe (PageContent Rendered)))) where
   render (rt,(pv,pcv)) =
-    producing @(Maybe (Page Rendered)) (either titled (wait >=> titled) pv) 
+    producing (either titled (wait >=> titled) pv) 
       (consumingWith options (consumer True))
     where
       titled Nothing = retitle "Not Found" >> pure Nothing
@@ -38,7 +38,7 @@ instance Render (Route, (Request (Maybe (Page Rendered)), Request (Maybe (PageCo
 
 instance Render (Route,Request (Maybe (PageContent Rendered))) where
   render (_,pcv) = 
-    producing @(Maybe (PageContent Rendered)) (either pure wait pcv) 
+    producing (either pure wait pcv) 
       (consumingWith options consumer)
     where
       consumer Nothing = Null

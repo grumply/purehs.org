@@ -25,10 +25,7 @@ placeholderPackageView = Package
   , homepage = Nothing
   , collaborators = fromList []
   , tags = fromList [ "Tag 1", "Tag 2"]
-  , synopsis = Txt.take 250 lorem_ipsum
   , description = lorem_ipsum
-  , excerpt = Excerpt $ fromList 
-      [ P <||> [ fromTxt $ Txt.take 300 lorem_ipsum ] ]
   }
 
 placeholderPackageContentView :: PackageContent Rendered
@@ -51,12 +48,9 @@ placeholderTutorialView = Tutorial
   , series = Nothing
   , episode = Nothing
   , published = fromTime $ Seconds 0 0
-  , edited = Nothing
   , authors = fromList [fromTxt "Placeholder"]
-  , editors = fromList []
   , tags = fromList [ "Tag 1", "Tag 2" ]
   , packages = fromList []
-  , synopsis = Txt.take 250 lorem_ipsum
   , description = lorem_ipsum
   , excerpt = Excerpt $ fromList
       [ P <||> [ fromTxt $ Txt.take 300 lorem_ipsum ] ]
@@ -71,13 +65,9 @@ placeholderPostView = Post
   { title = fromTxt "Placeholder"
   , subtitle = Nothing
   , slug = "placeholder"
-  , episode = Nothing
   , published = fromTime $ Seconds 0 0   
-  , edited = Nothing
   , authors = fromList [fromTxt "Placeholder"]
-  , editors = fromList []
   , tags = fromList [ "Tag 1", "Tag 2" ]
-  , synopsis = Txt.take 250 lorem_ipsum
   , description = lorem_ipsum
   , excerpt = Excerpt $ fromList
       [ P <||> [ fromTxt $ Txt.take 300 lorem_ipsum ] ]
@@ -94,7 +84,6 @@ placeholderAuthorView = Author.Author
   , twitter = Just $ fromTxt "Placeholder"
   , email = Just $ fromTxt "Placeholder"
   , company = Just $ fromTxt "Placeholder"
-  , synopsis = Txt.take 250 lorem_ipsum
   , description = lorem_ipsum
   , excerpt = Excerpt $ fromList
       [ P <||> [ fromTxt $ Txt.take 300 lorem_ipsum ] ]
@@ -107,7 +96,6 @@ placeholderAuthorContentView = AuthorContent $ fromList
 placeholderModuleView :: Module Rendered
 placeholderModuleView = Module
   { name = fromTxt "Placeholder"
-  , synopsis = Txt.take 250 lorem_ipsum
   , description = lorem_ipsum
   , excerpt = Excerpt $ fromList
       [ P <||> [ fromTxt $ Txt.take 300 lorem_ipsum ] ]
@@ -124,14 +112,10 @@ placeholderEntities =
     nm = fromTxt "Placeholder"
     v  = EntityView [ P <||> [ fromTxt $ Txt.take 300 lorem_ipsum ] ]
 
-placeholderPageView :: Page Rendered
+placeholderPageView :: Page
 placeholderPageView = Page
   { slug = fromTxt "placeholder"
-  , title = fromTxt "Placeholder" 
-  , synopsis = Txt.take 250 lorem_ipsum
   , description = lorem_ipsum
-  , excerpt = Excerpt $ fromList 
-      [ P <||> [ fromTxt $ Txt.take 300 lorem_ipsum ] ]
   }
 
 placeholderPageContentView :: PageContent Rendered

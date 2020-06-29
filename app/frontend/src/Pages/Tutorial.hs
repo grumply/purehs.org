@@ -40,30 +40,30 @@ toSpecificTutorial (VersionTutorialsR pn v) s = VersionTutorialR pn v s
 toSpecificTutorial rt@VersionTutorialR {} _ = rt
 toSpecificTutorial _ _ = TutorialsR -- fallback
 
-instance Render (Route,TutorialHeader) where
-  render (rt,TutorialHeader Tutorial {..}) =
+instance Render (Route,TutorialHeader,Maybe (Txt -> IO ())) where
+  render (rt,TutorialHeader Tutorial {..},searcher) =
     Header <| Themed @HeaderT |> 
       [ render $ Avatar.Avatars (toList authors)
       , render $ Title.Title (toSpecificTutorial rt slug) (toTxt title)
       , render $ Subtitle.Subtitle subtitle 
       , render authors
       , render published
-      , render tags
+      , maybe (render tags) (\s -> render (tags,s)) searcher
       ]
 
 instance Render (ListItem (Tutorial Rendered)) where
-  render (ListItem rt b t@Tutorial {..}) =
+  render (ListItem rt b searcher t@Tutorial {..}) =
     let 
       more = 
           [ Div <| Class "hide" 
           , Div <| Themed @MoreT |> [ A <| url Href Href (location (toSpecificTutorial rt slug)) |> [ "Read More >" ]]
           ]
     in
-      article b (render (rt,TutorialHeader t)) (render excerpt) (render $ Rendered more)
+      article b (render (rt,TutorialHeader t,Just searcher)) (render excerpt) (render $ Rendered more)
 
 instance Render (Route,(Request (Maybe (Tutorial Rendered)),Request (Maybe (TutorialContent Rendered)))) where
   render (rt,(t,tcv)) =
-    producing @(Maybe (Tutorial Rendered)) (either titled (wait >=> titled) t) 
+    producing (either titled (wait >=> titled) t) 
       (consumingWith options (consumer True))
     where
       titled t = do
@@ -75,7 +75,7 @@ instance Render (Route,(Request (Maybe (Tutorial Rendered)),Request (Maybe (Tuto
       consumer _ Nothing = notFound "Tutorial"
       consumer b (Just tv)
         = Div <||> 
-          [ article b (render (rt,TutorialHeader tv)) (render (rt,tcv)) Null
+          [ article b (render (rt,TutorialHeader tv,Nothing @(Txt -> IO ()))) (render (rt,tcv)) Null
           , case series (tv :: Tutorial Rendered) of
               Just s | Nothing <- episode (tv :: Tutorial Rendered) -> 
                 render (rt,s,App.req session Shared.listTutorials ())
@@ -89,7 +89,7 @@ instance Render (Route,(Request (Maybe (Tutorial Rendered)),Request (Maybe (Tuto
 
 instance Render (Route,Request (Maybe (TutorialContent Rendered))) where
   render (_,tcv) = 
-    producing @(Maybe (TutorialContent Rendered)) (either pure wait tcv) 
+    producing (either pure wait tcv) 
       (consumingWith options consumer)
     where
       consumer Nothing = Null 
@@ -101,8 +101,9 @@ instance Render (Route,Request (Maybe (TutorialContent Rendered))) where
 
 instance Render (Route,Request [Tutorial Rendered]) where
   render (rt,tvs) = 
-    producing @[Tutorial Rendered] (either pure wait tvs) 
-      (consumingWith options (consumer True id))
+    Tagged @[Tutorial Rendered] $
+      producing (either pure wait tvs) 
+        (consumingWith options (consumer True id))
     where
       consumer b _ [] = emptyList "No Tutorials Yet" Null
       consumer b f ts = 
@@ -116,8 +117,9 @@ instance Render (Route,Request [Tutorial Rendered]) where
 
 instance Render (Route,Series,IO (Request [Tutorial Rendered])) where
   render (rt,s,tvs) =
-    producing @[Tutorial Rendered] (tvs >>= either pure wait)
-      (consumingWith options (consumer True))
+    Tagged @Series $
+      producing (tvs >>= either pure wait)
+        (consumingWith options (consumer True))
     where
       consumer b [] = emptyList "No Tutorials Yet" Null
       consumer b ts = 
@@ -126,7 +128,7 @@ instance Render (Route,Series,IO (Request [Tutorial Rendered])) where
           ts' = List.sort (List.filter match ts)
         in Div <| Themed @SubarticlesT |>
             ( H2 <| (if b then Themed @LoadT else id) |> [ "Series" ]
-            : fmap (render . ListItem rt True) ts'
+            : fmap (render . ListItem rt True (const (pure ()))) ts'
             )
 
       options = defaultOptions 

@@ -16,7 +16,14 @@ import GHC.Exts (IsList(..))
 instance Render Tags where
   render ts = 
     P <| Themed @TagsT |>
-      [ Span <||> [ txt t ]
+      [ Span <| Cursor "default" |> [ txt t ]
+      | Tag t <- toList ts
+      ]
+
+instance Render (Tags,Txt -> IO()) where
+  render (ts,searcher) =
+    P <| Themed @TagsT |>
+      [ Span <| OnClick (\_ -> searcher t) . Cursor pointer |> [ txt t ]
       | Tag t <- toList ts
       ]
 
@@ -30,10 +37,10 @@ instance Theme TagsT where
         line-height      =: 1.3
         display          =: inline-block
         font-family      =: titleFont
-        background-color =: toTxt base
-        border           =* [1px,solid,toTxt (faded green)]
+        background-color =: toTxt (faded green)
+        border           =* [1px,solid,toTxt (green)]
         color            =: toTxt black
-        font-weight      =: 300
+        font-weight      =: 400
         border-radius    =: 7px
         padding          =* [4px,8px]
         margin-right     =: 16px

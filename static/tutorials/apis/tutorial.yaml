@@ -5,14 +5,13 @@ episode: 6
 published: 2020-05-31
 authors:
   - Sean Hickman
-editors: []
 tags:
   - beginner
   - apis
   - 5 minutes
 packages:
   - pure
-synopsis: |
+short: |
   Pure.hs APIs in 5 Minutes
 description: |
   Learn Pure.hs API development in 5 minutes.

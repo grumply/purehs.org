@@ -2,11 +2,16 @@
 
 .CodeMirror,
 .CodeMirror-scroll {
-    font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
-    font-weight: 300;
-    font-size: 14px;
-    background-color: hsla(210, 1.0101010101010102%, 14.85%, 1.0) !important;
-    color: #aab1bf !important
+    font-family: 'Fira Code iScript', monospace;
+}
+
+.CodeMirror,
+.CodeMirror-scroll {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 20px;
+    background-color: white !important;
+    color: hsla(210, 1.0101010101010102%, 14.85%, 1.0) !important
 }
 
 .CodeMirror-matchingbracket {
@@ -16,11 +21,11 @@
 }
 
 .CodeMirror-selected {
-    background: rgba(204, 217, 255, .05) !important
+    background: hsl(139, 66%, 86%)!important
 }
 
 .CodeMirror-focused .CodeMirror-selected {
-    background: rgba(204, 217, 255, .09) !important
+    background: hsl(139, 66%, 86%)!important
 }
 
 .CodeMirror-lines {
@@ -38,20 +43,20 @@
 }
 
 .CodeMirror-linenumber {
-    color: #797f8d !important
+    color: hsla(210, 1.0101010101010102%, 44.55%, 1.0) !important
 }
 
 .CodeMirror-gutter-filler,
 .CodeMirror-scrollbar-filler {
-    background-color: #ccc !important
+    background-color: hsla(210, 49.74874371859309%, 98.01%, 1.0) !important
 }
 
 .CodeMirror-cursor {
-    border-left: 2px solid #518bff !important
+    border-left: 2px solid hsl(238, 100%, 65%) !important
 }
 
 .CodeMirror-activeline {
-    color: #5b6270 !important
+    color: hsla(210, 1.0101010101010102%, 44.55%, 1.0) !important
 }
 
 .CodeMirror-overwrite .CodeMirror-cursor {
@@ -74,12 +79,12 @@
 }
 
 .cm-quote {
-    color: #d19965 !important;
+    color: hsl(207, 82%, 66%) !important;
     font-style: italic !important
 }
 
 .cm-keyword {
-    color: hsl(207, 82%, 66%) !important
+    color: hsl(210, 1%, 15%)!important
 }
 
 .cm-atom {
@@ -87,7 +92,7 @@
 }
 
 .cm-number {
-    color: #d19965 !important
+    color: hsl(238, 100%, 45%)!important
 }
 
 .cm-def {
@@ -95,11 +100,11 @@
 }
 
 .cm-variable {
-    color: hsl(220, 14%, 71%) !important
+    color: hsl(210, 1%, 30%)!important
 }
 
 .cm-variable-2 {
-    color: hsl(39, 67%, 69%) !important
+    color: hsl(250, 100%, 67%) !important
 }
 
 .cm-variable-3 {
@@ -115,66 +120,26 @@
 }
 
 .cm-comment {
-    color: #5b6270 !important;
+    color: hsl(210, 1%, 65%)!important;
     font-style: italic !important
 }
 
 .cm-string {
-    color: #97c279 !important
-}
-
-.cm-string-2 {
-    color: #97c279 !important
+    color: hsl(139, 67%, 45%)!important
 }
 
 .cm-meta {
-    color: #d19965 !important
+    color: hsl(360, 100%, 78%)!important
 }
 
 .cm-qualifier {
-    color: #d19a66 !important
+    color: hsl(250, 100%, 67%)!important
 }
 
 .cm-builtin {
-    color: #61afef !important
+    color: hsl(18, 100%, 65%)!important
 }
 
 .cm-bracket {
     color: #abb2bf !important
-}
-
-.cm-tag {
-    color: #df6b75 !important
-}
-
-.cm-attribute {
-    color: #d19965 !important
-}
-
-.cm-link {
-    color: #df6b75 !important;
-    border-bottom: solid 1px #df6b75 !important;
-    cursor: pointer !important
-}
-
-.cm-em {
-    color: #c578dd !important;
-    font-style: italic
-}
-
-.cm-strong {
-    color: #e4bf7a !important;
-    font-weight: 700
-}
-
-.cm-punctuation {
-    color: #5b6270 !important
-}
-
-.cm-positive {
-    color: #97c279 !important
-}
-
-.cm-negative {
-    color: #df6b75 !important
 }

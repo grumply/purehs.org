@@ -40,10 +40,8 @@ name: <display name>
 [twitter]: <twitter name>
 [email]: <email>
 [company]: <company>
-synopsis: |
-  A short description to use in page title.
 description: |
-  A text description to go in the page's meta description tag.
+  A short description to use in page description. <160 character max>
 excerpt: |
   A markdown excerpt from the author's bio.
 ```
@@ -62,13 +60,8 @@ pages/
 ```yaml
 # page.yaml
 slug : <slug>
-synopsis: |
-  A short description to use in page title.
 description: |
-  A text description to go in the page's meta description tag.
-excerpt: |
-  A markdown excerpt. Likely unused since this is a page and lists of
-  pages aren't likely to be shown anywhere.
+  A short description to use in page description. <160 character max>
 ```
 
 #### Blog directory structure
@@ -88,22 +81,18 @@ blog/
 title: <title>
 [subtitle]: <subtitle>
 slug: <slug>
-[episode]: <series number>
 published: <ISO 8601>
-[edited]: <ISO 8601>
 authors:
   - author1
   - author2
-editors: []
 tags:
   - tag1
   - tag2
-synopsis: |
-  A short description to use in page title.
+short: Short post description. Used in the dropdown menu. <50 character max>
 description: |
-  A text description to be used in a page meta tag.
+  A short description to use in page description. <160 character max>
 excerpt: |
-  A post excerpt in markdown for display in lists.
+  A post excerpt in markdown for display in post lists. Best kept short and compelling.
 ```
 
 #### Tutorials directory structure
@@ -122,25 +111,22 @@ tutorials/
 title: <title>
 [subtitle]: <subtitle>
 slug: <slug>
-[episode]: <series number>
+[series]: <series name>
+[episode]: <episode number>
 published: <ISO 8601>
-[edited]: <ISO 8601>
 authors:
   - author1
   - author2
-editors: []
 tags:
   - tag1
   - tag2
 [packages]:
   - package1
   - package2
-synopsis: |
-  A short description to use in page title.
-description: |
-  A text description to be used in a page meta tag.
+short: Short tutorial description. Used in the dropdown menu. <50 character max> 
+description: Tutorial description. Used in page meta description. <160 character max>
 excerpt: |
-  A post excerpt in markdown for display in lists.
+  A tutorial excerpt in markdown for display in lists. Best kept short and compelling.
 ```
 
 #### Packages directory structure
@@ -182,37 +168,10 @@ collaborators: []
 tags:
   - tag1
   - tag2
-synopsis: |
-  A short description to use in page title.
-description: |
-  A text description to be used in a page meta tag.
+short: A bite-sized package description. Used in the dropdown menu. <50 character max>
+description: Package description. Used in page meta description. <160 character max>
 excerpt: |
-  A package excerpt in markdown to be shown in lists of packages. Keep short.
-```
-
-##### post.yaml
-
-```yaml
-# post.yaml
-title: <title>
-[subtitle]: <subtitle>
-slug: <slug>
-[episode]: <series number>
-published: <ISO 8601>
-[edited]: <ISO 8601>
-authors:
-  - author1
-  - author2
-editors: []
-tags:
-  - tag1
-  - tag2
-synopsis: |
-  A short description to use in page title.
-description: |
-  A text description to be used in a page meta tag. Keep short.
-excerpt: |
-  A post excerpt in markdown for display in lists. Keep short.
+  Short markdown description used in listings. Best kept short; doesn't need impetus or purpose, only capability.
 ```
 
 ##### version.yaml
@@ -229,40 +188,10 @@ changes: |
 ```yaml
 # module.yaml
 name: <module name>
-synopsis: |
-  A short description to use in page title.
 description: |
-  Module description to be used in page meta tags. Keep short.
+  A short description to use in page description. <160 character max>
 excerpt: |
-  A module excerpt in markdown to be shown in lists of modules. Keep somewhat short.
-```
-
-##### tutorial.yaml
-
-```yaml
-# tutorial.yaml
-title: <title>
-[subtitle]: <subtitle>
-slug: <slug>
-[episode]: <series number>
-published: <ISO 8601>
-[edited]: <ISO 8601>
-authors:
-  - author1
-  - author2
-editors: []
-tags:
-  - tag1
-  - tag2
-[packages]:
-  - package1
-  - package2
-synopsis: |
-  A short description to use in page title.
-description: |
-  A text description to be used in a page meta tag. Keep short.
-excerpt: |
-  A post excerpt in markdown for display in lists. Keep short.
+  A module excerpt in markdown to be shown in lists of modules. General descriptive information goes here; explain the purpose of the module and maybe what, in general, it exports.
 ```
 
 ##### module.md

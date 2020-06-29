@@ -37,8 +37,9 @@ instance Render (Route,AuthorHeader) where
 
 instance Render (Route,(Request (Maybe (Author.Author Rendered)),Request (Maybe (AuthorContent Rendered)))) where
   render (rt,(a,acv)) =
-    producing @(Maybe (Author.Author Rendered)) (either titled (wait >=> titled) a) 
-      (consumingWith options (consumer True))
+    Tagged @(Maybe (Author.Author Rendered)) $
+      producing (either titled (wait >=> titled) a) 
+        (consumingWith options (consumer True))
     where
       titled Nothing = retitle "Not Found" >> pure Nothing
       titled x       = pure x
@@ -53,8 +54,9 @@ instance Render (Route,(Request (Maybe (Author.Author Rendered)),Request (Maybe 
 
 instance Render (Route,Request (Maybe (AuthorContent Rendered))) where
   render (rt,pcv) = 
-    producing @(Maybe (AuthorContent Rendered)) (either pure wait pcv) 
-      (consumingWith options consumer)
+    Tagged @(Maybe (AuthorContent Rendered)) $
+      producing (either pure wait pcv) 
+        (consumingWith options consumer)
     where
       consumer Nothing = Null
       consumer (Just (AuthorContent md)) = render md
@@ -64,13 +66,14 @@ instance Render (Route,Request (Maybe (AuthorContent Rendered))) where
                   (consumer (Just placeholderAuthorContentView) <| Themed @PlaceholderT)
 
 instance Render (ListItem (Author.Author Rendered)) where
-  render (ListItem rt b a@Author.Author {..}) = 
+  render (ListItem rt b _ a@Author.Author {..}) = 
     article b (render (rt,AuthorHeader a)) (render excerpt) Null
 
 instance Render (Route,Request [Author.Author Rendered]) where
   render (rt,as) = 
-    producing @[Author.Author Rendered] (either pure wait as) 
-      (consumingWith options (consumer True id))
+    Tagged @[Author.Author Rendered] $
+      producing (either pure wait as) 
+        (consumingWith options (consumer True id))
     where
       consumer b f = render . Listing b rt f (const Null)
 

@@ -5,14 +5,13 @@ episode: 4
 published: 2020-05-31
 authors:
   - Sean Hickman
-editors: []
 tags:
   - beginner
   - servers
   - 5 minutes
 packages:
   - pure
-synopsis: |
+short: |
   Pure.hs Applications in 5 Minutes
 description: |
   Learn Pure.hs server development in 5 minutes.

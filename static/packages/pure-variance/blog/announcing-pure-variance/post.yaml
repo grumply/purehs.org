@@ -8,7 +8,7 @@ tags:
   - announcing
   - pure-variance
   - statistics
-synopsis: |
+short: |
   The first public release of pure-variance
 description: |
   Announcing the first release of pure-variance, a library for simplifying calculation of variance and covariance.

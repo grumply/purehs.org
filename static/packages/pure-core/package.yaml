@@ -9,7 +9,7 @@ collaborators: []
 tags:
   - core
   - internal
-synopsis: |
+short: |
   Core Pure.hs types and patterns
 description: |
   Core types, methods, and patterns used to implement all higher-level abstractions for server, service, and interface development in Pure.hs. 

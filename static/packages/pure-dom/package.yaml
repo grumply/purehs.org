@@ -10,10 +10,10 @@ tags:
   - core
   - internal
   - dom
-synopsis: |
+short: |
   Rendering algorithm for Pure.hs
 description: |
-  Rendering and reconciling Algorithm for Pure.hs applications 
+  Rendering and reconciliation algorithm for Pure.hs applications 
 excerpt: |
   <div class="info">
   This is an internal package and not the best place to learn how to develop with Pure.hs. Consider starting with the [5-Minute Series](/tutorials/5-minute).

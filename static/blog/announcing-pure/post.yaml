@@ -6,7 +6,7 @@ authors:
 editors: []
 tags:
   - pure.hs
-synopsis: |
+short: |
   Announcing the first release of Pure.hs
 description: |
   Announcing the first release of Pure.hs, a library ecosystem for web applications, servers, and services.

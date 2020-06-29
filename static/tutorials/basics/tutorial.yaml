@@ -5,14 +5,13 @@ episode: 1
 published: 2020-05-27
 authors:
   - Sean Hickman
-editors: []
 tags:
   - beginner
   - basics
   - 5 minutes
 packages:
   - pure
-synopsis: |
+short: |
   Pure.hs Fundamentals in 5 Minutes
 description: |
   Get a grasp on the Pure.hs fundamental types and abstractions to build web sites in 5 minutes.

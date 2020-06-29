@@ -9,7 +9,7 @@ collaborators: []
 tags:
   - variance
   - statistics
-synopsis: |
+short: |
   Variance and covariance algorithms
 description: |
   Online and parallel-online variance and covariance algorithms with and without generics.

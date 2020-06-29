@@ -19,6 +19,7 @@ data Listing a = Listing Bool Route (View -> View) ([a] -> View) [a]
 data ListItem a = ListItem 
   { liRoute  :: Route 
   , liLoaded :: Bool 
+  , liSearch :: Txt -> IO ()
   , liItem   :: a
   }
 
@@ -26,10 +27,10 @@ instance (Search a,Render (ListItem a),Typeable a) => Render (Listing a) where
   render (Listing _ _ _ _ []) =
     Div
   render (Listing b rt f d as) =
-    flip searcher as $ \_ search xs ->
+    flip searcher as $ \v search xs ->
       Div <| Themed @ListingT |>
-        [ Input <| OnInput (withInput search) . Placeholder "Search" . Attribute "title" "Search"
-        , Div <||> [ render (ListItem rt b x) <| f | x <- xs ]
+        [ Input <| Value v . OnInput (withInput search) . Placeholder "Search" . Attribute "title" "Search"
+        , Div <||> [ render (ListItem rt b search x) <| f | x <- xs ]
         ]
 
 data ListingT

@@ -2,9 +2,11 @@
 module Components.Editor (editor) where
 
 import Shared
+import Styles.Fonts
+import Styles.Colors
 
 import qualified Pure.Elm as Elm
-import Pure.Elm hiding (state,mode,code,Default)
+import Pure.Elm hiding (state,mode,code,Default,green,gray)
 import Pure.WebSocket (WebSocket,clientWS,remote)
 
 import Data.Foldable
@@ -12,14 +14,14 @@ import System.IO.Unsafe
 
 {-# NOINLINE tryWS #-}
 tryWS :: WebSocket
-tryWS = unsafePerformIO $ clientWS "try.purehs.org" 8080
+tryWS = unsafePerformIO $ clientWS "204.48.20.19" 8080
 
 newtype Editor = Editor JSV
   deriving Elm.Default
     via JSV
 
 foreign import javascript unsafe
-  "var f = function(cm) { cm['replaceSelection']('  ','end'); };var o = {}; o['theme'] = 'one-dark'; o['viewportMargin'] = Infinity; o['mode'] = 'text/x-haskell'; o['lineNumbers'] = true; o['tabSize'] = 2; o['extraKeys'] = {};  o['extraKeys']['Tab'] = f; $r = CodeMirror['fromTextArea']($1,o)" 
+  "var f = function(cm) { cm['replaceSelection']('  ','end'); };var o = {}; o['theme'] = 'one-dark'; o['viewportMargin'] = Infinity; o['mode'] = 'text/x-haskell'; o['lineNumbers'] = true; o['tabSize'] = 2; o['extraKeys'] = {};  o['extraKeys']['Tab'] = f; o['fixedGutter'] = false; $r = CodeMirror['fromTextArea']($1,o)" 
     start_editor_js 
       :: Node -> IO Editor
 
@@ -34,7 +36,7 @@ foreign import javascript unsafe
       :: Editor -> IO Txt
 
 foreign import javascript unsafe
-  "$1['setValue']($2);var cm = $1; setTimeout(function() { cm['refresh']() },1)"
+  "$1['setValue']($2);"
     set_value_js
       :: Editor -> Txt -> IO ()
 
@@ -58,6 +60,11 @@ foreign import javascript unsafe
     set_default_js
       :: Editor -> IO ()
 
+foreign import javascript unsafe
+  "$1['refresh']();" 
+    refresh_js
+      :: Editor -> IO ()
+
 data Mode = Editing | Compiling
 
 data State = Waiting | Failure Txt | Success String 
@@ -77,7 +84,7 @@ data Msg
   | CreateResultsView Node 
   | Compile | Edit | SetKeymap Keymap
   | Failed Txt | Succeeded String 
-  | Receive 
+  | Receive | Refresh
 
 editor :: View -> View
 editor = run (App [] [Receive] [] (Model Editing Waiting Default def def) update view)
@@ -101,17 +108,24 @@ editor = run (App [] [Receive] [] (Model Editing Waiting Default def def) update
         { results = e 
         }
 
+    update Refresh _ mdl = do
+      refresh_js (code mdl)
+      refresh_js (results mdl)
+      pure mdl
+
     update Compile _ mdl = do
       v <- get_value_js (code mdl)
       set_value_js (results mdl) "Compiling..."
       remote compileAPI tryWS compile (v,False) 
         (command . either Failed Succeeded)
+      command Refresh
       pure mdl 
         { mode = Compiling
         , state = Waiting 
         }
 
-    update Edit _ mdl =
+    update Edit _ mdl = do
+      command Refresh
       pure mdl 
         { mode = Editing }
 
@@ -150,14 +164,15 @@ editor = run (App [] [Receive] [] (Model Editing Waiting Default def def) update
 
       in Div <| Themed @EditorT . modeT . stateT |>
           [ Div <| Themed @CommandsT |>
-            [ Button <| Themed @EditButtonT . OnClick (\_ -> command Edit) |> 
-              [ "Edit" ] 
-            , Button <| Themed @CompileButtonT . OnClick (\_ -> command Compile) |> 
-              [ "Compile" ]
-            , case keymap mdl of
-                Vim     -> Button <| Themed @KeymapButtonT . OnClick (\_ -> command (SetKeymap Sublime)) |> [ "Sublime" ]
-                Sublime -> Button <| Themed @KeymapButtonT . OnClick (\_ -> command (SetKeymap Default)) |> [ "Default" ]
-                Default -> Button <| Themed @KeymapButtonT . OnClick (\_ -> command (SetKeymap Vim))     |> [ "Vim" ]
+            [ Span <||>
+              [ Span <| Themed @CommandT . Themed @EditButtonT    . OnClick (\_ -> command Edit)    |> [ "Edit" ] 
+              , Span <| Themed @CommandT . Themed @CompileButtonT . OnClick (\_ -> command Compile) |> [ "Compile" ]
+              , case keymap mdl of
+                  Vim     -> Span <| Themed @CommandT . Themed @KeymapButtonT . OnClick (\_ -> command (SetKeymap Sublime)) |> [ "Sublime" ]
+                  Sublime -> Span <| Themed @CommandT . Themed @KeymapButtonT . OnClick (\_ -> command (SetKeymap Default)) |> [ "Default" ]
+                  Default -> Span <| Themed @CommandT . Themed @KeymapButtonT . OnClick (\_ -> command (SetKeymap Vim))     |> [ "Vim" ]
+              ]
+            , A <| Themed @EditorBrandingT . Href "http://try.purehs.org"  . Attribute "target" "_blank" |> [ "try.purehs.org" ]
             ]
           , Div <| Themed @CodeT |> 
             [ v <| WithHost (command . CreateCodeView)
@@ -182,10 +197,46 @@ data FailureT   deriving Theme
 data CommandsT
 instance Theme CommandsT where
   theme c = void $ is c .> do
-    background-color =: hex 0x252626
+    padding =: 8px
+    display =: flex
+    justify-content =: space-between
+    background-color =: white
     width =: (100%)
-    height =: 20px
+    height =: 36px
 
+data CommandT
+instance Theme CommandT where
+  theme c = void $ 
+    is c $ do
+      apply $ do
+        cursor       =: pointer
+        font-size    =: 18px
+        margin-right =: 12px
+        font-family  =: defaultFont
+        color        =: toTxt gray
+      
+      is hover .> do
+        color =: toTxt green
+
+data EditorBrandingT
+instance Theme EditorBrandingT where
+  theme c = void $ is c $ do
+    apply $ do
+      display         =: inline-block
+      cursor          =: pointer
+      font-size       =: 18px
+      color           =: toTxt gray
+      text-decoration =: none
+
+    is hover .> do
+      color =: toTxt green
+
+    is hover . is visited .> do
+      color =: toTxt green
+
+    is visited .> do
+      color =: toTxt gray
+ 
 data EditButtonT
 instance Theme EditButtonT where
   theme c = void $ do
@@ -225,7 +276,7 @@ instance Theme CodeT where
     is c .> do
       display =: none
       width =: (100%)
-      height =: calc((100%) - 20px)
+      height =: calc((100%) - 36px)
 
     has (subtheme @EditingT) $
       has c .> do
@@ -237,7 +288,7 @@ instance Theme ResultsT where
     is c .> do
       display =: none
       width =: (100%)
-      height =: calc((100%) - 20px)
+      height =: calc((100%) - 36px)
 
     is (subtheme @CompilingT) $ do
       has c .> do
@@ -257,7 +308,7 @@ instance Theme FrameT where
         outline =: none
         border =: none
         width =: (100%)
-        height =: (100%)
+        height =: calc((100%) - 36px)
 
     is (subtheme @CompilingT) $
       is (subtheme @SuccessT) $
@@ -271,4 +322,6 @@ instance Theme EditorT where
       height =: (100%)
     
     is c .> do
+      border =* [1px,solid,toTxt gray]
+      box-shadow =* [0px,4px,10px,toTxt gray]
       height =: (100%)

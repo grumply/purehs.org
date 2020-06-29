@@ -4,14 +4,13 @@ series: 5-Minute Series
 published: 2020-05-25
 authors:
   - Sean Hickman
-editors: []
 tags:
   - beginner
   - introduction
   - 5 minute
 packages:
   - pure
-synopsis: |
+short: |
   Pure.hs 5-Minutes Series
 description: |
   The Pure.hs 5-minute series will walk you through from basic web and application design through to full-blown server development in easy-to-digest 5-minute chunks.

@@ -5,14 +5,13 @@ episode: 4
 published: 2020-05-31
 authors:
   - Sean Hickman
-editors: []
 tags:
   - beginner
   - composition
   - 5 minutes
 packages:
   - pure
-synopsis: |
+short: |
   Pure.hs Composition in 5 Minutes
 description: |
   Learn how to decompose a monolithic application into composable pieces in 5 minutes.

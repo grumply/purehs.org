@@ -21,7 +21,7 @@ data Resource
   = NoResource
 
   | PageResource
-    (Request (Maybe (Page Rendered)))
+    (Request (Maybe Page))
     (Request (Maybe (PageContent Rendered)))
   
   -- PackageBlogResource == BlogResource

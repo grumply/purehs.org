@@ -5,14 +5,13 @@ episode: 2
 published: 2020-05-29
 authors:
   - Sean Hickman
-editors: []
 tags:
   - beginner
   - components
   - 5 minutes
 packages:
   - pure
-synopsis: |
+short: |
   Pure.hs Components in 5 Minutes
 description: |
   Get a grasp on the Pure.hs component type and how to create a managed stateful context in 5 minutes.

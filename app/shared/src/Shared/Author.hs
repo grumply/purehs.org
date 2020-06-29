@@ -9,7 +9,6 @@ import Shared.Types
   , Company
   , Excerpt
   , Description
-  , Synopsis
   )
 
 import Pure.Data.JSON (ToJSON,FromJSON)
@@ -27,7 +26,6 @@ data Author format = Author
   , twitter :: Maybe TwitterHandle
   , email :: Maybe Email
   , company :: Maybe Company
-  , synopsis :: Synopsis
   , description :: Description
   , excerpt :: Excerpt format
   } deriving (Generic,ToJSON,FromJSON,Functor,Foldable,Search)

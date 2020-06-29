@@ -9,7 +9,7 @@ collaborators: []
 tags:
   - base
   - internal
-synopsis: |
+short: |
   Pure.hs base library
 description: |
   Base library that re-exports much of the Pure.hs ecosystem for easy import.
