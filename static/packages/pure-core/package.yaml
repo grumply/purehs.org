@@ -13,14 +13,3 @@ short: |
   Core Pure.hs types and patterns
 description: |
   Core types, methods, and patterns used to implement all higher-level abstractions for server, service, and interface development in Pure.hs. 
-excerpt: |
-  The core types and methods used to implement all higher-level abstractions for server, service, and interface development. 
-  
-  See, for example, [pure-html](/packages/pure-html/latest), [pure-svg](/packages/pure-svg/latest), or [pure-events](/packages/pure-events/latest).
-    
-  For a driver that manages instances of these types, see [pure-dom](/packages/pure-dom/latest).
-
-  <div class="warn">
-  ### Warning 
-  This is an internal package. Consider starting with one of the [tutorials](/tutorials).
-  </div>

@@ -166,7 +166,7 @@ clock = Component $ \self ->
         t <- time
         pure 
           ( st { now = t }
-          , pure () -- IO action to perform after commiting update
+          , pure () -- IO action to perform after committing update
           )
   in def
     { construct = pure (State Nothing 0)

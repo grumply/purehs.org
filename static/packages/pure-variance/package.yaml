@@ -13,5 +13,3 @@ short: |
   Variance and covariance algorithms
 description: |
   Online and parallel-online variance and covariance algorithms with and without generics.
-excerpt: |
-  Online and parallel-online variance and covariance algorithms with and without generics.

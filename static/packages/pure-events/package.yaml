@@ -14,5 +14,3 @@ short: |
   Event patterns and utilities
 description: |
   Patterns and utilities for working with browser-based events in Pure.hs
-excerpt: |
-  Patterns and utilities for working with browser-based events.

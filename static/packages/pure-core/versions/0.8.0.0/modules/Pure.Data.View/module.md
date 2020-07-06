@@ -427,7 +427,7 @@ main = inject body (view bob)
 </pre>
 
 <pre data-try>
-import Pure
+import Pure hiding (Tagged)
 
 data Tagged = forall a. Pure a => Tagged 
   { name :: Txt
