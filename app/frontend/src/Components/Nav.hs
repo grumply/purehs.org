@@ -3,6 +3,7 @@ module Components.Nav where
 
 import qualified App
 
+import Components.Preload (preload)
 import Components.Icons hiding (Model,Msg)
 import Data.Route
 import Styles.Colors
@@ -15,8 +16,8 @@ import Shared.Package
 import Shared.Tutorial as Tutorial
 import Shared.Types (Episode,Rendered)
 
-import Pure.Elm hiding (Command,Open,target,name,link,url,menu,delay,wait,Left,Right,green,blue,black,gray,lavender,touch)
-import Pure.Elm.Application (link,goto,location,url,session)
+import Pure.Elm hiding (Command,Open,target,name,link,url,menu,delay,wait,Left,Right,green,blue,black,gray,lavender,touch,Preload)
+import Pure.Elm.Application (link,goto,location,url,session,URL(..))
 import Pure.Data.Styles (delay)
 import Pure.Data.SVG
 import Pure.Maybe
@@ -57,12 +58,12 @@ data Model = Model
   , touch :: Bool
   }
 
-data Msg = Clicked Menu | Focused Menu | Touched Menu | Blurred
+data Msg = Clicked Menu | Focused Menu | Touched Menu | Blurred | Preload Route
 
 nav :: App.App => Route -> View
-nav = run (App [] [] [] (Model Nothing False) update (view session))
+nav = let upd = update in run (App [] [] [] (Model Nothing False) upd (view session))
 
-update :: Msg -> Route -> Model -> IO Model
+update :: App.App => Msg -> Route -> Model -> IO Model
 update (Clicked menu) _ mdl = do
   case mdl of
     Model (Just m) True 
@@ -93,6 +94,10 @@ update (Touched menu) _ mdl = do
 update Blurred _ mdl =
   pure mdl { activeMenu = Nothing }
 
+update (Preload r) _ mdl = do
+  preload (location r)
+  pure mdl
+
 view :: Elm Msg => App.Session -> Route -> Model -> View
 view ses rt mdl =
   Div <| Themed @NavT . OnDoc "click" (const (command Blurred)) |>
@@ -106,6 +111,11 @@ view ses rt mdl =
   where
     vis | Just _ <- activeMenu mdl = Themed @ActiveT
         | otherwise                = id
+
+prelink :: Elm Msg => Route -> View -> View
+prelink r = 
+  let pre _ = command (Preload r) 
+  in link r . OnMouseEnter pre . OnTouchStart pre
 
 links :: Elm Msg => Route -> View
 links rt =
@@ -162,19 +172,19 @@ menus ses mdl =
           | activeMenu mdl  > Just m  = Themed @MenuLeftT
           | otherwise                 = id
 
-menu :: App.Session -> Menu -> View
+menu :: Elm Msg => App.Session -> Menu -> View
 menu ses = \case
   AboutMenu     -> aboutMenu ses
   PackagesMenu  -> documentationMenu ses
   TutorialsMenu -> tutorialsMenu ses
 
-aboutMenu :: App.Session -> View
+aboutMenu :: Elm Msg => App.Session -> View
 aboutMenu ses = 
   Div <||>
     [ Section <| Themed @MenuTopT |>
       [ -- Book SVG
         Header <||> 
-        [ H1 <||> [ A <| link BlogR |> [ newsIcon, "Blog" ] ]
+        [ H1 <||> [ A <| prelink BlogR |> [ newsIcon, "Blog" ] ]
         , P  <||> [ "Get news and important announcements about Pure.hs" ]
         ]
       , Section <||>
@@ -185,7 +195,7 @@ aboutMenu ses =
             producing @[Post Rendered] (App.req ses Shared.listPosts () >>= either pure wait) $ consuming $ \ps ->
               Ul <||> 
                 [ Li <||>
-                  [ A <| link (PostR slug) |>
+                  [ A <| prelink (PostR slug) |>
                     [ txt (toTxt title <> " ❯") ]
                   ]
                 | Post {..} <- List.take 4 (List.cycle $ List.sortBy (flip compare) ps)
@@ -197,7 +207,7 @@ aboutMenu ses =
         list is = Ul <||> [ item svg i l | (svg,i,l) <- is ]
         item svg i l = 
           Li <||> 
-            [ A <| either Href link l . either (const (Attribute "target" "_blank")) (const id) l |> 
+            [ A <| either Href prelink l . either (const (Attribute "target" "_blank")) (const id) l |> 
               [ svg , i ]
             ]
       in       
@@ -219,12 +229,12 @@ aboutMenu ses =
           ]
     ]
 
-documentationMenu :: App.Session -> View
+documentationMenu :: Elm Msg => App.Session -> View
 documentationMenu ses =
   Div <||>
     [ Section <| Themed @MenuTopT |> 
       [ Header <||> 
-        [ H1 <||> [ A <| link PackagesR |> [ compoundIcon, "Packages" ] ]
+        [ H1 <||> [ A <| prelink PackagesR |> [ compoundIcon, "Packages" ] ]
         , P  <||> [ "Per-package documentation, blogs and tutorials." ]
         ]
       , Div <||>
@@ -236,10 +246,10 @@ documentationMenu ses =
               ps <- either pure wait r
               let pub Package {..} = published
               pure (List.take 3 $ List.sortBy (flip compare `on` pub) ps)
-          in producing @[Package Rendered] rq $ consuming $ \ps ->
+          in producing @[Package] rq $ consuming $ \ps ->
               Ul <||> 
                 [ Li <||>
-                  [ A <| link (PackageR name) |>
+                  [ A <| prelink (PackageR name) |>
                     [ txt (toTxt name <> " ❯") ]
                   , P <||>
                     [ txt short ]
@@ -251,12 +261,12 @@ documentationMenu ses =
     ]
 
 
-tutorialsMenu :: App.Session -> View
+tutorialsMenu :: Elm Msg => App.Session -> View
 tutorialsMenu ses =
   Div <||>
     [ Section <| Themed @MenuTopT |> 
       [ Header <||> 
-        [ H1 <||> [ A <| link TutorialsR |> [ codeIcon, "Tutorials" ] ]
+        [ H1 <||> [ A <| prelink TutorialsR |> [ codeIcon, "Tutorials" ] ]
         , P  <||> [ "Start learning Pure.hs development." ]
         ]
       , Section <||>
@@ -272,7 +282,7 @@ tutorialsMenu ses =
             in producing @[Tutorial Rendered] rq $ consuming $ \ts ->
                 Ul <||> 
                   [ Li <||>
-                    [ A <| link (TutorialR slug) |>
+                    [ A <| prelink (TutorialR slug) |>
                       [ txt (toTxt title <> " ❯") ]
                     , P <||>
                       [ txt short ]
@@ -286,7 +296,7 @@ tutorialsMenu ses =
         list is = Ul <||> [ item svg i l | (svg,i,l) <- is ]
         item svg i l = 
           Li <||> 
-            [ A <| either Href link l . either (const (Attribute "target" "_blank")) (const id) l |> 
+            [ A <| either Href prelink l . either (const (Attribute "target" "_blank")) (const id) l |> 
               [ svg , i ]
             ]
       in 

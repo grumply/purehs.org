@@ -3,6 +3,7 @@ module Pages.Home (page,GradientT(..)) where
 import qualified App
 import Components.Header (header)
 import Components.Icons  (logo,animatedLogo)
+import Components.Preload (prelink)
 import Data.Route
 import Styles.Colors
 import Styles.Themes hiding (ContentT,page)
@@ -29,9 +30,9 @@ home =
         , P <| Themed @DescriptionT |>
           [ "Performance + Expressiveness + Asynchrony" ]
         , Div <| Themed @CallToActionT |>
-          [ A <| link (PageR "about") . Themed @ButtonT . Themed @AboutPureT |>
+          [ A <| prelink (PageR "about") . Themed @ButtonT . Themed @AboutPureT |>
             [ "About Pure.hs" ]
-          , A <| link (TutorialR "install") . Themed @ButtonT . Themed @GetPureT |>
+          , A <| prelink (TutorialR "install") . Themed @ButtonT . Themed @GetPureT |>
             [ "Get Pure.hs" ]
           ]
         ]

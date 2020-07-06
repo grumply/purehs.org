@@ -1,5 +1,6 @@
 module Components.Author where
 
+import Components.Preload
 import Data.Render
 import Data.Route
 
@@ -27,7 +28,7 @@ newtype Author = Author Name
 instance Render Author where
   render (Author nm) =
     Address <| Themed @AuthorT |>
-      [ A <| Rel "author" . link (AuthorR nm) |>
+      [ A <| Rel "author" . prelink (AuthorR nm) |>
         [ txt nm ]
       ]
 

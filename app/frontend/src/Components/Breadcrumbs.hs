@@ -1,6 +1,7 @@
 module Components.Breadcrumbs (breadcrumbs,sublinks) where
 
 import qualified App
+import Components.Preload
 import Data.Route as Route
 import Styles.Colors
 import Styles.Responsive
@@ -39,13 +40,13 @@ breadcrumbs r =
     _                         -> []
   where
     chevron  = " ❯ " 
-    ps       = A <| link PackagesR |> [ "Packages" ]
-    p pn     = A <| link (PackageR pn) |> [ txt pn ] 
-    v pn ver = A <| link (VersionR pn ver) |> [ txt ver ]
-    b        = A <| link BlogR |> [ "Blog" ]
-    t        = A <| link TutorialsR |> [ "Tutorials" ]
-    a        = A <| link AuthorsR |> [ "Authors" ]
-    n nm     = A <| link (AuthorR nm) |> [ txt nm ]
+    ps       = A <| prelink PackagesR |> [ "Packages" ]
+    p pn     = A <| prelink (PackageR pn) |> [ txt pn ] 
+    v pn ver = A <| prelink (VersionR pn ver) |> [ txt ver ]
+    b        = A <| prelink BlogR |> [ "Blog" ]
+    t        = A <| prelink TutorialsR |> [ "Tutorials" ]
+    a        = A <| prelink AuthorsR |> [ "Authors" ]
+    n nm     = A <| prelink (AuthorR nm) |> [ txt nm ]
 
 sublinks :: App.App => Route -> [View]
 sublinks r =
@@ -63,12 +64,12 @@ sublinks r =
     VersionR pn v           -> pb pn : pts pn v : []
     _                       -> []
   where
-    ps n      = A <| link (AuthorPostsR n)     |> [ "Posts" ]
-    pkgs n    = A <| link (AuthorPackagesR n)  |> [ "Packages" ]
-    ts n      = A <| link (AuthorTutorialsR n) |> [ "Tutorials" ]
-    pb pn     = A <| link (PackageBlogR pn)    |> [ "Blog" ]
-    pts pn v  = A <| link (VersionTutorialsR pn v) |> [ "Tutorials" ]
-    m pn v mn = A <| Themed @Hideable . link (ModuleR pn v mn) |> [ txt mn ]
+    ps n      = A <| prelink (AuthorPostsR n)     |> [ "Posts" ]
+    pkgs n    = A <| prelink (AuthorPackagesR n)  |> [ "Packages" ]
+    ts n      = A <| prelink (AuthorTutorialsR n) |> [ "Tutorials" ]
+    pb pn     = A <| prelink (PackageBlogR pn)    |> [ "Blog" ]
+    pts pn v  = A <| prelink (VersionTutorialsR pn v) |> [ "Tutorials" ]
+    m pn v mn = A <| Themed @Hideable . prelink (ModuleR pn v mn) |> [ txt mn ]
 
 data Hideable
 instance Theme Hideable where

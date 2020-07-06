@@ -53,99 +53,100 @@ data Resource
 
   -- AuthorPackagesResource == PackagesResource
   | PackagesResource 
-    (Request [(Package Rendered)])
+    (Request [Package])
 
   | PackageResource 
-    (Request (Maybe (Package Rendered))) 
+    (Request (Maybe Package)) 
     (Request (Maybe (PackageContent Rendered)))
     (Request [(Version Rendered)])
 
   | ModulesResource 
-    (Request (Maybe (Package Rendered))) 
+    (Request (Maybe Package)) 
     (Request (Maybe (Version Rendered))) 
     (Request [((Module Rendered),(ModuleContent Rendered))])
 
 resource :: App.App => Route -> IO Resource
 resource rt = do
-  rsc <- go rt 
+  rsc <- load rt 
   forkIO $ description rt rsc >>= describe
   pure rsc
-  where
-    go = \case
-      NoR -> pure NoResource
 
-      HomeR -> pure NoResource
+load :: App.App => Route -> IO Resource
+load = \case
+  NoR -> pure NoResource
 
-      PageR s -> PageResource
-        <$> (App.req session Shared.getPage s)
-        <*> (App.req session Shared.getPageContent s)
+  HomeR -> pure NoResource
 
-      BlogR -> BlogResource 
-        <$> (App.req session Shared.listPosts ())
+  PageR s -> PageResource
+    <$> (App.req session Shared.getPage s)
+    <*> (App.req session Shared.getPageContent s)
 
-      PostR s -> PostResource 
-        <$> (App.req session Shared.getPost s)
-        <*> (App.req session Shared.getPostContent s)
+  BlogR -> BlogResource 
+    <$> (App.req session Shared.listPosts ())
 
-      TutorialsR -> TutorialsResource 
-        <$> (App.req session Shared.listTutorials ())
+  PostR s -> PostResource 
+    <$> (App.req session Shared.getPost s)
+    <*> (App.req session Shared.getPostContent s)
 
-      TutorialR s -> TutorialResource 
-        <$> (App.req session Shared.getTutorial s)
-        <*> (App.req session Shared.getTutorialContent s)
+  TutorialsR -> TutorialsResource 
+    <$> (App.req session Shared.listTutorials ())
 
-      AuthorsR -> AuthorsResource
-        <$> (App.req session Shared.listAuthors ())
+  TutorialR s -> TutorialResource 
+    <$> (App.req session Shared.getTutorial s)
+    <*> (App.req session Shared.getTutorialContent s)
 
-      AuthorR n -> AuthorResource
-        <$> (App.req session Shared.getAuthor n)
-        <*> (App.req session Shared.getAuthorContent n)
+  AuthorsR -> AuthorsResource
+    <$> (App.req session Shared.listAuthors ())
 
-      AuthorPostsR n -> BlogResource
-        <$> (App.req session Shared.listAuthorPosts n)
+  AuthorR n -> AuthorResource
+    <$> (App.req session Shared.getAuthor n)
+    <*> (App.req session Shared.getAuthorContent n)
 
-      AuthorTutorialsR n -> TutorialsResource
-        <$> (App.req session Shared.listAuthorTutorials n)
+  AuthorPostsR n -> BlogResource
+    <$> (App.req session Shared.listAuthorPosts n)
 
-      AuthorPackagesR nm -> PackagesResource 
-        <$> (App.req session Shared.listAuthorPackages nm)
+  AuthorTutorialsR n -> TutorialsResource
+    <$> (App.req session Shared.listAuthorTutorials n)
 
-      PackagesR -> PackagesResource 
-        <$> (App.req session Shared.listPackages ())
+  AuthorPackagesR nm -> PackagesResource 
+    <$> (App.req session Shared.listAuthorPackages nm)
 
-      PackageR pn -> PackageResource 
-        <$> (App.req session Shared.getPackage pn)
-        <*> (App.req session Shared.getPackageContent pn)
-        <*> (App.req session Shared.listPackageVersions pn)
+  PackagesR -> PackagesResource 
+    <$> (App.req session Shared.listPackages ())
 
-      PackageBlogR pn -> BlogResource
-        <$> (App.req session Shared.listPackagePosts pn)
+  PackageR pn -> PackageResource 
+    <$> (App.req session Shared.getPackage pn)
+    <*> (App.req session Shared.getPackageContent pn)
+    <*> (App.req session Shared.listPackageVersions pn)
 
-      PackagePostR pn s -> PostResource
-        <$> (App.req session Shared.getPackagePost (pn,s))
-        <*> (App.req session Shared.getPackagePostContent (pn,s))
+  PackageBlogR pn -> BlogResource
+    <$> (App.req session Shared.listPackagePosts pn)
 
-      VersionTutorialsR pn v -> TutorialsResource 
-        <$> (App.req session Shared.listPackageVersionTutorials (pn,v))
+  PackagePostR pn s -> PostResource
+    <$> (App.req session Shared.getPackagePost (pn,s))
+    <*> (App.req session Shared.getPackagePostContent (pn,s))
 
-      VersionTutorialR pn v s -> TutorialResource 
-        <$> (App.req session Shared.getPackageVersionTutorial (pn,v,s))
-        <*> (App.req session Shared.getPackageVersionTutorialContent (pn,v,s))
+  VersionTutorialsR pn v -> TutorialsResource 
+    <$> (App.req session Shared.listPackageVersionTutorials (pn,v))
 
-      VersionR pn v -> ModulesResource 
-        <$> (App.req session Shared.getPackage pn)
-        <*> (App.req session Shared.getPackageVersion (pn,v))
-        <*> (App.req session Shared.listPackageVersionModulesContent (pn,v))
+  VersionTutorialR pn v s -> TutorialResource 
+    <$> (App.req session Shared.getPackageVersionTutorial (pn,v,s))
+    <*> (App.req session Shared.getPackageVersionTutorialContent (pn,v,s))
 
-      ModuleR pn v mn -> ModulesResource 
-        <$> (App.req session Shared.getPackage pn)
-        <*> (App.req session Shared.getPackageVersion (pn,v))
-        <*> (App.req session Shared.listPackageVersionModulesContent (pn,v))
+  VersionR pn v -> ModulesResource 
+    <$> (App.req session Shared.getPackage pn)
+    <*> (App.req session Shared.getPackageVersion (pn,v))
+    <*> (App.req session Shared.listPackageVersionModulesContent (pn,v))
 
-      EntityR pn v mn e -> ModulesResource 
-        <$> (App.req session Shared.getPackage pn)
-        <*> (App.req session Shared.getPackageVersion (pn,v))
-        <*> (App.req session Shared.listPackageVersionModulesContent (pn,v))
+  ModuleR pn v mn -> ModulesResource 
+    <$> (App.req session Shared.getPackage pn)
+    <*> (App.req session Shared.getPackageVersion (pn,v))
+    <*> (App.req session Shared.listPackageVersionModulesContent (pn,v))
+
+  EntityR pn v mn e -> ModulesResource 
+    <$> (App.req session Shared.getPackage pn)
+    <*> (App.req session Shared.getPackageVersion (pn,v))
+    <*> (App.req session Shared.listPackageVersionModulesContent (pn,v))
 
 description :: Route -> Resource -> IO Txt
 description rt rsc =

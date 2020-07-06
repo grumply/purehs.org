@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 29ccb21e0c64637da10a7671927317801a60127a3dedd80e96e291756a7b57ff
+-- hash: 08ebeaa97aaee534225578a7cd1b6d7f5351092a70c2d6d998bb3931dea33d96
 
 name:           frontend
 version:        0.1.0.0
@@ -30,6 +30,7 @@ library
       Components.Listing
       Components.Markdown
       Components.Nav
+      Components.Preload
       Components.Route
       Components.Searcher
       Components.Section
@@ -101,6 +102,7 @@ executable frontend
       Components.Listing
       Components.Markdown
       Components.Nav
+      Components.Preload
       Components.Route
       Components.Searcher
       Components.Section

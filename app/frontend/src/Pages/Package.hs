@@ -7,6 +7,7 @@ import Components.Author as Author
 import Components.CopyToClipboard
 import Components.Markdown
 import Components.Listing
+import Components.Preload
 import Components.Section as Section
 import Components.Tags 
 import Components.Title as Title
@@ -36,7 +37,7 @@ import Data.List as List
 import GHC.Exts (IsList(..))
 import Prelude hiding (max)
 
-instance Render (ListItem (Package Rendered)) where
+instance Render (ListItem Package) where
   render (ListItem _ b searcher p@Package {..}) = 
     let loaded = if b then Themed @LoadT else id
     in Div <| Themed @PackageListingT . loaded |>
@@ -118,7 +119,7 @@ data RelativeVersion = RelativeVersion PackageName Types.Version Types.Version
 instance Render RelativeVersion where
   render (RelativeVersion pn latest v) = 
     let t | v == latest = Themed @LatestT | otherwise = id
-    in A <| Themed @VersionT . t . link (VersionR pn v) |> [ txt v ]
+    in A <| Themed @VersionT . t . prelink (VersionR pn v) |> [ txt v ]
 
 data RelativeVersions = RelativeVersions PackageName Types.Version [Types.Version]
 
@@ -129,7 +130,7 @@ instance Render RelativeVersions  where
       | v <- vs
       ]
 
-instance Render (Package Rendered,[Types.Version]) where
+instance Render (Package,[Types.Version]) where
   render (p@Package {..},vs) = 
     Header <| Themed @HeaderT |>
       [ render (Avatar.Avatars (author : toList collaborators))
@@ -161,7 +162,7 @@ instance Render (Route,Request [Package.Version Rendered]) where
               & suspense (Milliseconds 500 0)
                   (consumer False (Themed @PlaceholderT) [placeholderVersionView])
 
-instance Render (Route,(Request (Maybe (Package Rendered)),Request (Maybe (PackageContent Rendered)),Request [Package.Version Rendered])) where
+instance Render (Route,(Request (Maybe Package),Request (Maybe (PackageContent Rendered)),Request [Package.Version Rendered])) where
   render (rt,(p,pc,vs)) =
     producing (either titled (wait >=> titled) p) 
       (consumingWith options (consumer True id))
@@ -192,8 +193,8 @@ instance Render (Route,Request (Maybe (PackageContent Rendered))) where
               & suspense (Milliseconds 500 0) 
                   (consumer (Just placeholderPackageContentView) <| Themed @PlaceholderT)
 
-instance Render (Route,Request [Package Rendered]) where
-  render :: App.App => (Route,Request [Package Rendered]) -> View
+instance Render (Route,Request [Package]) where
+  render :: App.App => (Route,Request [Package]) -> View
   render (rt,pvs) = 
     producing (either pure wait pvs) 
       (consumingWith options (consumer True id))
@@ -243,7 +244,7 @@ instance Render (PackageName,Request (Maybe (Package.Version Rendered))) where
               & suspense (Milliseconds 500 0)
                   (consumer False (Themed @PlaceholderT) (Just placeholderVersionView))
 
-instance Render (Route,(Request (Maybe (Package Rendered)),Request (Maybe (Package.Version Rendered)),Request [(Module Rendered,ModuleContent Rendered)])) where
+instance Render (Route,(Request (Maybe Package),Request (Maybe (Package.Version Rendered)),Request [(Module Rendered,ModuleContent Rendered)])) where
   render (r@(VersionR pn v),(pv,vv,mvs)) =
     Tagged @(Package.Version Rendered) $
       producing (either titled (wait >=> titled) pv) 

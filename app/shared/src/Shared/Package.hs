@@ -27,7 +27,7 @@ import GHC.Generics (Generic)
 
 import Pure.Data.Txt.Search (Search(..))
 
-data Package format = Package
+data Package = Package
   { name :: PackageName
   , author :: Name
   , latest :: Types.Version
@@ -39,18 +39,17 @@ data Package format = Package
   , tags :: Tags
   , short :: Short
   , description :: Description
-  , excerpt :: Excerpt format
-  } deriving (Generic,ToJSON,FromJSON,Functor)
+  } deriving (Generic,ToJSON,FromJSON)
 
-instance Search (Package format) where
+instance Search Package where
   contains so t Package {..} =
     contains so t (name,author,license,collaborators,tags,description)
 
-instance Eq (Package format) where
-  (==) = (==) `on` ((name :: Package format -> PackageName) &&& latest)
+instance Eq Package where
+  (==) = (==) `on` ((name :: Package -> PackageName) &&& latest)
 
-instance Ord (Package format) where
-  compare = compare `on` ((name :: Package format -> PackageName) &&& latest)
+instance Ord Package where
+  compare = compare `on` ((name :: Package -> PackageName) &&& latest)
 
 newtype PackageContent content = PackageContent content
   deriving (Functor,Foldable)

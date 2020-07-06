@@ -6,6 +6,7 @@ import Components.Avatar as Avatar
 import Components.Author as Author
 import Components.Markdown
 import Components.Listing
+import Components.Preload
 import Components.Tags 
 import Components.Title as Title
 import Components.Time
@@ -54,9 +55,10 @@ instance Render (Route,TutorialHeader,Maybe (Txt -> IO ())) where
 instance Render (ListItem (Tutorial Rendered)) where
   render (ListItem rt b searcher t@Tutorial {..}) =
     let 
+      r = toSpecificTutorial rt slug
       more = 
           [ Div <| Class "hide" 
-          , Div <| Themed @MoreT |> [ A <| url Href Href (location (toSpecificTutorial rt slug)) |> [ "Read More >" ]]
+          , Div <| Themed @MoreT |> [ A <| prelink r |> [ "Read More >" ]]
           ]
     in
       article b (render (rt,TutorialHeader t,Just searcher)) (render excerpt) (render $ Rendered more)

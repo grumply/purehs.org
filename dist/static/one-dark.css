@@ -2,7 +2,7 @@
 
 .CodeMirror,
 .CodeMirror-scroll {
-    font-family: 'Fira Code iScript', monospace;
+    font-family: 'Fira Code VF', monospace;
 }
 
 .CodeMirror,
@@ -84,7 +84,7 @@
 }
 
 .cm-keyword {
-    color: hsl(210, 1%, 15%)!important
+    color: hsl(360, 100%, 65%)!important
 }
 
 .cm-atom {

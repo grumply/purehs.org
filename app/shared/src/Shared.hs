@@ -21,7 +21,7 @@ port = 8081
 mkRequest "ListAuthors" [t|() -> [Author.Author Rendered]|]
 mkRequest "GetAuthor" [t|Name -> Maybe (Author.Author Rendered)|]
 mkRequest "GetAuthorContent" [t|Name -> Maybe (Author.AuthorContent Rendered)|]
-mkRequest "ListAuthorPackages" [t|Name -> [Package.Package Rendered]|]
+mkRequest "ListAuthorPackages" [t|Name -> [Package.Package]|]
 mkRequest "ListAuthorPosts" [t|Name -> [Blog.Post Rendered]|]
 mkRequest "ListAuthorTutorials" [t|Name -> [Tutorial.Tutorial Rendered]|]
 
@@ -84,8 +84,8 @@ tutorialAPI = api msgs reqs
 
 
 
-mkRequest "ListPackages" [t|() -> [Package.Package Rendered]|]
-mkRequest "GetPackage" [t|PackageName -> Maybe (Package.Package Rendered)|]
+mkRequest "ListPackages" [t|() -> [Package.Package]|]
+mkRequest "GetPackage" [t|PackageName -> Maybe Package.Package|]
 mkRequest "GetPackageContent" [t|PackageName -> Maybe (Package.PackageContent Rendered)|]
 
 packageAPI :: API '[] _

@@ -309,6 +309,7 @@ instance Theme FrameT where
         border =: none
         width =: (100%)
         height =: calc((100%) - 36px)
+        padding-bottom =: 8px
 
     is (subtheme @CompilingT) $
       is (subtheme @SuccessT) $

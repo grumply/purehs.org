@@ -3,6 +3,7 @@ module Components.Markdown where
 
 import Components.Editor as Editor
 import Components.CopyToClipboard
+import Components.Preload
 import Data.Render
 import Styles.Colors
 import Styles.Fonts
@@ -28,10 +29,14 @@ instance Render Rendered where
   render (Rendered md) = 
     Section <| Themed @ContentT |>
       [ Div <| Themed @MarkdownT |> 
-        [ processTry (processCopyable (processLinks v))
+        [ processTry (processCopyable (processLinksWith options v))
         | v <- toList md
         ]
       ]
+    where
+      options = def { preloader = Just pre }
+      pre ref = OnTouchStart (\_ -> preload (Internal ref)) 
+              . OnMouseOver (\_ -> preload (Internal ref))
 
 processTry :: View -> View
 processTry (Children (texts -> t) (Attributes as Pre)) 
@@ -82,6 +87,9 @@ instance Theme MarkdownT where
 
     has ".hide" .>
       display =: none
+
+    has ".footnotes" .> do
+      margin-top =: 1em
 
     has (subtheme @EditorT) $ do
       apply $ 

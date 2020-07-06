@@ -1,5 +1,6 @@
 module Components.Avatar where
 
+import Components.Preload
 import Data.Render
 import Data.Route
 
@@ -21,7 +22,7 @@ newtype Avatar = Avatar Name
 
 instance Render Avatar where
   render (Avatar nm0) = let nm = Txt.replace " " "_" nm0 in
-    A <| link (AuthorR nm0) |>
+    A <| prelink (AuthorR nm0) |>
       [ Img <| Src ("/static/avatars/" <> toTxt nm <> ".jpg") . Alt (toTxt nm0)
       ]
 

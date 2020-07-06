@@ -5,6 +5,7 @@ import Components.Avatar as Avatar
 import Components.Author as Author
 import Components.Markdown
 import Components.Listing
+import Components.Preload
 import Components.Tags 
 import Components.Title as Title
 import Components.Time
@@ -52,7 +53,7 @@ instance Render (ListItem (Post Rendered)) where
     let 
       more = 
           [ Div <| Class "hide" 
-          , Div <| Themed @MoreT |> [ A <| url Href Href (location (toSpecificPost rt slug)) |> [ "Read More >" ]]
+          , Div <| Themed @MoreT |> [ A <| prelink (toSpecificPost rt slug) |> [ "Read More >" ]]
           ]
     in article b (render (rt,PostHeader p,Just searcher)) (render excerpt) (render $ Rendered more)
 

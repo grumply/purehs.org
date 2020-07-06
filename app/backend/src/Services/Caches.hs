@@ -52,7 +52,7 @@ import System.IO.Unsafe
 import GHC.Exts (IsList(..))
 
 epoch :: Time
-epoch = Seconds 30 0
+epoch = Minutes 30 0
 
 {-# NOINLINE authors #-}
 authors :: Cached (Map Name (Author Rendered,AuthorContent Rendered))
@@ -306,17 +306,17 @@ rawTutorialsContent = unsafePerformIO $
       cached tutorialsContent
 
 {-# NOINLINE packages #-}
-packages :: Cached (Map PackageName (Package Rendered,PackageContent Rendered))
+packages :: Cached (Map PackageName (Package,PackageContent Rendered))
 packages = unsafePerformIO $ 
   forkCache epoch $
     fmap build loadPackages
   where
     build = Map.fromList . fmap process
       where
-        nm :: Package.Package Txt -> PackageName
+        nm :: Package.Package -> PackageName
         nm = name
 
-        process (py,pm) = (nm py,(fmap parseMarkdown py,pm))
+        process (py,pm) = (nm py,(py,pm))
 
     loadPackages = catMaybes <$!> do
       globs          [i|static/packages/*/|] $ \p -> do
@@ -339,7 +339,7 @@ rawPackageContents = unsafePerformIO $
       cached Services.Caches.packages
 
 {-# NOINLINE packagesList #-}
-packagesList :: Cached [Package Rendered]
+packagesList :: Cached [Package]
 packagesList = unsafePerformIO $ 
   forkCache epoch $
     (fmap fst . Map.elems) <$!> 
@@ -353,11 +353,11 @@ rawPackagesList = unsafePerformIO $
       cached packagesList
 
 {-# NOINLINE authorPackages #-}
-authorPackages :: Cached (Map Name [Package Rendered])
+authorPackages :: Cached (Map Name [Package])
 authorPackages = unsafePerformIO $ 
   forkCache epoch $ do
     as :: [Author Rendered] <- cached authorsList
-    ps :: Map PackageName (Package Rendered,PackageContent Rendered) <- cached Services.Caches.packages
+    ps :: Map PackageName (Package,PackageContent Rendered) <- cached Services.Caches.packages
     aps <- for as $ \a -> 
       let nm = Author.name a
       in pure (nm,fmap fst $ Map.elems $ Map.filter ((nm ==) . author . fst) ps)
@@ -381,7 +381,7 @@ packageVersions = unsafePerformIO $
       where
         process (pkgy,py) = (key,value) 
           where
-            nm :: Package.Package Txt -> PackageName
+            nm :: Package.Package -> PackageName
             nm = name
 
             ver :: Package.Version Txt -> Types.Version
@@ -429,7 +429,7 @@ packagePosts = unsafePerformIO $
       where
         process (pkgy,psty,m) = (key,value) 
           where
-            nm :: Package.Package Txt -> PackageName
+            nm :: Package.Package -> PackageName
             nm = name
 
             slg :: Post Txt -> Slug
@@ -492,7 +492,7 @@ packageTutorials = unsafePerformIO $
       where
         process (py,vy,ty,t) = (key,value)
           where
-            nm :: Package.Package Txt -> PackageName
+            nm :: Package.Package -> PackageName
             nm = name
 
             slg :: Tutorial Txt -> Slug
@@ -668,7 +668,7 @@ modules =
       where
         process (py,vy,my,md) = (key,value) 
           where
-            nm :: Package.Package Txt -> PackageName
+            nm :: Package.Package -> PackageName
             nm = name
 
             mdl :: Module Txt -> ModuleName

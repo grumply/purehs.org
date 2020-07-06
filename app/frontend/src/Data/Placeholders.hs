@@ -14,7 +14,7 @@ import Pure.Elm
 
 import GHC.Exts (IsList(..))
 
-placeholderPackageView :: Package Rendered
+placeholderPackageView :: Package
 placeholderPackageView = Package
   { name = fromTxt "Placeholder"
   , author = fromTxt "Placeholder"
