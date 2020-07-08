@@ -151,7 +151,7 @@ instance Render (Route,Request [Package.Version Rendered]) where
     producing (either pure wait vs) 
       (consumingWith options (consumer True id))
     where
-      consumer b f ms = Div <| Themed @PackageListT |> 
+      consumer b f ms = Div <| Themed @SubarticlesT |> 
         ( H2 <| (if b then Themed @LoadT else id) |> [ "Versions" ]
         : [ article b (render (pn,v)) (render changes) Null <| f
           | v@Package.Version {..} <- ms 
