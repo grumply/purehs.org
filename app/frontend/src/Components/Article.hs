@@ -90,6 +90,34 @@ instance Theme SubarticlesT where
         apply $ do
           padding =* [30px,30px]
 
+      has (subtheme @AvatarsT) .> do
+        display =: none
+
+
+data PackageListT
+instance Theme PackageListT where
+  theme c = void $ 
+    is c $ do
+      apply $ do
+        padding-bottom =: 30px
+
+      child (tag H2) $ do
+        apply $ do
+          font-family =: titleFont
+          font-size   =: 2.5em
+          font-weight =: 400
+          color       =: toTxt base { brightness = 45 }
+          text-align  =: center
+
+      has (tag Article) .> do
+        padding-top    =: 60px
+        margin-bottom =: 50px
+
+      has (subtheme @ArticleT) $ do
+        
+        apply $ do
+          padding =* [30px,30px]
+
         child (tag Header) . is firstChild .> do
           margin-top  =: (-40)px
           text-align  =: left
@@ -97,6 +125,8 @@ instance Theme SubarticlesT where
 
       has (subtheme @AvatarsT) .> do
         display =: none
+
+
 
 data TutorialsT
 instance Theme TutorialsT 
