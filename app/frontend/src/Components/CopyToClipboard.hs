@@ -2,7 +2,10 @@
 module Components.CopyToClipboard where
 
 import Pure.Elm
+import Pure.Data.SVG (pattern Svg)
+import Components.Icons
 import Styles.Themes
+import Styles.Colors
 
 import Data.Coerce
 import Debug.Trace
@@ -35,12 +38,12 @@ copyable = run (App [] [Received] [] mdl update view)
           command Copied
 
         (cls,img) 
-          | b = (Class "copied","/static/check.svg")
-          | otherwise = (OnClick handleClick,"/static/copy.svg")
+          | b = (Class "copied",checkIcon)
+          | otherwise = (OnClick handleClick,copyIcon)
 
       in
         Div <| Themed @CopyableT . cls |> 
-          [ Img <| Src img
+          [ img
           , v 
           ]
 
@@ -50,19 +53,20 @@ instance Theme CopyableT where
     apply $ do
       position =: relative
 
-    child (tag Img) $ do
+    child (tag Svg) $ do
       apply $ do
+        fill       =: toTxt base
         position   =: absolute
         right      =: 20px
-        top        =: 4px
-        height     =: 15px
+        top        =: 10px
+        height     =: 32px
         opacity    =: 0
         transition =* [opacity,300ms]
 
-    isn't ".copied" . is hover . child (tag Img) .> 
+    isn't ".copied" . is hover . child (tag Svg) .> 
       opacity =: 1
 
-    is ".copied" . child (tag Img) .>
+    is ".copied" . child (tag Svg) .>
       opacity =: 1
 
 processCopyable :: View -> View
