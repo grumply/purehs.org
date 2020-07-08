@@ -102,4 +102,4 @@ rechunk :: Monad f => Int -> Stream f [a] -> Stream f a
 rechunk count = chunksOf count . merge
 ```
 
-[^1]: [frameStepper](0.8.0.0/Pure.Stream/frameStepper) is necessitated here to induce loading because of the hosting iframe; normally [stepper](0.8.0.0/Pure.Stream/stepper) with a [RootMargin](/packages/pure-intersection/latest/Pure.Intersection/pattern%20RootMargin) would be used in a standard application.
+[^1]: [frameStepper](pure-stream/0.8.0.0/Pure.Stream/frameStepper) is necessitated here to induce loading because of the hosting iframe; normally [stepper](pure-stream/0.8.0.0/Pure.Stream/stepper) with a [RootMargin](/packages/pure-intersection/latest/Pure.Intersection/pattern%20RootMargin) would be used in a standard application.
