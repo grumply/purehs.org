@@ -1,0 +1,7 @@
+name: Pure.Maybe.Producer
+synopsis: |
+  A resource acquisition wrapper
+description: |
+  A wrapper that declaratively reifies an asynchronous resource acquisition into a `Maybe` value.
+excerpt: |
+  A wrapper that declaratively reifies an asynchronous resource acquisition into a `Maybe` value for use with [Pure.Maybe.Consumer](0.8.0.0/Pure.Maybe.Consumer).

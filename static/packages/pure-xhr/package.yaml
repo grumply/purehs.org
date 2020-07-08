@@ -1,0 +1,14 @@
+name: pure-xhr
+author: Sean Hickman
+latest: 0.8.0.0
+published: 2020-06-25
+license: BSD3
+repository: github.com/grumply/pure-xhr.git
+homepage: purehs.org/packages/pure-xhr
+collaborators: []
+tags:
+  - xhr
+short: |
+  Make XMLHttp Requests
+description: |
+  Make XMLHttp Requests

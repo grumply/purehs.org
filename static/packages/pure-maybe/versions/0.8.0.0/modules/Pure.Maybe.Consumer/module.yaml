@@ -1,0 +1,7 @@
+name: Pure.Maybe.Consumer
+synopsis: |
+  Maybe-based consumer functions with configurable options
+description: |
+  Maybe-based consumer functions with suspense and failure breakpoints
+excerpt: |
+  Consume `Maybe` values and display custom views when the value has not become `Just` after pre-defined breakpoints.

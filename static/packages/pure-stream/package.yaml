@@ -1,0 +1,14 @@
+name: pure-stream
+author: Sean Hickman
+latest: 0.8.0.0
+published: 2020-06-23
+license: BSD3
+repository: github.com/grumply/pure-stream.git
+homepage: purehs.org/packages/pure-stream
+collaborators: []
+tags:
+  - stream
+short: |
+  Streaming views 
+description: |
+  Streaming view abstraction with a convenient API.

@@ -1,0 +1,5 @@
+name: Pure.Stream.Internal
+description: |
+  Delimited monadic stream abstraction built on a build/fold fusion framework.
+excerpt: |
+  A delimited monadic stream abstraction with a build/fold fusion framework with support for pull-oriented chunking.

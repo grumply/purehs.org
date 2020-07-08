@@ -13,5 +13,3 @@ short: |
   Pure.hs base library
 description: |
   Base library that re-exports much of the Pure.hs ecosystem for easy import.
-excerpt: |
-  Base library that re-exports much of the core Pure.hs ecosystem for developing with HTML, CSS + themeing, and events.

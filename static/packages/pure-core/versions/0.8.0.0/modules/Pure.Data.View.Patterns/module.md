@@ -145,10 +145,11 @@ A typeclass abstracting the functions to get, set, and add features to a structu
 class HasFeatures a where
   getFeatures :: a -> Features
   setFeatures :: Features -> a -> a
-  {-# INLINE addFeatures #-}
   addFeatures :: Features -> a -> a
-  addFeatures fs a = setFeatures (getFeatures a <> fs) a
+  {-# MINIMAL getFeatures, setFeatures #-}
 ```
+
+There is a convenience function for working with members of the `HasFeatures` class, [<|](Pure.Data.View.Patterns/%3C%7C), as well as [SetFeatures](Pure.Data.View.Patterns/pattern%20SetFeatures) and [Features](Pure.Data.View.Patterns/pattern%20Features).
 
 ## pattern SetFeatures
 
@@ -579,7 +580,10 @@ class HasChildren a where
   getChildren :: a -> [View]
   setChildren :: [View] -> a -> a
   addChildren :: [View] -> a -> a
+  {-# MINIMAL getChildren, setChildren #-}
 ```
+
+There are convenience utilities for working with instances of the `HasChildren` class, including [|>](Pure.Data.View.Patterns/%7C%3E) and [<||>](Pure.Data.View.Patterns/%3C%7C%7C%3E), as well as [SetChildren](Pure.Data.View.Patterns/pattern%20SetChildren), and [Children](Pure.Data.View.Patterns/pattern%20Children).
 
 ## pattern SetChildren
 
@@ -651,7 +655,10 @@ class HasKeyedChildren a where
   getKeyedChildren :: a -> [(Int,View)]
   setKeyedChildren :: [(Int,View)] -> a -> a
   addKeyedChildren :: [(Int,View)] -> a -> a
+  {-# MINIMAL getKeyedChildren, setKeyedChildren #-}
 ```
+
+There are convenience utilities for working with instances of the `HasKeyedChildren` class, including [|#>](Pure.Data.View.Patterns/%7C%23%3E) and [<||#>](Pure.Data.View.Patterns/%3C%7C%7C%23%3E), as well as [SetKeyedChildren](Pure.Data.View.Patterns/pattern%20SetKeyedChildren), and [KeyedChildren](Pure.Data.View.Patterns/pattern%20KeyedChildren).
 
 ## pattern SetKeyedChildren
 

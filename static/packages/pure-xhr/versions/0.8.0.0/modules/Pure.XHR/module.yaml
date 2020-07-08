@@ -1,0 +1,7 @@
+name: Pure.XHR
+description: |
+  Perform GET and POST requests using XML Http Requests. 
+excerpt: |
+  Perform GET and POST requests using XML Http Requests. 
+  
+  This is a browser-only library due to the compile-time cost of implementing this in GHC for the pure base libraries. See the source on [GitHub](https://github.com/grumply/pure-xhr) for a commented-out example of a working GHC-based implementation with the same API.

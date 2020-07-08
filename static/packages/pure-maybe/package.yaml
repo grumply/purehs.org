@@ -1,0 +1,15 @@
+name: pure-maybe
+author: Sean Hickman
+latest: 0.8.0.0
+published: 2020-06-21
+license: BSD3
+repository: github.com/grumply/pure-maybe.git
+homepage: purehs.org/packages/pure-maybe
+collaborators: []
+tags:
+  - maybe
+  - suspense
+short: |
+  Producer/consumer abstraction with suspense
+description: |
+  Maybe-based view abstraction with a convenient API for producing and consuming values with suspense and failure.
