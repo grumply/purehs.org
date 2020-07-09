@@ -585,6 +585,7 @@ Subject to fusion.
 import Pure
 import Pure.Stream.Internal as Stream
 
+stream :: Stream IO Int
 stream = Stream.drop 3 [1..10]
 
 main = inject body . txt . show $

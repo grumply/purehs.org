@@ -96,7 +96,7 @@ data Post = Post
 mypost = Post "My Post" 1 "Some post content."
 
 main = do
-  post <- postRaw "https://jsonplaceholder.typicode.com/posts" mypost
+  post <- postRaw "https://jsonplaceholder.typicode.com/posts" (encode mypost)
   print $
     either (const "Problem with endpoint") 
       id
