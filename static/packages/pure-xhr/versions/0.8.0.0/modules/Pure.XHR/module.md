@@ -8,7 +8,6 @@ get :: FromJSON a => Txt -> IO (Either XHRError a)
 ```
 
 <div class="hide">
-<div class="info">
 <pre data-try>
 import Pure hiding (Value,get)
 import Pure.XHR (get)
@@ -84,7 +83,7 @@ postRaw :: ToJSON a => Txt -> a -> IO (Either XHRError Txt)
 <pre data-try>
 {-# language DeriveAnyClass #-}
 import Pure
-import Pure.XHR (post)
+import Pure.XHR (postRaw)
 import Pure.Data.JSON
 import GHC.Generics
 

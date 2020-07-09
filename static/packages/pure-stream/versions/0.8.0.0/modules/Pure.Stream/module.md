@@ -14,7 +14,7 @@ data Streamer a = Streamer
 
 <div class="hide">
 <pre data-try>
-import Pure
+import Pure hiding (children,features)
 import Pure.Stream
 
 fibs :: Stream IO Integer
@@ -142,7 +142,7 @@ Note that this will not work correctly in this example because of the constraint
 In the general case, this will work correctly, but in iframes, the [frameStepper](Pure.Stream/frameStepper) approach is required that hacks together a similar approach with relative+absolute positioning.
 
 <pre data-try>
-import Pure
+import Pure hiding (children)
 import Pure.Stream
 
 fibs :: Stream IO Integer
@@ -177,7 +177,7 @@ This approach is for vertically scrolling elements, as the stepping frame is pos
 See [the spec](https://w3c.github.io/IntersectionObserver/#dom-intersectionobserver-rootmargin) for an explanation as to why this is necessary in an &lt;iframe>.
 
 <pre data-try>
-import Pure
+import Pure hiding (children)
 import Pure.Stream
 
 fibs :: Stream IO Integer

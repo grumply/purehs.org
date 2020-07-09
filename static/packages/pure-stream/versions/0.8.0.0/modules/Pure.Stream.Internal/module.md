@@ -343,6 +343,7 @@ Subject to fusion.
 import Pure hiding (step)
 import Pure.Stream.Internal as Stream
 
+fibs :: Stream IO Integer
 fibs = Stream.take 10 $ unfolds (0,1) $ \(f2,f1) ->
   let f = f2 + f1 in more f (f1,f)
 
@@ -442,7 +443,7 @@ import Pure.Stream.Internal as Stream
 import Data.Functor.Identity
 
 main = inject body . txt . show $
-  toList @Identity (concat [[1,2,3],[4,5,6]])
+  toList @Identity (Stream.concat [[1,2,3],[4,5,6]])
 </pre>
 </div>
 
@@ -460,10 +461,11 @@ Subject to fusion.
 
 <div class="hide">
 <pre data-try>
-import Pure
+import Pure hiding (step)
 import Pure.Stream.Internal as Stream
 
-stream = Stream.take 10 (repeat 1)
+stream :: Stream IO Int
+stream = Stream.take 10 (Stream.repeat 1)
 
 main = inject body . txt . show .
   toList =<< step stream
@@ -487,6 +489,7 @@ Subject to fusion.
 import Pure hiding (step)
 import Pure.Stream.Internal as Stream
 
+stream :: Stream IO Int
 stream = Stream.take 10 (repeatM (pure 1))
 
 main = inject body . txt . show .
@@ -508,9 +511,10 @@ Subject to fusion.
 import Pure
 import Pure.Stream.Internal as Stream
 
+stream :: Stream IO Int
 stream = Stream.take 10 (Stream.cycle [1,2,3])
 
-main = inject body . txt . show =<<
+main = inject body . txt . show $
   toList stream
 </pre>
 </div>
@@ -533,9 +537,10 @@ Subject to fusion.
 import Pure
 import Pure.Stream.Internal as Stream
 
-stream = Stream.take 10 (infinite 1)
+stream :: Stream IO Int
+stream = Stream.take 10 (Stream.infinite 1)
 
-main = inject body . txt . show =<<
+main = inject body . txt . show $
   toList stream
 </pre>
 </div>
@@ -558,9 +563,10 @@ Subject to fusion.
 import Pure
 import Pure.Stream.Internal as Stream
 
+stream :: Stream IO Int
 stream = Stream.take 3 [1..10]
 
-main = inject body . txt . show =<<
+main = inject body . txt . show $
   toList stream
 </pre>
 </div>
@@ -581,7 +587,7 @@ import Pure.Stream.Internal as Stream
 
 stream = Stream.drop 3 [1..10]
 
-main = inject body . txt . show =<<
+main = inject body . txt . show $
   toList stream
 </pre>
 </div>
