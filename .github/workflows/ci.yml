@@ -26,3 +26,22 @@ jobs:
         nix-build -o result -A ghc.backend
         nix-build -o result -A ghc.server
         nix-build -o result -A ghcjs.frontend
+  macos_perf_test:
+    name: Build on macos_perf_test
+    runs-on: macos-latest
+    steps:
+    - name: Disable syspolicy assessments
+      run: |
+        spctl --status
+        sudo spctl --master-disable
+    - uses: actions/checkout@v2
+    - uses: cachix/install-nix-action@v8
+    - uses: cachix/cachix-action@v6
+      with:
+        name: purehs
+
+    - name: build
+      run: |
+        nix-build -o result -A ghc.backend
+        nix-build -o result -A ghc.server
+        nix-build -o result -A ghcjs.frontend
