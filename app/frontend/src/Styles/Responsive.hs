@@ -23,6 +23,6 @@ hugeScreens :: Int
 hugeScreens = 1200
 
 -- | Construct a media query, given a minimum screen width.
-(<%>) :: Int -> Styles Txt -> CSS Txt
+(<%>) :: Int -> Styles a -> CSS ()
 (<%>) n = (.>) (atMedia ("screen and (min-width: " <> pxs n <> ")"))
 infixr 1 <%>
