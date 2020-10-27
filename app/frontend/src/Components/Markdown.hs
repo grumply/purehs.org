@@ -348,32 +348,30 @@ instance Theme MarkdownT where
               color =: toTxt green
               background =: none
 
-      has ".prev" do
-        or is c do
-          has ".next" do
-            position =: absolute
-            bottom =: 20px
+      using [has ".prev", has ".next"] do
+        position =: absolute
+        bottom =: 20px
 
-            has (tag A) do
-              display       =: block
-              margin-top    =: 8px
-              color         =: toTxt black
-              border-bottom =: none
-              background    =: none
-              font-size     =: 18px
+        has (tag A) do
+          display       =: block
+          margin-top    =: 8px
+          color         =: toTxt black
+          border-bottom =: none
+          background    =: none
+          font-size     =: 18px
 
-              hover do
-                color =: toTxt green
-                background =: none
+          hover do
+            color =: toTxt green
+            background =: none
 
-              visited do
-                color =: toTxt black
-                background =: none
+          visited do
+            color =: toTxt black
+            background =: none
 
-              visited do 
-                hover do
-                  color =: toTxt green
-                  background =: none
+          visited do 
+            hover do
+              color =: toTxt green
+              background =: none
 
       has ".prev" do
         left =: 8vw
