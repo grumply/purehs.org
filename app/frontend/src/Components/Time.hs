@@ -24,14 +24,13 @@ instance Render Published where
 
 data TimeT
 instance Theme TimeT where
-  theme c = void $ do
-    is (subtheme @PlaceholderT) . has c .> do
-      pointer-events =: none
-      filter_        =: blur(8px)
-
-    is c .> do
+  theme c = do
+    is c do
       font-family =: titleFont
       font-size   =: 16px
       display     =: inline
       color       =: toTxt gray
 
+      within @PlaceholderT do
+        pointer-events =: none
+        filter_        =: blur(8px)

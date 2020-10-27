@@ -1,48 +1,34 @@
 {-# language DuplicateRecordFields, UndecidableInstances, DeriveAnyClass #-}
 module Main where
 
-import App
-import Components.Breadcrumbs as Breadcrumbs
-import Components.Header as Header
+import App ( Session, Page, App, Message(..), Settings(..), mkSession )
+import Components.Breadcrumbs as Breadcrumbs ( breadcrumbs, sublinks )
+import Components.Header as Header ( header )
 
-import Pages.Author as Author
-import Pages.Page as Page
-import Pages.Post as Post
-import Pages.Tutorial as Tutorial
-import Pages.Package as Package
+import Pages.Author as Author ()
+import Pages.Page as Page ()
+import Pages.Post as Post ()
+import Pages.Tutorial as Tutorial ()
+import Pages.Package as Package ()
 
 import qualified Pages.Home as Home
 
-import Shared
-import Shared.Types as Types
-import Shared.Blog as Blog
-import Shared.Tutorial as Tutorial
-import Shared.Author as Author
+import Shared ( host, port )
 
-import Styles.Themes as Themes hiding (wait)
+import Styles.Themes as Themes ( PageHeaderT, AppT, page, withHeader )
 
-import Data.Route
-import Data.Render
+import Data.Route ( Route(..) )
+import Data.Render ( Render(..) )
 import Data.Resource
 
-import Pure.Data.Txt as Txt
-import Pure.Data.Txt.Search
-import Pure.Data.JSON (pretty)
-import Pure (Pure(..))
 import Pure.Elm.Application hiding (Session,Settings,content,page,wait,Async,title,render,Title)
 import qualified Pure.Elm.Application as Elm
-import Pure.Maybe
+import Pure.Maybe ( producingKeyed )
 import qualified Pure.WebSocket as WS
 
-import Control.Concurrent
-import Control.Concurrent.Async (Async,async,wait)
-import Data.Function ((&))
-import Data.Functor
-import Data.List as List
-import Data.Typeable
-import GHC.Exts (IsList(..))
-import GHC.Generics
-import System.IO
+import Control.Concurrent.Async (async)
+import Data.Functor ( ($>) )
+import System.IO ( stdout, hSetBuffering, BufferMode(LineBuffering) )
 
 main :: IO ()
 main = do
@@ -52,7 +38,7 @@ main = do
   where
     app ws = App [] [] [App.Routed] [] (App.mkSession ws) update Main.view
 
-update :: Elm Message Route => Route -> Message -> Settings -> Session -> IO Session
+update :: Route -> Message -> Settings -> Session -> IO Session
 update _rt (App.UpdateSession f) _ ses = 
   pure (f ses)
 
@@ -81,7 +67,7 @@ view r = Elm.page $
             ]
 
 app :: App.App => Route -> Maybe Resource -> View
-app rt Nothing = Null
+app _rt Nothing = Null
 app rt (Just rsc) = render (rt,rsc)
 
 instance Render (Route,Resource) where

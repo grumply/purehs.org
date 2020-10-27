@@ -1,4 +1,4 @@
-**Average installation time: 8 minutes _(mostly pre-built binary downloads)_**
+**Average installation time: A few minutes _(pre-built binary downloads)_**
 
 The new [Haskell VSCode extension](https://marketplace.visualstudio.com/items?itemName=haskell.haskell) works exceptionally well. Just be sure to start the editor from a project-associated nix shell.
 

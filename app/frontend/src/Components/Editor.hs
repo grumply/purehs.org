@@ -1,16 +1,15 @@
-{-# language DeriveAnyClass #-}
+{-# language DeriveAnyClass, CPP #-}
 module Components.Editor (editor) where
 
-import Shared
-import Styles.Fonts
-import Styles.Colors
+import Shared ( compile, compileAPI )
+import Styles.Fonts ( defaultFont )
+import Styles.Colors ( green, gray )
 
 import qualified Pure.Elm as Elm
 import Pure.Elm hiding (state,mode,code,Default,green,gray)
-import Pure.WebSocket (WebSocket,clientWS,remote)
+import Pure.WebSocket (WebSocket,clientWS,request)
 
-import Data.Foldable
-import System.IO.Unsafe
+import System.IO.Unsafe ( unsafePerformIO )
 
 {-# NOINLINE tryWS #-}
 tryWS :: WebSocket
@@ -20,6 +19,7 @@ newtype Editor = Editor JSV
   deriving Elm.Default
     via JSV
 
+#ifdef __GHCJS__
 foreign import javascript unsafe
   "var f = function(cm) { cm['replaceSelection']('  ','end'); };var o = {}; o['theme'] = 'one-dark'; o['viewportMargin'] = Infinity; o['mode'] = 'text/x-haskell'; o['lineNumbers'] = true; o['tabSize'] = 2; o['extraKeys'] = {};  o['extraKeys']['Tab'] = f; o['fixedGutter'] = false; $r = CodeMirror['fromTextArea']($1,o)" 
     start_editor_js 
@@ -64,6 +64,7 @@ foreign import javascript unsafe
   "$1['refresh']();" 
     refresh_js
       :: Editor -> IO ()
+#endif
 
 data Mode = Editing | Compiling
 
@@ -96,6 +97,7 @@ editor = run (App [] [Receive] [] (Model Editing Waiting Default def def) update
         , state = Waiting 
         }
 
+#ifdef __GHCJS__
     update (CreateCodeView n) _ mdl = do
       e <- start_editor_js n
       pure mdl
@@ -116,7 +118,7 @@ editor = run (App [] [Receive] [] (Model Editing Waiting Default def def) update
     update Compile _ mdl = do
       v <- get_value_js (code mdl)
       set_value_js (results mdl) "Compiling..."
-      remote compileAPI tryWS compile (v,False) 
+      request compileAPI tryWS compile (v,False) 
         (command . either Failed Succeeded)
       command Refresh
       pure mdl 
@@ -124,20 +126,11 @@ editor = run (App [] [Receive] [] (Model Editing Waiting Default def def) update
         , state = Waiting 
         }
 
-    update Edit _ mdl = do
-      command Refresh
-      pure mdl 
-        { mode = Editing }
-
     update (Failed failed) _ mdl = do
       set_value_js (results mdl) failed
       pure mdl 
         { state = Failure failed 
         }
-
-    update (Succeeded success) _ mdl = do
-      pure mdl 
-        { state = Success success }
 
     update (SetKeymap km) _ mdl = do
       case km of
@@ -145,6 +138,16 @@ editor = run (App [] [Receive] [] (Model Editing Waiting Default def def) update
         Sublime -> set_sublime_js (code mdl)
         Default -> set_default_js (code mdl)
       pure mdl { keymap = km }
+#endif
+
+    update Edit _ mdl = do
+      command Refresh
+      pure mdl 
+        { mode = Editing }
+
+    update (Succeeded success) _ mdl = do
+      pure mdl 
+        { state = Success success }
 
     view v mdl = 
       let modeT =
@@ -168,9 +171,9 @@ editor = run (App [] [Receive] [] (Model Editing Waiting Default def def) update
               [ Span <| Themed @CommandT . Themed @EditButtonT    . OnClick (\_ -> command Edit)    |> [ "Edit" ] 
               , Span <| Themed @CommandT . Themed @CompileButtonT . OnClick (\_ -> command Compile) |> [ "Compile" ]
               , case keymap mdl of
-                  Vim     -> Span <| Themed @CommandT . Themed @KeymapButtonT . OnClick (\_ -> command (SetKeymap Sublime)) |> [ "Sublime" ]
-                  Sublime -> Span <| Themed @CommandT . Themed @KeymapButtonT . OnClick (\_ -> command (SetKeymap Default)) |> [ "Default" ]
-                  Default -> Span <| Themed @CommandT . Themed @KeymapButtonT . OnClick (\_ -> command (SetKeymap Vim))     |> [ "Vim" ]
+                  Vim     -> Span <| Themed @CommandT . Themed @KeymapButtonT . OnClick (\_ -> command (SetKeymap Sublime)) |> [ "Vim Keymap" ]
+                  Sublime -> Span <| Themed @CommandT . Themed @KeymapButtonT . OnClick (\_ -> command (SetKeymap Default)) |> [ "Sublime Keymap" ]
+                  Default -> Span <| Themed @CommandT . Themed @KeymapButtonT . OnClick (\_ -> command (SetKeymap Vim))     |> [ "Default Keymap" ]
               ]
             , A <| Themed @EditorBrandingT . Href "http://try.purehs.org"  . Attribute "target" "_blank" |> [ "try.purehs.org" ]
             ]
@@ -196,133 +199,126 @@ data FailureT   deriving Theme
 -- Components
 data CommandsT
 instance Theme CommandsT where
-  theme c = void $ is c .> do
-    padding =: 8px
-    display =: flex
-    justify-content =: space-between
-    background-color =: white
-    width =: (100%)
-    height =: 36px
+  theme c = 
+    is c do
+      padding =: 8px
+      display =: flex
+      justify-content =: space-between
+      background-color =: white
+      width =: (100%)
+      height =: 36px
 
 data CommandT
 instance Theme CommandT where
-  theme c = void $ 
-    is c $ do
-      apply $ do
-        cursor       =: pointer
-        font-size    =: 18px
-        margin-right =: 12px
-        font-family  =: defaultFont
-        color        =: toTxt gray
+  theme c =
+    is c do
+      cursor       =: pointer
+      font-size    =: 18px
+      margin-right =: 12px
+      font-family  =: defaultFont
+      color        =: toTxt gray
       
-      is hover .> do
+      hover do
         color =: toTxt green
 
 data EditorBrandingT
 instance Theme EditorBrandingT where
-  theme c = void $ is c $ do
-    apply $ do
-      display         =: inline-block
-      cursor          =: pointer
-      font-size       =: 18px
-      color           =: toTxt gray
-      text-decoration =: none
+  theme c = is c do
+    display         =: inline-block
+    cursor          =: pointer
+    font-size       =: 18px
+    color           =: toTxt gray
+    text-decoration =: none
 
-    is hover .> do
+    hover do
       color =: toTxt green
 
-    is hover . is visited .> do
-      color =: toTxt green
+    visited do
+      hover do
+        color =: toTxt gray
 
-    is visited .> do
-      color =: toTxt gray
  
 data EditButtonT
 instance Theme EditButtonT where
-  theme c = void $ do
-    is c .> do
+  theme c = 
+    is c do
       display =: none
       height  =: 20px
       
-    is (subtheme @CompilingT) $ 
-      has c .> do
+      within @CompilingT do
         display =: inline-block
 
 data CompileButtonT
 instance Theme CompileButtonT where
-  theme c = void $ do
-    is c .> do
+  theme c =
+    is c do
       display =: none
       height  =: 20px
-
-    has (subtheme @EditingT) $
-      has c .> do
+      
+      within @EditingT do
         display =: inline-block
 
 data KeymapButtonT 
 instance Theme KeymapButtonT where
-  theme c = void $ do
-    is c .> do
+  theme c =
+    is c do
       display =: none
       height  =: 20px
 
-    has (subtheme @EditingT) $
-      has c .> do
+      within @EditingT do
         display =: inline-block
 
 data CodeT
 instance Theme CodeT where
-  theme c = void $ do
-    is c .> do
+  theme c =
+    is c do
       display =: none
       width =: (100%)
       height =: calc((100%) - 36px)
-
-    has (subtheme @EditingT) $
-      has c .> do
+      
+      within @EditingT do
         display =: block
 
 data ResultsT
 instance Theme ResultsT where
-  theme c = void $ do
-    is c .> do
+  theme c = do
+    is c do
       display =: none
       width =: (100%)
       height =: calc((100%) - 36px)
 
-    is (subtheme @CompilingT) $ do
-      has c .> do
+    at @CompilingT do
+      has c do
         display =: block
       
-      is (subtheme @SuccessT) $
-        has c .> do
+      at @SuccessT do
+        has c do
           display =: none
 
 data FrameT
 instance Theme FrameT where
-  theme c = void $  do
-    is c $ do
-      apply $ do
-        display =: none
-        background-color =: white
-        outline =: none
-        border =: none
-        width =: (100%)
-        height =: calc((100%) - 36px)
-        padding-bottom =: 8px
+  theme c = do
+    is c do
+      display =: none
+      background-color =: white
+      outline =: none
+      border =: none
+      width =: (100%)
+      height =: calc((100%) - 36px)
+      padding-bottom =: 8px
 
-    is (subtheme @CompilingT) $
-      is (subtheme @SuccessT) $
-        has c .> do
+    at @CompilingT do
+      at @SuccessT do
+        has c do
           display =: block
 
 data EditorT
 instance Theme EditorT where
-  theme c = void $ do
-    is ".CodeMirror" .> do
+  theme c = do
+    is ".CodeMirror" do
       height =: (100%)
     
-    is c .> do
+    is c do
       border =* [1px,solid,toTxt gray]
       box-shadow =* [0px,4px,10px,toTxt gray]
       height =: (100%)

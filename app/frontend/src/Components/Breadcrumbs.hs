@@ -3,11 +3,7 @@ module Components.Breadcrumbs (breadcrumbs,sublinks) where
 import qualified App
 import Components.Preload
 import Data.Route as Route
-import Styles.Colors
 import Styles.Responsive
-import Styles.Themes
-
-import Shared.Types
 
 import Pure.Elm.Application
 
@@ -73,10 +69,9 @@ sublinks r =
 
 data Hideable
 instance Theme Hideable where
-  theme c = void $ do
-    is c $ do
-      apply $ 
-        display =: none
+  theme c =
+    is c do
+      display =: none
 
       -- small to medium screens are generally
       -- touch-capable and can use swipe here

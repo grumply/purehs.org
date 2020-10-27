@@ -38,22 +38,20 @@ instance Theme AuthorsT where
 
 data AuthorT
 instance Theme AuthorT where
-  theme c = void $ do
-    is (subtheme @PlaceholderT) . has c .> do
-      pointer-events =: none
-      filter_        =: blur(8px)
+  theme c =
+    is c do
+      display     =: inline
 
-    is c $ do
-      apply $ do
-        display     =: inline
-
-      has (tag A) $ do
-        apply $ do
-          font-family =: titleFont
-          font-size   =: 16px
-          font-style  =: normal
-          color       =: toTxt lavender
+      has (tag A) do
+        font-family =: titleFont
+        font-size   =: 16px
+        font-style  =: normal
+        color       =: toTxt lavender
          
-        is hover .> do
+        hover do
           color =: toTxt green
+
+      within @PlaceholderT do
+        pointer-events =: none
+        filter_        =: blur(8px)
  

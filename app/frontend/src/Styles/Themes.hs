@@ -8,32 +8,34 @@ import Styles.Responsive
 import Pure.Elm hiding (selection,green,lavender,black,green,brightness,gray)
 import Pure.Spinners
 
-import Prelude hiding (or,max,min,reverse)
+import Prelude hiding (or,max,min,reverse,any)
 
 data AppT
 instance Theme AppT where
-  theme c = void $ do
-    is c . child (tag Div) .> do
-      height =: (100%)
-  -- opinionated resets
-  -- system fonts chosen under the assumption that they are well-optimized.
-  -- border-box is, currently, the only sane box model.
-  --
-  -- Page styles:
-  --  Set font default to system fonts
-  --  Optimize fonts for clean look and feel
-  --  Set box model to border-box
-  --  Set a default 100% height
-  --
-    is "*" . or is after . or is before .> do
+  theme c = do
+    is c do 
+      child (tag Div) do
+        height =: (100%)
+
+    -- opinionated resets
+    -- system fonts chosen under the assumption that they are well-optimized.
+    -- border-box is, currently, the only sane box model.
+    --
+    -- Page styles:
+    --  Set font default to system fonts
+    --  Optimize fonts for clean look and feel
+    --  Set box model to border-box
+    --  Set a default 100% height
+    --
+    using [any,after,before] do
       box-sizing  =: inherit
       webkit-box-sizing =: inherit
 
-    is (tag Html) .> do
+    is (tag Html) do
       box-sizing =: border-box
       background-color =: toTxt base
 
-    is "body" .> do
+    is "body" do
       font-family =: defaultFont
       text-rendering =: "optimizeLegibility"
       webkit-font-smoothing =: antialiased
@@ -41,28 +43,28 @@ instance Theme AppT where
 
     -- page defaults
 
-    is (tag Html) .> do
+    is (tag Html) do
       height =: (100%)
 
-    is "body" .> do
+    is "body" do
       margin =: 0
       height =: (100%)
 
-    is "body" . child (tag Div) .> do
-      width  =: (100%)
-      height =: (100%)
+    is "body" do
+      child (tag Div) do
+        width  =: (100%)
+        height =: (100%)
 
-    is (tag A) .> do
+    is (tag A) do
       text-decoration =: none
 
 data PageT
 instance Theme PageT where
-  theme c = void $ 
-    is c $ do
-      apply $ do
-        height =: (100%)
+  theme c =
+    is c do
+      height =: (100%)
 
-      child "*" .> do
+      child "*" do
         height         =: (100%)
         width          =: (100%)
         max-width      =: 1200px
@@ -74,104 +76,104 @@ instance Theme PageT where
 
 data WithHeaderT
 instance Theme WithHeaderT where
-  theme c = void $ do
-    is c $ do
-      apply $ do 
-        padding-top =: 40px
+  theme c =
+    is c do
+      padding-top =: 40px
 
       mediumScreens <%> do
         padding-top =: 64px
 
-      child (tag Div) . child (tag Div) .> do
-        padding-bottom =: 1px
+      child (tag Div) do
+        child (tag Div) do
+          padding-bottom =: 1px
     
 
 data HideT
 instance Theme HideT where
-  theme c = void $
-    is c $ do
-      has (subtheme @MoreT) .> 
+  theme c =
+    is c do
+      has (subtheme @MoreT) do
         display =: none
 
-      has ".hide" $ do
-        apply $ 
-          display =: none
+      has ".hide" do
+        display =: none
 
         -- display any .more elements iff there is a .hide 
         -- element before it at the same level
-        nexts (subtheme @MoreT) .> do
+        nexts (subtheme @MoreT) do
           display =: initial
 
 data UnhideT
 instance Theme UnhideT where
-  theme c = void $ do
-    is c . is c $ do
-      has ".hide" $ do
-        apply $ 
+  theme c =
+    is c do
+      -- double up for precedence
+      is c do
+        has ".hide" do
           display =: initial
 
-        nexts (subtheme @MoreT) .> do
-          display =: none
+          nexts (subtheme @MoreT) do
+            display =: none
 
 data MoreT
 instance Theme MoreT where
-  theme c = void $
-    is c $ do
+  theme c =
+    is c do
 
-      has (tag A) $ do
-        apply $ do
-          display       =: block
-          text-align    =: right
-          margin-right  =: 16px
-          margin-top    =: 30px
-          color         =: toTxt black
-          border-bottom =: none
-          background    =: none
-          font-size     =: 18px
+      has (tag A) do
+        display       =: block
+        text-align    =: right
+        margin-right  =: 16px
+        margin-top    =: 30px
+        color         =: toTxt black
+        border-bottom =: none
+        background    =: none
+        font-size     =: 18px
 
-        is hover .> do
+        hover do
           color =: toTxt green
           background =: none
 
-        is visited .> do
+        visited do
           color =: toTxt black
           background =: none
 
-        is visited . is hover .> do
-          color =: toTxt green
-          background =: none
+        visited do
+          hover do
+            color =: toTxt green
+            background =: none
 
 data HiddenMediumT
 instance Theme HiddenMediumT where
-  theme c = void $ 
-    is c $ do
-      apply $ 
-        display =: none
+  theme c =
+    is c do
+      display =: none
 
       largeScreens <%> do
         display =: block
 
 data LoadingT
 instance Theme LoadingT where
-  theme c = void $ is c $ return ()
+  theme c = is c $ return ()
 
 data FailedT
 instance Theme FailedT where
-  theme c = void $ is c $ return ()
+  theme c = is c $ return ()
 
+page :: View -> View
 page c = Div <| Themed @PageT |> [ c ]
 
+withHeader :: View -> View -> View
 withHeader h c = 
   Div <| Themed @WithHeaderT |> 
     [ h , c ]
 
 data ErrorT
 instance Theme ErrorT where
-  theme c = void $ 
-    is c $ do
-      apply $ do
-        width  =: (90%)
-        margin =* [40px,auto]
+  theme c =
+    is c do
+      width  =: (90%)
+      margin =* [40px,auto]
 
       mediumScreens <%> do
         width =: 720px
@@ -179,40 +181,38 @@ instance Theme ErrorT where
       largeScreens <%> do
         width =: 900px
 
-      child (tag Header) $ do
-        child (tag H1) $ do
-          apply $ do
-            margin-top    =: 0
-            margin-bottom =: 24px
-            color         =: toTxt lavender
-            font-size     =: 4em
-            font-family   =: titleFont
+      child (tag Header) do
+        child (tag H1) do
+          margin-top    =: 0
+          margin-bottom =: 24px
+          color         =: toTxt lavender
+          font-size     =: 4em
+          font-family   =: titleFont
         
-        child (tag H2) .> do
+        child (tag H2) do
           margin-bottom =: 44px
           color         =: toTxt black
           font-size     =: 1.5em
           font-family   =: titleFont
 
-      has (tag P) $ do
-        apply $ do
-          color =: toTxt black
-          font-family =: defaultFont
-          line-height =: 28px
-          font-size   =: 16px
+      has (tag P) do
+        color =: toTxt black
+        font-family =: defaultFont
+        line-height =: 28px
+        font-size   =: 16px
 
-        has (tag A) $ do
+        has (tag A) do
 
-          apply $ do
-            background-color =: toTxt (faded green)
-            border-bottom    =* [1px,solid,toTxt green]
-            color            =: toTxt black
-            text-decoration  =: none
+          background-color =: toTxt (faded green)
+          border-bottom    =* [1px,solid,toTxt green]
+          color            =: toTxt black
+          text-decoration  =: none
 
-          is hover .> do
+          hover do
             background    =: toTxt green
             border-bottom =* [1px,solid,toTxt black]
 
+problems :: Txt -> View -> View
 problems nm c =
     Div <||>
       [ Div <| Themed @ErrorT |>
@@ -224,6 +224,7 @@ problems nm c =
         ]
       ]
 
+notFound :: Txt -> View
 notFound nm = problems nm $ Div <||>
   [ P <||> [ "Please contact the owner of the site that linked you to the original URL and let them know their link is broken." ]
   , P <||> 
@@ -233,6 +234,7 @@ notFound nm = problems nm $ Div <||>
     ]
   ]
 
+emptyList :: View -> View -> View
 emptyList h1 h2 = 
   Div <||>
     [ Div <| Themed @ErrorT |>
@@ -244,12 +246,13 @@ emptyList h1 h2 =
     ]
 
 
+loading :: View
 loading = 
     View (ChasingDots :: ChasingDots 2000 40 40 40 "#333")
 
 data ButtonT
 instance Theme ButtonT where
-  theme c = void $ is c .> do
+  theme c = is c do
     display          =: inline-block
     margin           =* [0px,16px]
     height           =: 44px
@@ -272,51 +275,42 @@ data VersionT
 instance Theme VersionT
 data VersionsT
 instance Theme VersionsT where
-  theme c = void $ do
-    is (subtheme @PlaceholderT) . has c $ do
-      has (tag A) .> do
-        pointer-events =: none
-        filter_ =: blur(8px)
-
-    is c . has (subtheme @VersionT) $ do
-      apply $ 
+  theme c =
+    is c do
+      has (subtheme @VersionT) do
         color =: toTxt gray
 
-      is (subtheme @LatestT) .> 
+        at @LatestT do 
           color =: toTxt black
-   
-      is hover $ do
-        apply $ 
+     
+        hover do
           color =: toTxt green
 
-        is ":visited" $ do
-          apply $
+          visited do
             color =: toTxt green
 
-          is (subtheme @LatestT) .> 
-            color =: toTxt green
+            at @LatestT do
+              color =: toTxt green
 
-      is ":visited" $ do
-        apply $
+        visited do
           color =: toTxt gray
 
-        is (subtheme @LatestT) .> 
-          color =: toTxt black
-
+          at @LatestT do 
+            color =: toTxt black
+      
+      within @PlaceholderT do
+        has (tag A) do
+          pointer-events =: none
+          filter_ =: blur(8px)
 
 data HeaderT
 instance Theme HeaderT where
-  theme c = void $ do
-    is (subtheme @PlaceholderT) . has c .> do
-      pointer-events =: none
-      filter_        =: blur(12px)
-
-    is c $ do
-      apply $ do
-        text-align =: center
-        width      =: (100%)
-        max-width  =: (100%)
-        margin     =* [0,auto,40px]
+  theme c =
+    is c do
+      text-align =: center
+      width      =: (100%)
+      max-width  =: (100%)
+      margin     =* [0,auto,40px]
 
       mediumScreens <%> do
         width =: 700px
@@ -326,37 +320,42 @@ instance Theme HeaderT where
 
       hugeScreens <%> do
         width =: 900px
+        
+      within @PlaceholderT do
+        pointer-events =: none
+        filter_        =: blur(12px)
 
 data SectionTitleT
 instance Theme SectionTitleT where
-  theme c = void $ do
-    is (subtheme @PlaceholderT) . has c .> do
-      pointer-events =: none
-      filter_ =: blur(10px)
-
-    is c .> do
+  theme c =
+    is c do
       font-family =: titleFont
       font-size =: 1.2em
       font-weight =: 400
       color =: toTxt base
 
-buttonBoxShadow vOff blur color vOff' blur' color' =
-  customBoxShadow 0 vOff blur 0 color <> ", " <>
-  customBoxShadow 0 vOff' blur' 0 color'
+      within @PlaceholderT do
+        pointer-events =: none
+        filter_ =: blur(10px)
 
-customBoxShadow hOff vOff blur spread color = 
-  pxs hOff <<>> pxs vOff <<>> pxs blur <<>> pxs spread <<>> color
+buttonBoxShadow :: Int -> Int -> Txt -> Int -> Int -> Txt -> Txt
+buttonBoxShadow vOff blr clr vOff' blr' clr' =
+  customBoxShadow 0 vOff blr 0 clr <> ", " <>
+  customBoxShadow 0 vOff' blr' 0 clr'
+
+customBoxShadow :: Int -> Int -> Int -> Int -> Txt -> Txt
+customBoxShadow hOff vOff blr spread clr = 
+  pxs hOff <<>> pxs vOff <<>> pxs blr <<>> pxs spread <<>> clr
 
 data PageHeaderT
 instance Theme PageHeaderT where
-  theme c = void $ 
-    is c $ do
-      apply $ do
-        font-size       =: 18px
-        width           =: (100%)
-        margin          =* [0,auto]
-        height          =: 80px
-        margin-bottom   =: 30px
+  theme c =
+    is c do
+      font-size       =: 18px
+      width           =: (100%)
+      margin          =* [0,auto]
+      height          =: 80px
+      margin-bottom   =: 30px
 
       smallScreens <%> do
         display         =: flex
@@ -370,20 +369,18 @@ instance Theme PageHeaderT where
       largeScreens <%> do
         width =: 900px
 
-      has (tag Nav) $ do
-        apply $ do
-          margin-top  =: 30px
-          color       =: toTxt black
-          font-weight =: 400
-          width       =: (100%)
+      has (tag Nav) do
+        margin-top  =: 30px
+        color       =: toTxt black
+        font-weight =: 400
+        width       =: (100%)
 
-        is lastChild $ do
-          apply $ do
-            font-size =: 24px
-            display =: flex
-            justify-content =: space-around
-            margin-right =: 16px
-            margin-top =: (-30)px
+        lastChild do
+          font-size =: 24px
+          display =: flex
+          justify-content =: space-around
+          margin-right =: 16px
+          margin-top =: (-30)px
 
           smallScreens <%> do
             display =: block
@@ -391,28 +388,26 @@ instance Theme PageHeaderT where
             width =: auto
             margin-top =: 30px
 
+        has (tag A) do
+          margin-top   =: 50px
+          font-family  =: titleFont
+          margin-right =: 5px
+          margin-left  =: 5px
+          color        =: toTxt gray
+          white-space  =: nowrap
 
-        has (tag A) $ do
-          apply $ do
-            margin-top   =: 50px
-            font-family  =: titleFont
-            margin-right =: 5px
-            margin-left  =: 5px
-            color        =: toTxt gray
-            white-space  =: nowrap
-
-          is firstChild .> do
+          firstChild do
             margin-left =: 0
 
-          is lastChild .> do
+          lastChild do
             margin-right =: 0
 
-          is hover .>
+          hover do
             color =: toTxt green
 
-          is hover . is visited .>
-            color =: toTxt green
+            visited do
+              color =: toTxt green
 
-          is visited .>
+          visited do
             color =: toTxt gray
     

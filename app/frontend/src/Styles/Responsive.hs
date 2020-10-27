@@ -3,9 +3,8 @@ module Styles.Responsive
   , (<%>)
   ) where
 
-import Pure.Data.CSS ((.>), Styles, CSS, atMedia)
+import Pure.Data.CSS (CSS, atMedia)
 import Pure.Data.Styles (pxs)
-import Pure.Data.Txt (Txt)
 
 smallScreens :: Int
 smallScreens = 480
@@ -23,6 +22,6 @@ hugeScreens :: Int
 hugeScreens = 1200
 
 -- | Construct a media query, given a minimum screen width.
-(<%>) :: Int -> Styles a -> CSS ()
-(<%>) n = (.>) (atMedia ("screen and (min-width: " <> pxs n <> ")"))
+(<%>) :: Int -> CSS a -> CSS () 
+(<%>) n = atMedia ("screen and (min-width: " <> pxs n <> ")")
 infixr 1 <%>

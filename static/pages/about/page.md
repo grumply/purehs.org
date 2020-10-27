@@ -100,8 +100,8 @@ import Pure
 
 data GreenT
 instance Theme GreenT where
-  theme c = void $ 
-    is c .> do
+  theme c =
+    is c do
       height           =: 40px
       width            =: 40px
       background-color =: green

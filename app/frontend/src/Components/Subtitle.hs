@@ -23,13 +23,13 @@ instance Render Subtitle where
 
 data SubtitleT
 instance Theme SubtitleT where
-  theme c = void $ do
-    is (subtheme @PlaceholderT) . has c .> do
-      pointer-events =: none
-      filter_        =: blur(12px)
-
-    is c .> do
+  theme c =
+    is c do
       font-family =: titleFont
       font-size   =: 1.3em
       font-weight =: 400
       color       =: toTxt base
+      
+      within @PlaceholderT do
+        pointer-events =: none
+        filter_        =: blur(12px)

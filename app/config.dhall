@@ -16,6 +16,7 @@ let extensions =
       , "TupleSections", "TypeApplications", "TypeFamilies"
       , "TypeFamilyDependencies", "TypeOperators", "TypeSynonymInstances"
       , "ViewPatterns", "TemplateHaskell", "PostfixOperators", "DerivingVia"
+      , "BlockArguments"
       ]
 
 let PackageConfiguration =

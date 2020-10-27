@@ -6,7 +6,6 @@ import Data.Route as Route
 import qualified Shared as API
 
 import Pure.Data.JSON (ToJSON,FromJSON)
-import Pure.Data.Time
 import Pure.WebSocket as WS hiding (Message)
 import qualified Pure.Elm.Application as Elm
 
@@ -24,7 +23,7 @@ data Settings = Settings
 
 data Message = Routed Route | UpdateSession (Session -> Session) 
 
-type App = (Elm.Session Session, Elm.Settings Settings, Elm.Elm Message Route) 
+type App = (Elm.Session Session, Elm.Settings Settings) 
 
 type Page = Elm.Page Settings Session Message Route.Route
 
@@ -72,7 +71,7 @@ req ses rq pl = do
     Nothing -> Right <$> do
       async $ do
         mv <- newEmptyMVar
-        remote API.backend (App.socket ses) rq pl $ \rsp -> do
+        request API.backend (App.socket ses) rq pl $ \rsp -> do
           forkIO (addToCache rq pl rsp)
           putMVar mv rsp
         takeMVar mv

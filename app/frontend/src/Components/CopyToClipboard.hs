@@ -3,12 +3,10 @@ module Components.CopyToClipboard where
 
 import Pure.Elm
 import Pure.Data.SVG (pattern Svg)
-import Components.Icons
-import Styles.Themes
-import Styles.Colors
+import Components.Icons ( copyIcon, checkIcon )
+import Styles.Colors ( base )
 
-import Data.Coerce
-import Debug.Trace
+import Data.Coerce ( coerce )
 
 #ifdef __GHCJS__
 foreign import javascript unsafe
@@ -49,25 +47,26 @@ copyable = run (App [] [Received] [] mdl update view)
 
 data CopyableT = CopyableT
 instance Theme CopyableT where
-  theme c = void $ is c $ do
-    apply $ do
-      position =: relative
+  theme c = is c do
+    position =: relative
 
-    child (tag Svg) $ do
-      apply $ do
-        fill       =: toTxt base
-        position   =: absolute
-        right      =: 20px
-        top        =: 10px
-        height     =: 32px
-        opacity    =: 0
-        transition =* [opacity,300ms]
+    child (tag Svg) do
+      fill       =: toTxt base
+      position   =: absolute
+      right      =: -10px
+      top        =: 10px
+      height     =: 32px
+      opacity    =: 0
+      transition =* [opacity,300ms]
 
-    isn't ".copied" . is hover . child (tag Svg) .> 
-      opacity =: 1
+    isn't ".copied" do
+      hover do 
+        child (tag Svg) do 
+          opacity =: 1
 
-    is ".copied" . child (tag Svg) .>
-      opacity =: 1
+    is ".copied" do
+      child (tag Svg) do
+        opacity =: 1
 
 processCopyable :: View -> View
 processCopyable (Classes cs (Children vs v))

@@ -199,29 +199,32 @@ regularLogo =
 
 data SimpleLogoT = SimpleLogoT
 instance Theme SimpleLogoT where
-  theme c = void $
-    is c $
-      has ".letter" .>
-        "fill" =: toTxt blue
+  theme c = 
+    is c do
+      has ".letter" do
+        fill =: toTxt blue
 
 data RegularLogoT = RegularLogoT
 instance Theme RegularLogoT where
-  theme c = void $
-    is c $ do
+  theme c =
+    is c do
 
-      let fill = "fill"
+      has ".bracket" do
+        fill =: toTxt base
 
-      has ".bracket" .> fill =: toTxt base
+      has ".letter" do
+        fill =: toTxt green
 
-      has ".letter"  .> fill =: toTxt green
+      has ".ext" do
+        fill =: toTxt base
 
-      has ".ext"     .> fill =: toTxt base
-
-      has ".period"  .> fill =: toTxt base
+      has ".period" do
+        fill =: toTxt base
 
 data Model = Model Int
 data Msg = Step
 
+animatedLogo :: View
 animatedLogo = 
   Div <||>
     [ open
@@ -284,14 +287,14 @@ instance Render Company where
 
 data MiniT
 instance Theme MiniT where
-  theme c = void $ 
-    is c $ do
-      apply $ 
-        height =: 32px
+  theme c =
+    is c do
+      height =: 32px
 
-      child (tag Path) .> do
+      child (tag Path) do
         fill       =: toTxt black
         transition =* [fill,150ms] 
 
-      is hover . child (tag Path) .> do
-        fill =: toTxt green
+      hover do
+        child (tag Path) do
+          fill =: toTxt green

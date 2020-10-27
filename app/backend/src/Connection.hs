@@ -8,8 +8,6 @@ import Shared.Types
 import qualified Shared.Package as Package
 import qualified Shared.Types as Types
 
-import Pure.Data.JSON (encodeBS)
-import Pure.Data.Txt as Txt hiding (maximum)
 import Pure.Elm
 import Pure.WebSocket as WS
 

@@ -315,25 +315,27 @@ tutorialsMenu ses =
     ]
 data NavT
 instance Theme NavT where
-  theme c = void $ is c .> do
-    display         =: flex
-    flex-direction  =: row
-    overflow-x      =: auto
-    justify-content =: flex-end
+  theme c = 
+    is c do
+      display         =: flex
+      flex-direction  =: row
+      overflow-x      =: auto
+      justify-content =: flex-end
 
 data LinksT
 instance Theme LinksT where
-  theme c = void $ is c .> do
-    display         =: flex
-    flex-direction  =: row
-    overflow-x      =: auto
-    justify-content =: flex-end
-    cursor          =: pointer
+  theme c = 
+    is c do
+      display         =: flex
+      flex-direction  =: row
+      overflow-x      =: auto
+      justify-content =: flex-end
+      cursor          =: pointer
 
 data LinkT
 instance Theme LinkT where
-  theme c = void $ is c $ do
-    apply $ do
+  theme c = 
+    is c do
       display         =: flex
       flex-direction  =: row
       align-items     =: center
@@ -346,40 +348,40 @@ instance Theme LinkT where
       color           =: toTxt base
       text-decoration =: none
 
-    mediumScreens <%> do
-      font-size =: 24px
+      mediumScreens <%> do
+        font-size =: 24px
 
-    is hover .> do
-      color       =: toTxt base
-      text-shadow =* [0,0,5px,toTxt green]
+      hover do
+        color       =: toTxt base
+        text-shadow =* [0,0,5px,toTxt green]
 
 data LightbarT
 instance Theme LightbarT where
-  theme c = void $ is c .> do
-    position         =: absolute
-    height           =: 1px
-    left             =: 10px
-    right            =: 0
-    bottom           =: 0
-    background-color =: toTxt base
+  theme c = 
+    is c do
+      position         =: absolute
+      height           =: 1px
+      left             =: 10px
+      right            =: 0
+      bottom           =: 0
+      background-color =: toTxt base
 
 data SandboxT
 instance Theme SandboxT where
-  theme c = void $ 
-    is c $ do
-      apply $ do
-        position       =: absolute
-        top            =: 40px
-        overflow       =: hidden
-        min-height     =: 320px
-        max-height     =: 510px
-        width          =: 95vw 
-        min-width      =: 400px
-        max-width      =: 600px
-        pointer-events =: none
-        margin-left    =: auto
-        margin-right   =: auto
-        padding-top    =: 10px
+  theme c =
+    is c do
+      position       =: absolute
+      top            =: 40px
+      overflow       =: hidden
+      min-height     =: 320px
+      max-height     =: 510px
+      width          =: 95vw 
+      min-width      =: 400px
+      max-width      =: 600px
+      pointer-events =: none
+      margin-left    =: auto
+      margin-right   =: auto
+      padding-top    =: 10px
 
       mediumScreens <%> do
         min-height  =: 435px
@@ -387,87 +389,76 @@ instance Theme SandboxT where
 
 data MenusT
 instance Theme MenusT where
-  theme c = void $ do
-    is c $ do
-      apply $ do
-        position    =: relative
-        display     =: inline-block
-        float       =: right
-        perspective =: 2000px
-        opacity     =: 0
-        will-change =: opacity
+  theme c =
+    is c do
+      position    =: relative
+      display     =: inline-block
+      float       =: right
+      perspective =: 2000px
+      opacity     =: 0
+      will-change =: opacity
 
 data HarnessT
 instance Theme HarnessT where
-  theme c = void $ do
-    is c $ do
-      apply $ do
-        position =: absolute
-        right    =: 8px
-
-easeInOut = ease-"in"-out
+  theme c = 
+    is c do
+      position =: absolute
+      right    =: 8px
 
 data CardT
 instance Theme CardT where
-  theme c = void $ 
-    is c $ do
-      apply $ do
-        background-color =: toTxt base
-        min-width        =: 300px
-        min-height       =: 170px
-        max-width        =: 93vw
-        max-height       =: 93vh
-        border-radius    =: 8px
-        box-shadow       =: customBoxShadow 0 5 10 (-2) (rgba(50,50,90,0.75))
-        transition       =: elems [transform <<>> 192ms,width <<>> 192ms,height <<>> 192ms]
-        transform        =: rotateX((-20)deg)
-        transform-origin =: (50%) <<>> (-50)px
-        will-change      =: elems [transform,width,height]
-        overflow         =: hidden
-        line-height      =: 1.2em
+  theme c =
+    is c do
+      background-color =: toTxt base
+      min-width        =: 300px
+      min-height       =: 170px
+      max-width        =: 93vw
+      max-height       =: 93vh
+      border-radius    =: 8px
+      box-shadow       =: customBoxShadow 0 5 10 (-2) (rgba(50,50,90,0.75))
+      transition       =: elems [transform <<>> 192ms,width <<>> 192ms,height <<>> 192ms]
+      transform        =: rotateX((-20)deg)
+      transform-origin =: (50%) <<>> (-50)px
+      will-change      =: elems [transform,width,height]
+      overflow         =: hidden
+      line-height      =: 1.2em
 
       has (tag A) $ do
-        apply $ do
-          display =: inline-flex
-          align-items =: center
-          color =: toTxt black
-          font-style =: bold
+        display =: inline-flex
+        align-items =: center
+        color =: toTxt black
+        font-style =: bold
 
-        has (tag Svg) .> do
+        has (tag Svg) do
           width =: 20px
           margin-right =: 4px
           fill =: toTxt black
 
-        is hover $ do
-          apply $ do
-            color =: toTxt green
+        hover do
+          color =: toTxt green
           
-        is visited $ do
-          apply $ do
-            color =: toTxt black
+        visited do
+          color =: toTxt black
 
-        is visited . is hover $ do
-          apply $ do
+        visited do
+          hover do
             color =: toTxt green
 
-      is (subtheme @AboutMenuActiveT) $ do
-        apply $ do
-          width  =: 500px
-          height =: 245px
+      at @AboutMenuActiveT do
+        width  =: 500px
+        height =: 245px
 
         mediumScreens <%> do
           height =: 365px
 
-      is (subtheme @PackagesMenuActiveT) $ do
-        apply $ do
-          width  =: 400px
-          height =: 270px
+      at @PackagesMenuActiveT do
+        width  =: 400px
+        height =: 270px
 
 
-      is (subtheme @TutorialsMenuActiveT) $ do
-        apply $ do
-          width =: 540px
-          height =: 185px
+      at @TutorialsMenuActiveT do
+        width =: 540px
+        height =: 185px
 
         mediumScreens <%> do
           height  =: 410px
@@ -475,43 +466,47 @@ instance Theme CardT where
 
 data MenuT
 instance Theme MenuT where
-  theme c = void $ is c .> do
-    z-index       =: initial
-    position      =: absolute
-    height        =: (100%)
-    width         =: (100%)
-    top           =: 0
-    opacity       =: 0
-    transition    =: elems [transform <<>> 192ms, opacity <<>> 192ms]
-    transform     =: translateX(0)
-    will-change   =: elems [transform,opacity,z-index]
+  theme c = 
+    is c do
+      z-index       =: initial
+      position      =: absolute
+      height        =: (100%)
+      width         =: (100%)
+      top           =: 0
+      opacity       =: 0
+      transition    =: elems [transform <<>> 192ms, opacity <<>> 192ms]
+      transform     =: translateX(0)
+      will-change   =: elems [transform,opacity,z-index]
 
 data MenuLeftT
 instance Theme MenuLeftT where
-  theme c = void $ is c .> do
-    transform =: translateX((-50)%)
+  theme c = 
+    is c do
+      transform =: translateX((-50)%)
 
 data MenuRightT
 instance Theme MenuRightT where
-  theme c = void $ is c .> do
-    transform =: translateX(50%)
+  theme c = 
+    is c do
+      transform =: translateX(50%)
 
 data ActiveT
 instance Theme ActiveT where
-  theme c = void $ do
-    is (subtheme @MenusT) . is c .> do
-      opacity    =: 1
+  theme c =
+    is c do
+      at @MenusT do
+        opacity =: 1
 
-    is (subtheme @HarnessT) . is c .> do
-      pointer-events =: auto
+      at @HarnessT do
+        pointer-events =: auto
 
-    is (subtheme @CardT) . is c .> do
-      transform  =: rotateX(0deg)
+      at @CardT do
+        transform  =: rotateX(0deg)
 
-    is (subtheme @MenuT) . is c .> do
-      z-index   =: 10
-      opacity   =: 1
-      transform =: translateX(0) 
+      at @MenuT do
+        z-index   =: 10
+        opacity   =: 1
+        transform =: translateX(0) 
 
 data AboutMenuActiveT deriving Theme
 data PackagesMenuActiveT deriving Theme
@@ -523,74 +518,66 @@ data TutorialsMenuT deriving Theme
 
 data MenuTopT
 instance Theme MenuTopT where
-  theme c = void $ do
-    is c $ do
-      apply $ do
-        padding =* [25px,25px,12px,25px]
-        background-color =: toTxt base
+  theme c =
+    is c do
+      padding =* [25px,25px,12px,25px]
+      background-color =: toTxt base
     
-      has (tag Header) $ do
-        has (tag H1) $ do
-          apply $ do
-            margin =: 0
-            font-size =: 24px
-            color =: toTxt black
+      has (tag Header) do
+        has (tag H1) do
+          margin =: 0
+          font-size =: 24px
+          color =: toTxt black
           
-          has (tag Svg) .> do
+          has (tag Svg) do
             margin-right =: 8px
             width =: 24px
 
-      has (tag P) .> do
+      has (tag P) do
         font-size =: 14px
         margin    =* [5px,12px]
         color =: toTxt gray
 
-      has (tag Section) $ do
-        apply $ do
-          margin-left =: 12px
-          display =: none
+      has (tag Section) do
+        margin-left =: 12px
+        display =: none
 
         mediumScreens <%> do
           display =: block
 
-      has (tag H2) .> do
+      has (tag H2) do
         font-size =: 16px
         color =: toTxt gray
         margin =* [8px,0px]
 
-      has (tag Ul) $ do
-        apply $ do
-          font-size =: 14px
-          list-style =: none
-          padding-left =: 12px
-          padding-bottom =: 8px
-          margin =: 0
+      has (tag Ul) do
+        font-size =: 14px
+        list-style =: none
+        padding-left =: 12px
+        padding-bottom =: 8px
+        margin =: 0
 
-        has (tag Li) $ do
-          apply $ do
-            margin-top =: 5px
+        has (tag Li) do
+          margin-top =: 5px
 
 data MenuBottomT
 instance Theme MenuBottomT where
   theme c = void $ do
-    is c $ do
-      apply $ do
-        padding-bottom =: 15px
-        background-color =: toTxt lavender
-        border-bottom-left-radius  =: 8px
-        border-bottom-right-radius =: 8px
+    is c do
+      padding-bottom =: 15px
+      background-color =: toTxt lavender
+      border-bottom-left-radius  =: 8px
+      border-bottom-right-radius =: 8px
 
-      child (tag Div) $ do
-        apply $ do
-          display =: flex
-          justify-content =: space-evenly
-          align-items =: center
+      child (tag Div) do
+        display =: flex
+        justify-content =: space-evenly
+        align-items =: center
 
-      has (tag Ul) $ do
-        apply $ do
-          display =: inline-block
-          list-style =: none
-          padding =* [0px, 10px]
+      has (tag Ul) do
+        display =: inline-block
+        list-style =: none
+        padding =* [0px, 10px]
 
         smallScreens <%> do
           padding =* [0px,20px]
@@ -598,27 +585,26 @@ instance Theme MenuBottomT where
         mediumScreens <%> do
           padding =* [0px,60px]
 
-        has (tag Li) $ do
-          apply $ do
-            margin-top =: 5px
+        has (tag Li) do
+          margin-top =: 5px
 
-          has (tag A) $ do
-            apply $ do
-              font-size =: 18px
-              color =: toTxt base
+          has (tag A) do
+            font-size =: 18px
+            color =: toTxt base
 
-            is hover .> do
+            hover do
               color =: toTxt base
               text-shadow =* [0,0,5px,toTxt green]
 
-            is visited .> do
+            visited do
               color =: toTxt base
 
-            is visited . is hover .> do
-              color =: toTxt base
-              text-shadow =* [0,0,5px,toTxt green]
+            visited do
+              hover do
+                color =: toTxt base
+                text-shadow =* [0,0,5px,toTxt green]
 
-          has (tag Svg) .> do
+          has (tag Svg) do
             width =: 18px
             fill  =: toTxt base
 

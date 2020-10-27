@@ -60,20 +60,17 @@ data PackageListingT
 instance Theme PackageListingT where
   theme c = void $ 
     is c $ do
-      apply $ do
-        font-size =: 18px
+      font-size =: 18px
+      padding     =* [0px,0px,32px,0px]
+      margin      =* [0,auto]
+      width       =: (100%)
+      width       =: (100%)
+      max-width   =: (100%)
 
-      isn't lastChild .>
+      isn't ":last-child" do
         border-bottom =* [1px,solid,toTxt (faded gray)]
 
-      apply $ do
-        padding     =* [0px,0px,32px,0px]
-        margin      =* [0,auto]
-        width       =: (100%)
-        width       =: (100%)
-        max-width   =: (100%)
-
-      is firstOfType .> do
+      firstOfType do
         margin-top  =: (-40)px
 
       mediumScreens <%> do
@@ -85,33 +82,31 @@ instance Theme PackageListingT where
       hugeScreens <%> do
         width =: 900px
 
-      child (tag Div) .> do
+      child (tag Div) do
         display =: flex
         justify-content =: space-between
 
-      child (tag P) .> do
+      child (tag P) do
         font-family   =: defaultFont
         font-size     =: 18px
         color         =: toTxt black
         margin-top    =: 8px
         margin-bottom =: 0
 
-      has (subtheme @TagsT) .> do
+      has (subtheme @TagsT) do
         margin =: 0
         margin-bottom =: 10px
         margin-left   =: 10px
 
-      has (subtheme @AuthorT) $ do
-        has (tag A) .> do
+      has (subtheme @AuthorT) do
+        has (tag A) do
           font-size =: 20px
 
-      has (subtheme @TitleT) $ do
-        apply $ do
-          display =: inline-block
+      has (subtheme @TitleT) do
+        display =: inline-block
 
-        has (tag A) $ do
-          apply $ do
-            font-size =: 22px
+        has (tag A) do
+          font-size =: 22px
 
 
 data RelativeVersion = RelativeVersion PackageName Types.Version Types.Version

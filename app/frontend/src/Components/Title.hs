@@ -21,22 +21,19 @@ instance Render Title where
 
 data TitleT
 instance Theme TitleT where
-  theme c = void $ do
-    is (subtheme @PlaceholderT) . has c .> do
-      pointer-events =: none
-      filter_        =: blur(16px)
+  theme c =
+    is c do
+      margin-bottom =: 10px
 
-    is c $ do
-      apply $ 
-        margin-bottom =: 10px
-
-      has (tag A) $ do
-        apply $ do
-          font-family =: titleFont
-          font-size   =: 1.45em
-          font-weight =: 400
-          color       =: toTxt black
+      has (tag A) do
+        font-family =: titleFont
+        font-size   =: 1.45em
+        font-weight =: 400
+        color       =: toTxt black
         
-        is hover .> do
+        hover do
           color =: toTxt green
 
+      within @PlaceholderT do
+        pointer-events =: none
+        filter_        =: blur(16px)

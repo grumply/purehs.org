@@ -96,7 +96,7 @@ Pure.hs includes a lot of primitive attributes, properties, styles, event handle
 data BigRedButtonT
 instance Theme BigRedButtonT where
   theme bigRedButton =
-    is bigRedButton .> do
+    is bigRedButton do
       width            =: 500px
       height           =: 200px
       background-color =: red
@@ -150,8 +150,8 @@ main = do
 
 data BigRedButtonT
 instance Theme BigRedButtonT where
-  theme bigRedButton = void $ 
-    is bigRedButton .> do
+  theme bigRedButton =
+    is bigRedButton do
       width            =: 500px
       height           =: 200px
       background-color =: red

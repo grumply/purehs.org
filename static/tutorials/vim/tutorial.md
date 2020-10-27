@@ -2,7 +2,7 @@
 
 > The [VSCode experience](/tutorials/vscode) is much better at the moment. Try it out if you want a seamless experience.
 
-> Note this approach will only be compatible with Pure.hs-based projects. But you may choose to use this method to start non-pure haskell projects, as well, to retain `lsp` functionality. If you want to consider using this alongside another configuration, a good approach might be [GNU Stow](https://www.gnu.org/software/stow/).
+> Note this approach will only be compatible with Pure.hs-based projects. But you may choose to use this method to start non-Pure.hs haskell projects, as well, to retain `lsp` functionality. If you want to consider using this alongside another configuration, a good approach might be [GNU Stow](https://www.gnu.org/software/stow/).
 
 The `pure-project-skeleton` includes a simple wrapper for easy [neovim](https://neovim.io) integration with [Haskell IDE Engine](https://github.com/haskell/haskell-ide-engine) to provide type signatures, completions, and other goodies.
 

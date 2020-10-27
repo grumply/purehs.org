@@ -81,6 +81,7 @@ default-extensions:
 - TemplateHaskell
 - PostfixOperators
 - DerivingVia
+- BlockArguments
 name: backend
 version: 0.1.0.0
 synopsis: backend server

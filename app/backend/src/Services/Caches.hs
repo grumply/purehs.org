@@ -12,42 +12,36 @@ import Shared.Page as Page
 import Shared.Tutorial as Tutorial
 import Shared.Types as Types
 
-import Pure.Cached
+import Pure.Cached ( cached, forkCache, Cached )
 import Pure.Data.JSON (encodeBS,FromJSON)
-import Pure.Data.Time
 import Pure.Data.Render ()
 import Pure.Data.View (View)
-import Pure.Data.Txt as Txt hiding (concat)
-import Pure.Data.Txt.Interpolate
-import Pure.TagSoup
-import Pure.WebSocket as WS
+import Pure.Data.Txt as Txt
+    ( dropWhile, dropWhileEnd, length, repack )
+import Pure.Data.Txt.Interpolate ( i )
+import Pure.TagSoup ( parseView )
+import Pure.WebSocket as WS ( request, clientWS, WebSocket )
 
-import Control.Concurrent
-import Control.Exception (bracket,SomeException(..),handle,throw)
-import Data.Char
-import qualified Data.ByteString as BS
-import qualified Data.ByteString.Lazy as BSL
+import Data.Char ( isSpace )
+import qualified Data.ByteString as BS ( length, readFile )
+import qualified Data.ByteString.Lazy as BSL ( ByteString )
 import qualified Data.Text.IO as T
 import qualified Data.Map as Map
 import Data.Map (Map)
 
-import Data.Yaml as Yaml
+import Data.Yaml as Yaml ( decodeEither' )
 
-import Text.Pandoc.Class
-import Text.Pandoc.Readers.Markdown
-import Text.Pandoc.Writers.HTML
+import Text.Pandoc.Class ( runPure )
+import Text.Pandoc.Readers.Markdown ( readMarkdown )
+import Text.Pandoc.Writers.HTML ( writeHtml5String )
 import qualified Text.Pandoc.Options as Pandoc
 
-import System.FilePath.Glob as Glob (glob)
+import System.FilePath.Glob as Glob ( glob )
 
-import Control.Arrow
 import qualified Data.List as List
-import Data.Maybe
-import Data.Ord
-import Data.Function
-import Data.Traversable
-import System.IO
-import System.IO.Unsafe
+import Data.Maybe ( catMaybes )
+import System.IO ( stdout, hFlush )
+import System.IO.Unsafe ( unsafePerformIO )
 
 import GHC.Exts (IsList(..))
 
@@ -607,7 +601,7 @@ withYamlFile :: (FromJSON a) => FilePath -> (a -> IO b) -> IO (Maybe b)
 withYamlFile fp f = do
   c <- BS.readFile fp
   BS.length c `seq`
-    case Yaml.decodeEither c of
+    case Yaml.decodeEither' c of
       Left e ->
         putStrLn [i|Bad yaml file at #{fp} with error #{show e}|]
           *> hFlush stdout
@@ -701,7 +695,7 @@ processExamples (Rendered md) = traverse_ example md
     example :: View -> IO ()
     example (Children (texts -> t) (Attributes as Pre)) 
       | Just _ <- List.lookup "data-try" as = void $
-        remote compileAPI tryWS compile (Txt.dropWhile isSpace t,True) print
+        request compileAPI tryWS compile (Txt.dropWhile isSpace t,True) print
     example v = traverse_ example (getChildren v)
 
 texts :: [View] -> Txt

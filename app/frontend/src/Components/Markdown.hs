@@ -18,7 +18,7 @@ import Pure.Data.Txt as Txt (lines,dropWhileEnd,dropWhile,count)
 
 import GHC.Exts (IsList(..))
 
-import Prelude hiding (break,max,even)
+import Prelude hiding (break,max,even,or)
 import Data.Char
 import Data.List as List (lookup,length,foldl')
 
@@ -62,14 +62,10 @@ instance Render (Changes Rendered) where
 
 data ContentT
 instance Theme ContentT where
-  theme c = void $ do
-    is (subtheme @PlaceholderT) . has c .> do
-      filter_ =: blur(8px)
-
-    is c $ do
-      apply $ do
-        width  =: (100%)
-        margin =* [0,auto]
+  theme c =
+    is c do
+      width  =: (100%)
+      margin =* [0,auto]
 
       mediumScreens <%> do
         width =: 520px
@@ -77,269 +73,259 @@ instance Theme ContentT where
       largeScreens <%> do
         width =: 700px
 
+      within @PlaceholderT do
+        filter_ =: blur(8px)
+
+
 data EditorT deriving Theme
 data MarkdownT
 instance Theme MarkdownT where
-  theme c = void $ is c $ do
-    apply $ do
+  theme c = 
+    is c do
       -- for inheriting
       color =: toTxt black
+      width =: (100%)
 
-    has ".hide" .>
-      display =: none
+      has ".hide" do
+        display =: none
 
-    has ".footnotes" .> do
-      margin-top =: 1em
+      has ".footnotes" do
+        margin-top =: 1em
 
-    has (subtheme @EditorT) $ do
-      apply $ 
+      has (subtheme @EditorT) do
         width  =: (100%)
 
-      has (tag A) $ do
-        apply $ do
+        has (tag A) do
           color           =: toTxt gray
           text-decoration =: none
           border          =: none
           background      =: white
 
-        is hover .> do
-          color =: toTxt green
-          background      =: white
-          border          =: none
+          hover do
+            color =: toTxt green
+            background      =: white
+            border          =: none
 
-        is hover . is visited .> do
-          color =: toTxt green
-          background      =: white
-          border          =: none
+          visited do
+            color =: toTxt gray
+            background      =: white
+            border          =: none
 
-        is visited .> do
-          color =: toTxt gray
-          background      =: white
-          border          =: none
+            hover do
+              color =: toTxt green
+              background      =: white
+              border          =: none
 
-    has (tag Figure) $ do
-      apply $ do
+      has (tag Figure) do
         margin     =* [30px,0]
         text-align =: center
 
-      largeScreens <%> do
-        margin =* [30px,(-80)px]
-        
-      has (tag Img) .> do
-        max-width =: (100%)
-        height    =: auto
+        largeScreens <%> do
+          margin =* [30px,(-80)px]
+          
+        has (tag Img) do
+          max-width =: (100%)
+          height    =: auto
 
-      has (tag Figcaption) .> do
-        text-align  =: center
-        margin-top  =: 8px
-        color       =: toTxt black
-        font-family =: defaultFont
+        has (tag Figcaption) do
+          text-align  =: center
+          margin-top  =: 8px
+          color       =: toTxt black
+          font-family =: defaultFont
+          font-size   =: 16px
+
+      has (tag P) do
+        line-height =: 28px
         font-size   =: 16px
+        font-weight =: 400
+        color       =: toTxt black
+        margin      =: 16px
 
-    id .> do
-      width =: (100%)
-
-    has (tag P) .> do
-      line-height =: 28px
-      font-size   =: 16px
-      font-weight =: 400
-      color       =: toTxt black
-      margin      =: 16px
-
-    has (tag A) $ do
-      apply $ do
+      has (tag A) do
         background      =: toTxt (faded green)
         border-bottom   =* [1px,solid,toTxt green]
         color           =: toTxt black
         text-decoration =: none
 
-      is hover .> do
-        background    =: toTxt green
+        hover do
+          background    =: toTxt green
 
-      is hover . is visited .> do
-        background    =: toTxt green
+        visited do
+          background    =: toTxt (faded green)
 
-      is visited .> do
-        background    =: toTxt (faded green)
+          hover do
+            background  =: toTxt green
 
-    has (tag Li) .> do
-      line-height =: 20px
-      font-size   =: 18px
-      font-weight =: 400
-      color       =: toTxt base { brightness = 25 }
-      margin      =: 16px
+      has (tag Li) do
+        line-height =: 20px
+        font-size   =: 18px
+        font-weight =: 400
+        color       =: toTxt base { brightness = 25 }
+        margin      =: 16px
 
-    has (tag H1) .> do
-      font-family =: titleFont
-      font-size   =: 48px
-      margin      =: 0
+      has (tag H1) do
+        font-family =: titleFont
+        font-size   =: 48px
+        margin      =: 0
 
-    has (tag H2) .> do
-      font-family =: titleFont
-      font-size =: 32px
+      has (tag H2) do
+        has (tag A) do
+          or is c do
+            has (tag H3) do
+              has (tag A) do
+                important do
+                  background =: none
+                  border-bottom =: none
 
-    has (tag H2) . has (tag A) .> important $ do
-      background =: none
-      border-bottom =: none
+                hover do
+                  important do
+                    color =: toTxt green
+                    background =: none
+                    border-bottom =: none
 
-    has (tag H2) . has (tag A) . is hover .> important $ do
-      color =: toTxt green
-      background =: none
-      border-bottom =: none
+                visited do
+                  hover do 
+                    important do
+                      color =: toTxt green
+                      background =: none
+                      border-bottom =: none
 
-    has (tag H2) . has (tag A) . is visited . is hover .> important $ do
-      color =: toTxt green
-      background =: none
-      border-bottom =: none
+      has (tag H2) do
+        font-family =: titleFont
+        font-size =: 32px
 
-    has (tag H3) .> do
-      font-family =: titleFont
-      color       =: toTxt base { brightness = 45 }
-      font-size   =: 24px
-      padding-top =: 1em
+      has (tag H3) do
+        font-family =: titleFont
+        color       =: toTxt base { brightness = 45 }
+        font-size   =: 24px
+        padding-top =: 1em
 
-    has (tag H3) . has (tag A) .> important $ do
-      background =: none
-      border-bottom =: none
+      has (tag P) do
+        has (tag Code) do
+          font-family =: defaultMonoFont
+          word-break  =: break-word
+          padding     =* [3px,4px,2px,4px]
+          background  =: toTxt (faded orange)
 
-    has (tag H3) . has (tag A) . is hover .> important $ do
-      color =: toTxt green
-      background =: none
-      border-bottom =: none
+      has (tag Li) do 
+        has (tag Code) do
+          font-family =: defaultMonoFont
+          word-break  =: break-word
+          padding     =* [3px,4px,2px,4px]
+          background  =: toTxt (faded orange)
 
-    has (tag H3) . has (tag A) . is visited . is hover .> important $ do
-      color =: toTxt green
-      background =: none
-      border-bottom =: none
-
-    has (tag P) . has (tag Code) .> do
-      font-family =: defaultMonoFont
-      word-break  =: break-word
-      padding     =* [3px,4px,2px,4px]
-      background  =: toTxt (faded orange)
-
-    has (tag Li) . has (tag Code) .> do
-      font-family =: defaultMonoFont
-      word-break  =: break-word
-      padding     =* [3px,4px,2px,4px]
-      background  =: toTxt (faded orange)
-
-    has (tag Blockquote) $ do
-      apply $ do
+      has (tag Blockquote) do
         border-left      =* [5px,solid,toTxt black]
         padding          =* [16px,0px,16px,8px]
         margin           =* [20px,0px,20px,(-16)px]
 
-      child (tag P) .> do
-        margin-bottom =: 0
+        child (tag P) do
+          margin-bottom =: 0
 
-      atMedia "(max-width: 48em)" $ do
-        apply $
+        atMedia "(max-width: 48em)" do
           margin-right =: (-16)px
 
-        has ".sourceCode" . has (tag Pre) .> do
-          margin-right =: 0
+          has ".sourceCode" do 
+            has (tag Pre) do
+              margin-right =: 0
 
-      atMedia "(min-width: 48em)" .> do
-        margin-left  =: 16px
-        margin-right =: 16px
+        atMedia "(min-width: 48em)" do
+          margin-left  =: 16px
+          margin-right =: 16px
 
-      has (tag H2) .> do
-        font-family =: titleFont
-        margin    =: 8px
-        font-size =: 20px
+        has (tag H2) do
+          font-family =: titleFont
+          margin    =: 8px
+          font-size =: 20px
 
-      has (tag H3) .> do
-        font-family =: titleFont
-        border-top =: none
-        margin     =: 8px
-        font-size  =: 18px
+        has (tag H3) do
+          font-family =: titleFont
+          border-top =: none
+          margin     =: 8px
+          font-size  =: 18px
 
-      has (tag P) .> do
-        font-style =: italic
-        font-weight =: 400
-        font-family =: serifFont
-        font-size   =: 18px
-        color =: toTxt gray
-        margin-top =: 0
+        has (tag P) do
+          font-style =: italic
+          font-weight =: 400
+          font-family =: serifFont
+          font-size   =: 18px
+          color =: toTxt gray
+          margin-top =: 0
 
-    has ".warn" $ do
-      apply $ do
+      has ".warn" do
         background-color =: toTxt (faded orange)
         border-left      =* [10px,solid,toTxt red]
         padding          =* [16px,0px,16px,16px]
         margin           =* [20px,0px,20px,(-16)px]
 
-      child (tag P) .> do
-        margin-bottom =: 0
+        child (tag P) do
+          margin-bottom =: 0
 
-      atMedia "(max-width: 48em)" $ do
-        apply $
+        atMedia "(max-width: 48em)" do
           margin-right =: (-16)px
 
-        has ".sourceCode" . has (tag Pre) .> do
-          margin-right =: 0
+          has ".sourceCode" do 
+            has (tag Pre) do
+              margin-right =: 0
 
-      atMedia "(min-width: 48em)" .> do
-        margin-left  =: 16px
-        margin-right =: 16px
+        atMedia "(min-width: 48em)" do
+          margin-left  =: 16px
+          margin-right =: 16px
 
-      has (tag H2) .> do
-        padding-top =: 0
-        font-family =: titleFont
-        margin    =: 8px
-        font-size =: 20px
+        has (tag H2) do
+          padding-top =: 0
+          font-family =: titleFont
+          margin    =: 8px
+          font-size =: 20px
 
-      has (tag H3) .> do
-        padding-top =: 0
-        font-family =: titleFont
-        border-top =: none
-        margin     =: 8px
-        font-size  =: 18px
+        has (tag H3) do
+          padding-top =: 0
+          font-family =: titleFont
+          border-top =: none
+          margin     =: 8px
+          font-size  =: 18px
 
-      has (tag P) .> do
-        margin-top =: 0
+        has (tag P) do
+          margin-top =: 0
 
-    has ".info" $ do
-      apply $ do
+      has ".info" do
         background-color =: toTxt (faded blue)
         border-left      =* [10px,solid,toTxt blue]
         padding          =* [16px,0px,16px,16px]
         margin           =* [20px,0px,20px,(-16)px]
 
-      child (tag P) .> do
-        margin-bottom =: 0
+        child (tag P) do
+          margin-bottom =: 0
 
-      atMedia "(max-width: 48em)" $ do
-        apply $
+        atMedia "(max-width: 48em)" do
           margin-right =: (-16)px
 
-        has ".sourceCode" . has (tag Pre) .> do
-          margin-right =: 0
+          has ".sourceCode" do 
+            has (tag Pre) do
+              margin-right =: 0
 
-      atMedia "(min-width: 48em)" .> do
-        margin-left  =: 16px
-        margin-right =: 16px
+        atMedia "(min-width: 48em)" do
+          margin-left  =: 16px
+          margin-right =: 16px
 
-      has (tag H2) .> do
-        padding-top =: 0
-        font-family =: titleFont
-        margin    =: 8px
-        font-size =: 20px
+        has (tag H2) do
+          padding-top =: 0
+          font-family =: titleFont
+          margin    =: 8px
+          font-size =: 20px
 
-      has (tag H3) .> do
-        padding-top =: 0
-        font-family =: titleFont
-        border-top =: none
-        margin     =: 8px
-        font-size  =: 18px
+        has (tag H3) do
+          padding-top =: 0
+          font-family =: titleFont
+          border-top =: none
+          margin     =: 8px
+          font-size  =: 18px
 
-      has (tag P) .> do
-        margin-top =: 0
+        has (tag P) do
+          margin-top =: 0
 
-    has ".more" $
-      has (tag A) $ do
-        apply $ do
+      has ".more" do
+        has (tag A) do
           display       =: block
           text-align    =: right
           margin-right  =: 16px
@@ -349,137 +335,216 @@ instance Theme MarkdownT where
           background    =: none
           font-size     =: 18px
 
-        is hover .> do
-          color =: toTxt green
-          background =: none
+          hover do
+            color =: toTxt green
+            background =: none
 
-        is visited .> do
-          color =: toTxt black
-          background =: none
+          visited do
+            color =: toTxt black
+            background =: none
 
-        is visited . is hover .> do
-          color =: toTxt green
-          background =: none
+          visited do 
+            hover do
+              color =: toTxt green
+              background =: none
 
-    has ".prev" $ do
-      apply $ do
-        position =: absolute
-        bottom =: 20px
+      has ".prev" do
+        or is c do
+          has ".next" do
+            position =: absolute
+            bottom =: 20px
+
+            has (tag A) do
+              display       =: block
+              margin-top    =: 8px
+              color         =: toTxt black
+              border-bottom =: none
+              background    =: none
+              font-size     =: 18px
+
+              hover do
+                color =: toTxt green
+                background =: none
+
+              visited do
+                color =: toTxt black
+                background =: none
+
+              visited do 
+                hover do
+                  color =: toTxt green
+                  background =: none
+
+      has ".prev" do
         left =: 8vw
-
-      has (tag A) $ do
-        apply $ do
-          display       =: block
+        has (tag A) do
           float         =: left
           margin-left   =: (-16)px
-          margin-top    =: 8px
-          color         =: toTxt black
-          border-bottom =: none
-          background    =: none
-          font-size     =: 18px
 
-        is hover .> do
-          color =: toTxt green
-          background =: none
-
-        is visited .> do
-          color =: toTxt black
-          background =: none
-
-        is visited . is hover .> do
-          color =: toTxt green
-          background =: none
-
-    has ".next" $ do
-      apply $ do
-        position =: absolute
-        bottom =: 20px
+      has ".next" do
         right =: 8vw
-
-      has (tag A) $ do
-        apply $ do
-          display       =: block
+        has (tag A) do
           float         =: right
           margin-right  =: (-16)px
-          margin-top    =: 8px
-          color         =: toTxt black
-          border-bottom =: none
-          background    =: none
-          font-size     =: 18px
 
-        is hover .> do
-          color =: toTxt green
-          background =: none
+      has (tag Pre) do 
+        is ".sourceCode" do
+          margin-left           =: (-16)px
+          margin-right          =: (-16)px
+          font-family           =: defaultMonoFont
+          font-weight           =: 400
+          webkit-font-smoothing =: auto
+          background-color      =: toTxt black
+          color                 =: mono1
+          overflow              =: auto
+          overflow              =: moz-"scrollbars"-none
+          microsoft-overflow-style =: none
 
-        is visited .> do
-          color =: toTxt black
-          background =: none
+      has (tag Pre) do 
+        is ".sourceCode" do 
+          is "::-webkit-scrollbar" do 
+            important do
+              width  =: 0
+              height =: 0
 
-        is visited . is hover .> do
-          color =: toTxt green
-          background =: none
+        atMedia "(min-width: 48em)" do
+          border-radius =: 10px
+          margin-left   =: 16px
+          margin-right  =: 16px
 
-    has (tag Pre) . is ".sourceCode" .> do
-      margin-left           =: (-16)px
-      margin-right          =: (-16)px
-      font-family           =: defaultMonoFont
-      font-weight           =: 400
-      webkit-font-smoothing =: auto
-      background-color      =: toTxt black
-      color                 =: mono1
-      overflow              =: auto
-      overflow              =: moz-"scrollbars"-none
-      microsoft-overflow-style =: none
+      has (tag Code) do 
+        is ".sourceCode" do
+          font-family    =: inherit
+          margin         =: 16px
+          font-height    =: 16px
+          line-height    =: 20.8px
+          display        =: block
+          padding-bottom =: 2px
 
-    has (tag Pre) . is ".sourceCode" . is "::-webkit-scrollbar" .> important $ do
-      width  =: 0
-      height =: 0
+      has ".sourceLine" do
+        white-space =: pre-wrap
+        display     =: inline-block
+        line-height =: 1.5em
+        width       =: (100%)
 
-    has (tag Pre) . is ".sourceCode" $
-      atMedia "(min-width: 48em)" .> do
-        border-radius =: 10px
-        margin-left   =: 16px
-        margin-right  =: 16px
+      has (tag Code) do 
+        has (tag Span) do
 
-    has (tag Code) . is ".sourceCode" .> do
-      font-family    =: inherit
-      margin         =: 16px
-      font-height    =: 16px
-      line-height    =: 20.8px
-      display        =: block
-      padding-bottom =: 2px
+          -- Comment
+          is ".co" do 
+            color =: mono3
+            font-style =: italic
 
-    has ".sourceLine" .> do
-      white-space =: pre-wrap
-      display     =: inline-block
-      line-height =: 1.5em
-      width       =: (100%)
+          -- DataType
+          is ".dt" do 
+            color =: orange2
 
-    has (tag Code) . has (tag Span) $ do
-      is ".co" .> do { color =: mono3; font-style =: italic }                         -- Comment
-      is ".dt" .> color =: orange2                                                   -- DataType
-      is ".kw" .> do { color =: blue_   }                                            -- Keyword
-      is ".cf" .> do { color =: purple_ }                                            -- ControlFlow
-      is ".op" .> color =: blue_                                                     -- Operator
-      -- is ".ot" .> color =: mono1                                                     -- Other
-      is ".sc" .> color =: blue_                                                     -- SpecialChar
-      is ".ss" .> color =: blue_                                                     -- SpecialString
-      is ".vs" .> color =: blue_                                                     -- VerbatimString
-      is ".cn" .> color =: orange1                                                   -- Constant
-      is ".dv" .> color =: orange1                                                   -- DecVal
-      is ".bn" .> color =: orange1                                                   -- BaseN
-      is ".fl" .> color =: orange1                                                   -- Float
-      is ".ch" .> color =: orange1                                                   -- Char
-      is ".st" .> color =: green_                                                    -- String
-      is ".va" .> color =: red1                                                      -- Variable
-      is ".fu" .> color =: blue_                                                     -- Function
-      is ".al" .> do { color =: red2; font-weight =: bold }                           -- Alert
-      is ".er" .> do { color =: red2; font-weight =: bold }                           -- Error
-      is ".wa" .> do { color =: red1; font-weight =: bold; font-style =: italic }      -- Warning
-      is ".im" .> color =: purple_                                                   -- Import
-      is ".bu" .> color =: purple_                                                   -- BuiltIn
-      is ".ex" .> color =: purple_                                                   -- Extension
-      is ".do" .> do { color =: mono3; font-style =: italic }                         -- Documentation
-      is ".an" .> do { color =: purple_; font-weight =: bold; font-style =: italic }   -- Annotation
-      is ".cv" .> do { color =: mono3; font-weight =: bold; font-style =: italic }     -- CommentVar
-      is ".in" .> do { color =: mono3; font-weight =: bold; font-style =: italic }     -- Information
+          -- Keyword
+          is ".kw" do 
+            color =: blue_
+
+          -- ControlFlow
+          is ".cf" do 
+            color =: purple_ 
+
+          -- Operator
+          is ".op" do 
+            color =: blue_                                                     
+
+          -- Other
+          -- is ".ot" .> color =: mono1 
+
+          -- SpecialChar
+          is ".sc" do 
+            color =: blue_ 
+
+          -- SpecialString
+          is ".ss" do 
+            color =: blue_ 
+
+          -- VerbatimString
+          is ".vs" do 
+            color =: blue_ 
+
+          -- Constant
+          is ".cn" do 
+            color =: orange1 
+
+          -- DecVal
+          is ".dv" do 
+            color =: orange1 
+
+          -- BaseN
+          is ".bn" do 
+            color =: orange1 
+
+          -- Float
+          is ".fl" do 
+            color =: orange1 
+
+          -- Char
+          is ".ch" do 
+            color =: orange1 
+
+          -- String
+          is ".st" do 
+            color =: green_ 
+
+          -- Variable
+          is ".va" do 
+            color =: red1 
+
+          -- Function
+          is ".fu" do 
+            color =: blue_ 
+
+          -- Alert
+          is ".al" do 
+            color =: red2
+            font-weight =: bold 
+
+          -- Error
+          is ".er" do 
+            color =: red2
+            font-weight =: bold 
+
+          -- Warning
+          is ".wa" do 
+            color =: red1
+            font-weight =: bold
+            font-style =: italic 
+
+          -- Import
+          is ".im" do 
+            color =: purple_ 
+
+          -- BuiltIn
+          is ".bu" do 
+            color =: purple_ 
+
+          -- Extension
+          is ".ex" do 
+            color =: purple_ 
+
+          -- Documentation
+          is ".do" do 
+            color =: mono3
+            font-style =: italic 
+
+          -- Annotation
+          is ".an" do 
+            color =: purple_
+            font-weight =: bold
+            font-style =: italic 
+
+          -- CommentVar
+          is ".cv" do 
+            color =: mono3
+            font-weight =: bold
+            font-style =: italic 
+
+          -- Information
+          is ".in" do 
+            color =: mono3
+            font-weight =: bold
+            font-style =: italic 
