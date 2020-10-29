@@ -1,4 +1,4 @@
-{-# language DuplicateRecordFields, UndecidableInstances, DeriveAnyClass #-}
+{-# language DuplicateRecordFields, UndecidableInstances, DeriveAnyClass, ForeignFunctionInterface, UnliftedFFITypes, JavaScriptFFI , GHCForeignImportPrim #-}
 module Main where
 
 import App ( Session, Page, App, Message(..), Settings(..), mkSession )

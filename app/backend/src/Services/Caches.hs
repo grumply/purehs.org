@@ -46,7 +46,7 @@ import System.IO.Unsafe ( unsafePerformIO )
 import GHC.Exts (IsList(..))
 
 epoch :: Time
-epoch = Minutes 30 0
+epoch = Seconds 30 0
 
 {-# NOINLINE authors #-}
 authors :: Cached (Map Name (Author Rendered,AuthorContent Rendered))
@@ -623,9 +623,9 @@ parseMarkdown cnt =
 
 markdown :: (FromTxt (f Txt), Functor f, Foldable f) => FilePath -> IO (f Rendered)
 markdown fp = do
-  f <- T.readFile fp
-  Txt.length f `seq` do
-    let md = fmap parseMarkdown (fromTxt f)
+  f <- BS.readFile fp
+  BS.length f `seq` do
+    let md = fmap parseMarkdown (fromTxt (toTxt f))
     traverse_ processExamples md
     pure md 
 

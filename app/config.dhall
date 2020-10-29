@@ -1,6 +1,6 @@
 let authorName = "Sean Hickman"
 
-let authorEmail = "sean@grump.ly"
+let authorEmail = "sean@grumply.com"
 
 let extensions =
       [ "AutoDeriveTypeable", "BangPatterns", "ConstraintKinds", "DataKinds"

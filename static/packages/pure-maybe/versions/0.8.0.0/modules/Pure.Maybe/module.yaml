@@ -1,6 +1,4 @@
 name: Pure.Maybe
-synopsis: |
-  Re-exports maybe-based producers and consumers
 description: |
   A re-export module for maybe-based producers and consumers
 excerpt: |

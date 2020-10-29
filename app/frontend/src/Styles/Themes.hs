@@ -360,8 +360,8 @@ instance Theme PageHeaderT where
       smallScreens <%> do
         display         =: flex
         justify-content =: space-between
-        font-size =: 24px
-        margin-bottom =: 45px
+        font-size       =: 24px
+        margin-bottom   =: 45px
 
       mediumScreens <%> do
         width =: 720px
