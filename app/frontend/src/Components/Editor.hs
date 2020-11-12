@@ -1,13 +1,14 @@
 {-# language DeriveAnyClass, CPP #-}
 module Components.Editor (editor) where
 
-import Shared ( compile, compileAPI )
+import Shared
+
 import Styles.Fonts ( defaultFont )
 import Styles.Colors ( green, gray )
 
 import qualified Pure.Elm as Elm
 import Pure.Elm hiding (state,mode,code,Default,green,gray)
-import Pure.WebSocket (WebSocket,clientWS,request)
+import Pure.WebSocket ( WebSocket, clientWS, request )
 
 import System.IO.Unsafe ( unsafePerformIO )
 

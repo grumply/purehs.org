@@ -13,8 +13,7 @@ import qualified Shared.Tutorial as Tutorial
 import Pure.WebSocket (API,api,mkRequest,(<:>),none,(<:+:>))
 
 host :: String
--- host = "159.65.79.222"
-host = "192.168.1.36"
+host = "159.65.79.222"
 
 port :: Int
 port = 8081

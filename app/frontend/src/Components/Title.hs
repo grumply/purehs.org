@@ -1,23 +1,23 @@
 module Components.Title where
 
-import Components.Route
-import Data.Render
-import Data.Route
+import qualified App (App)
+import Data.Route ( Route )
+import Components.Preload ( prelink )
 
-import Styles.Colors
-import Styles.Fonts
-import Styles.Themes
+import Styles.Colors ( green, black )
+import Styles.Fonts ( titleFont )
+import Styles.Themes ( Article, Listing )
 
 import Pure.Elm hiding (render,Title,green,black)
 
 data Title = Title Route Txt
-
-instance Render Title where
-  render (Title rt t) = 
-    H1 <| Themed @TitleT |> 
-      [ render rt <||> 
-        [ txt t ]
-      ]
+  
+title :: App.App => Route -> Txt -> View
+title rt t =
+  H1 <| Themed @TitleT |> 
+    [ A <| prelink rt |> 
+      [ txt t ]
+    ]
 
 data TitleT
 instance Theme TitleT where
@@ -34,6 +34,10 @@ instance Theme TitleT where
         hover do
           color =: toTxt green
 
-      within @PlaceholderT do
-        pointer-events =: none
-        filter_        =: blur(16px)
+      within @Listing do
+        display   =: inline-block
+        font-size =: 1em
+        
+      within @Article do
+        display =: block
+

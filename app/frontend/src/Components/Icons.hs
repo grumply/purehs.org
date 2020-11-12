@@ -1,9 +1,33 @@
 {-# language AllowAmbiguousTypes #-}
-module Components.Icons where
+module Components.Icons 
+  ( gitHubLink,
+    gitHubLogo,
+    gitHubLogo_alt,
+    twitterLogo,
+    emailLogo,
+    companyLogo,
+    aboutIcon,
+    compoundIcon, 
+    installIcon,
+    lightbulbIcon,
+    copyIcon,
+    checkIcon,
+    cookIcon,
+    tryIcon,
+    discourseIcon,
+    discordIcon,
+    playIcon,
+    authorsIcon,
+    bookIcon,
+    timerIcon,
+    codeIcon,
+    newsIcon,
+    logo,
+    animatedLogo,
+    Mini,
+  ) where
 
-import Data.Render
-import Styles.Colors
-import Styles.Themes
+import Styles.Colors ( base, green, blue, black )
 
 import Shared.Types
 
@@ -157,7 +181,7 @@ logo simple linked =
 
 simpleLogo :: View
 simpleLogo =
-  Svg <| Themed @SimpleLogoT . ViewBox "0 0 50.23 50.48" |>
+  Svg <| Themed @SimpleLogo . ViewBox "0 0 50.23 50.48" |>
     [ G <||> [ p ] ]
   where
 
@@ -165,7 +189,7 @@ simpleLogo =
 
 regularLogo :: View
 regularLogo =
-  Svg <| Themed @RegularLogoT . ViewBox "0 0 157.38 50.58" |>
+  Svg <| Themed @RegularLogo . ViewBox "0 0 157.38 50.58" |>
     [ G <||> [ open, pure', dot, hs, close ] ]
   where
 
@@ -197,15 +221,15 @@ regularLogo =
 
     close = bracket "M143.76,47.52c2.7.18,6.06.48,8.1.48a9,9,0,0,0,2.1-.18,67.37,67.37,0,0,1-.36-7.8c0-5.64.36-8.64.6-15.84.24-5.76.48-12.3.48-16.62a34.28,34.28,0,0,0-.18-4.38,3.45,3.45,0,0,0-2-.42,37.33,37.33,0,0,0-4.92.54,23.37,23.37,0,0,1-3,.36,1.3,1.3,0,0,1-1.26-1.38,1.18,1.18,0,0,1,1.26-1.2c.54,0,1.5-.18,2.58-.3A37.51,37.51,0,0,1,152.4.24c5,0,5,2,5,7.5,0,5.28-1.08,26.58-1.08,32.4a49.54,49.54,0,0,0,.42,7.74v.24c0,2.1-2.58,2.46-5,2.46-1.68,0-3.9-.18-6.72-.42-1.86-.18-2.7-.24-2.7-1.5a1.19,1.19,0,0,1,1.32-1.14Z"
 
-data SimpleLogoT = SimpleLogoT
-instance Theme SimpleLogoT where
+data SimpleLogo = SimpleLogo
+instance Theme SimpleLogo where
   theme c = 
     is c do
       has ".letter" do
         fill =: toTxt blue
 
-data RegularLogoT = RegularLogoT
-instance Theme RegularLogoT where
+data RegularLogo = RegularLogo
+instance Theme RegularLogo where
   theme c =
     is c do
 
@@ -232,7 +256,7 @@ animatedLogo =
     , close
     ]
   where
-    bracket d = Svg <| Themed @RegularLogoT . ViewBox "0 0 16 51" |> [ path "bracket" d ]
+    bracket d = Svg <| Themed @RegularLogo . ViewBox "0 0 16 51" |> [ path "bracket" d ]
     open = bracket "M13.86,47.94a1.32,1.32,0,0,1,1.2,1.38,1.2,1.2,0,0,1-1.44,1.14H9.18c-2.46,0-5.34-.18-6.24-1C1.2,47.76.36,43.5.06,28.2,0,26.76,0,25.08,0,23.4,0,14.58.3,4,1.14,1.62A1.58,1.58,0,0,1,2.64.42H4.92A51.69,51.69,0,0,0,12.54,0h.18A1.26,1.26,0,0,1,14,1.32a1.23,1.23,0,0,1-1.14,1.2,61.55,61.55,0,0,1-9.42.42C3,5.64,2.7,13.92,2.7,23c0,12.48.42,23.22,1.8,24.12,1,.6,2.94.78,4.74.78Z"
     close = bracket "M1.76,47.52c2.7.18,6.06.48,8.1.48a9,9,0,0,0,2.1-.18,67.37,67.37,0,0,1-.36-7.8c0-5.64.36-8.64.6-15.84.24-5.76.48-12.3.48-16.62a34.28,34.28,0,0,0-.18-4.38,3.45,3.45,0,0,0-2-.42,37.33,37.33,0,0,0-4.92.54,23.37,23.37,0,0,1-3,.36,1.3,1.3,0,0,1-1.26-1.38,1.18,1.18,0,0,1,1.26-1.2c.54,0,1.5-.18,2.58-.3A37.51,37.51,0,0,1,10.4.24c5,0,5,2,5,7.5,0,5.28-1.08,26.58-1.08,32.4a49.54,49.54,0,0,0,.42,7.74v.24c0,2.1-2.58,2.46-5,2.46-1.68,0-3.9-.18-6.72-.42-1.86-.18-2.7-.24-2.7-1.5a1.19,1.19,0,0,1,1.32-1.14Z"
 
@@ -253,7 +277,7 @@ typingLogo = run (App [Step] [] [] mdl update view) ()
         , s
         ] 
 
-    letter vb d = Svg <| Themed @RegularLogoT . ViewBox vb |> [ path "letter" d ]
+    letter vb d = Svg <| Themed @RegularLogo . ViewBox vb |> [ path "letter" d ]
 
     p = letter "0 0 32 41.1" "M31.22,13c0,7-6.6,10.74-10.74,10.74a1.3,1.3,0,0,1-1.32-1.3v-.08a1.26,1.26,0,0,1,1.26-1.2C23.84,21,28.58,18,28.58,13c0-4.68-3.66-8-8.7-8a14.33,14.33,0,0,0-7.32,1.92C15,11.58,16,17.76,16,23.76,16,34.76,12.58,41,7.42,41,3,41,0,37,0,28.32,0,20.7,2.76,11.64,9.06,6.24A9.24,9.24,0,0,0,1.94,2.52,1.23,1.23,0,0,1,.62,1.38V1.32A1.37,1.37,0,0,1,1.94,0a11.36,11.36,0,0,1,9.12,4.8,17.58,17.58,0,0,1,8.82-2.28C26.6,2.52,31.22,7,31.22,13ZM10.34,8.46c-5.58,5-7.68,13.86-7.68,19.86,0,5.22,1.5,10.38,4.86,10.38,3.12,0,5.7-5.58,5.82-14.4C13.4,18.66,12.56,12.66,10.34,8.46Z"
     u = letter "0 0 32 25"   "M8.4,17.6c-0.8,3.4-1.3,7-1.4,10.5c0,2.8,0.5,5.6,2.5,5.6c3.8,0,7.3-7.8,8.6-17.3c0.1-0.7,0.8-1.2,1.6-1.1 c0.6,0,1.1,0.8,1,1.5s-0.4,2.9-0.8,4.9c-0.5,2.7-0.9,5.4-1,8.1c-0.1,1.5,0.3,3,1.2,4.1c0.2,0.3,0.3,0.6,0.3,0.9 c0,0.7-0.6,1.3-1.3,1.3c-1.3,0-2.8-2.5-2.7-5.9c-1.6,3.7-4.1,6-6.8,6c-2.2,0-5.2-1.4-5.2-8.2c0.1-3.6,0.5-7.2,1.3-10.7 c0.1-0.5,0.3-1.5,1.4-1.5c0.8,0,1.4,0.6,1.4,1.4V17.6z" 
@@ -265,28 +289,8 @@ typingLogo = run (App [Step] [] [] mdl update view) ()
 
 path cls d = Path <| Class cls . D d
 
-instance Render GitHubName where
-  render gh =
-    A <| Href (toTxt gh) . Attribute "target" "_blank" . Rel "noopener" . Attribute "title" "GitHub" |>
-      [ gitHubLogo_alt <| Themed @MiniT ]
-
-instance Render TwitterHandle where
-  render th =
-    A <| Href (toTxt th) . Attribute "target" "_blank" . Rel "noopener" . Attribute "title" "Twitter" |>
-      [ twitterLogo <| Themed @MiniT ]
-
-instance Render Email where
-  render em =
-    A <| Href ("mailto:" <> toTxt em) . Attribute "title" "Email" |>
-      [ emailLogo <| Themed @MiniT ]
-
-instance Render Company where
-  render c =
-    A <| Href (toTxt c) . Attribute "target" "_blank" . Rel "noopener" . Attribute "title" "Company" |>
-      [ companyLogo <| Themed @MiniT ]
-
-data MiniT
-instance Theme MiniT where
+data Mini
+instance Theme Mini where
   theme c =
     is c do
       height =: 32px

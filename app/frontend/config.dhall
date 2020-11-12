@@ -32,10 +32,6 @@ let deps =
 in
   frontend //
     { dependencies = deps
-    , library = 
-        { source-dirs = ["src"]
-        , other-modules = [] : List Text
-        }
     , executables =
         { frontend =
           { source-dirs = [ "src" ]

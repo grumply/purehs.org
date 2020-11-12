@@ -1,46 +1,43 @@
-module Components.Author where
+module Components.Author (authors, author, Author(), Authors()) where
 
-import Components.Preload
-import Data.Render
-import Data.Route
+import Components.Preload ( prelink )
+import Data.Route ( Route(AuthorR) )
 
-import Shared.Types (Name,Authors)
+import Shared.Types (Authors(..),Name)
 
-import Styles.Colors
-import Styles.Fonts
-import Styles.Themes
+import Styles.Colors ( lavender, green )
+import Styles.Fonts ( titleFont )
+import Styles.Themes ( Placeholder, Listing )
 
 import Pure.Elm.Application hiding (render,Title,green,black,lavender,brightness,blue)
 
-import Data.List as List
-import GHC.Exts (IsList(..))
+import Data.List as List ( intersperse )
 
-instance Render Authors where
-  render as =
-    Div <| Themed @AuthorsT |>
-      List.intersperse ", " 
-        [ render (Author a) 
-        | a <- toList as 
-        ]
+authors :: Authors -> View
+authors (Authors as) =
+  Div <| Themed @Authors |>
+    List.intersperse ", " 
+      [ author a
+      | a <- as 
+      ]
 
-newtype Author = Author Name
-
-instance Render Author where
-  render (Author nm) =
-    Address <| Themed @AuthorT |>
+author :: Name -> View
+author nm =
+    Address <| Themed @Author |>
       [ A <| Rel "author" . prelink (AuthorR nm) |>
         [ txt nm ]
       ]
 
-data AuthorsT
-instance Theme AuthorsT where
-  theme c = void $ is c .> display =: inline
-
-data AuthorT
-instance Theme AuthorT where
+instance Theme Authors where
   theme c =
     is c do
-      display     =: inline
+      display =: inline
+
+data Author
+instance Theme Author where
+  theme c =
+    is c do
+      display =: inline
 
       has (tag A) do
         font-family =: titleFont
@@ -51,7 +48,10 @@ instance Theme AuthorT where
         hover do
           color =: toTxt green
 
-      within @PlaceholderT do
-        pointer-events =: none
-        filter_        =: blur(8px)
- 
+      within @Listing do
+        has (tag A) do
+          font-size =: 20px
+
+        has (tag A) do
+          font-size =: 22px
+

@@ -1,42 +1,33 @@
-module Components.Avatar where
+module Components.Avatar (avatar, avatars, Avatars) where
 
-import Components.Preload
-import Data.Render
-import Data.Route
+import Components.Preload ( prelink )
+import Data.Route ( Route(AuthorR) )
 
-import Shared.Types (Name(..))
+import Shared.Types ( Name(Name) )
 
-import Styles.Colors
-import Styles.Fonts
-import Styles.Themes
+import Styles.Colors ( Color(alpha), green, black )
+import Styles.Themes ( Subarticles, customBoxShadow )
 
-import Pure.Data.Txt as Txt hiding (center,index,reverse)
+import Pure.Data.Txt as Txt ( ToTxt(toTxt), replace )
 import Pure.Elm.Application hiding (render,Title,green,black,alpha,brightness)
-
-import Data.List as List hiding (reverse)
-import GHC.Exts (IsList(..))
 
 import Prelude hiding (reverse)
 
-newtype Avatar = Avatar Name
+avatar :: Name -> View
+avatar nm0 = let nm = Txt.replace " " "_" nm0 in
+  A <| prelink (AuthorR nm0) |>
+    [ Img <| Src ("/static/avatars/" <> toTxt nm <> ".jpg") . Alt (toTxt nm0)
+    ]
 
-instance Render Avatar where
-  render (Avatar nm0) = let nm = Txt.replace " " "_" nm0 in
-    A <| prelink (AuthorR nm0) |>
-      [ Img <| Src ("/static/avatars/" <> toTxt nm <> ".jpg") . Alt (toTxt nm0)
-      ]
-
-newtype Avatars = Avatars [Name]
-
-instance Render Avatars where
-  render (Avatars as) = 
-    Div <| Themed @AvatarsT |>
-      [ render (Avatar a) 
+avatars :: [Name] -> View
+avatars as = 
+    Div <| Themed @Avatars |>
+      [ avatar a
       | a <- as
       ]
 
-data AvatarsT
-instance Theme AvatarsT where
+data Avatars
+instance Theme Avatars where
   theme c =
     is c do
       width           =: (100%)
@@ -72,10 +63,7 @@ instance Theme AvatarsT where
           height         =: 130px
           border         =* [5px,solid,toTxt green]
           box-shadow     =: customBoxShadow 0 15 30 (-5) (toTxt black { alpha = 0.65 })
-
-          within @PlaceholderT do
-            filter_ =: blur(10px)
-
-      within @PlaceholderT do
-        top =: (-165)px
+        
+      within @Subarticles do
+        display =: none
 

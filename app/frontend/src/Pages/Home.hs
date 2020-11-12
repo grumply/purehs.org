@@ -1,4 +1,4 @@
-module Pages.Home (page,GradientT(..)) where
+module Pages.Home (page,Gradient(..)) where
 
 import qualified App
 import Components.Header (header)
@@ -14,34 +14,34 @@ import Prelude hiding (all,min,max)
 
 page :: App.App => View
 page =
-  Div <| Themed @HomeT |>
+  Div <| Themed @Home |>
     [ header HomeR
     , home
     ]
 
 home :: App.App => View
 home = 
-  Div <| Themed @ContentT |>
-    [ Div <| Themed @IntroT |>
-      [ Div <| Themed @HeroT |>
-        [ logo @HeroLogoT False False 
-        , H1 <| Themed @SloganT |>
+  Div <| Themed @Content |>
+    [ Div <| Themed @Intro |>
+      [ Div <| Themed @Hero |>
+        [ logo @HeroLogo False False 
+        , H1 <| Themed @Slogan |>
           [ "Dynamic Hierarchical Contexts" ]
-        , P <| Themed @DescriptionT |>
+        , P <| Themed @Description |>
           [ "Performance + Expressiveness + Asynchrony" ]
-        , Div <| Themed @CallToActionT |>
-          [ A <| prelink (PageR "about") . Themed @ButtonT . Themed @AboutPureT |>
+        , Div <| Themed @CallToAction |>
+          [ A <| prelink (PageR "about") . Themed @Button . Themed @AboutPure |>
             [ "About Pure.hs" ]
-          , A <| prelink (TutorialR "install") . Themed @ButtonT . Themed @GetPureT |>
+          , A <| prelink (TutorialR "install") . Themed @Button . Themed @GetPure |>
             [ "Get Pure.hs" ]
           ]
         ]
       ]
-    , Div <| Themed @GradientT
+    , Div <| Themed @Gradient
     ]
 
-data HomeT
-instance Theme HomeT where
+data Home
+instance Theme Home where
   theme c = void $ do
     is c .> do
       height =: (100%)
@@ -51,8 +51,8 @@ instance Theme HomeT where
         padding-top    =: 24px
         padding-bottom =: 48px
 
-data GradientT
-instance Theme GradientT where
+data Gradient
+instance Theme Gradient where
   theme c = do
     is c do
       position   =: absolute
@@ -99,8 +99,8 @@ instance Theme GradientT where
         opacity =: 0
 
 
-data ContentT
-instance Theme ContentT where
+data Content
+instance Theme Content where
   theme c = 
     is c do
       display         =: flex
@@ -108,8 +108,8 @@ instance Theme ContentT where
       justify-content =: center
       height          =: (100%)
 
-data IntroT
-instance Theme IntroT where
+data Intro
+instance Theme Intro where
   theme c = 
     is c do
       display     =: flex
@@ -122,8 +122,8 @@ instance Theme IntroT where
         margin-top =: 50px
 
 
-data HeroT
-instance Theme HeroT where
+data Hero
+instance Theme Hero where
   theme c = 
     is c do
       display        =: flex
@@ -133,15 +133,15 @@ instance Theme HeroT where
       font-weight    =: 200
       max-width      =: (100%)
 
-data HeroLogoT
-instance Theme HeroLogoT where
+data HeroLogo
+instance Theme HeroLogo where
   theme c =
     is c do
       margin =: auto
       width  =: 90vmin
 
-data SloganT
-instance Theme SloganT where
+data Slogan
+instance Theme Slogan where
   theme c =
     is c do
       margin-top      =: 8px
@@ -163,8 +163,8 @@ instance Theme SloganT where
       atMedia "(max-width: 48em)" do
         font-size =: 30px
 
-data DescriptionT
-instance Theme DescriptionT where
+data Description
+instance Theme Description where
   theme c =
     is c do
       display         =: inline-flex
@@ -176,8 +176,8 @@ instance Theme DescriptionT where
       atMedia "(max-width: 48em)" do
         font-size =: 22px
 
-data CallToActionT
-instance Theme CallToActionT where
+data CallToAction
+instance Theme CallToAction where
   theme c =
     is c do
       height          =: 50px
@@ -187,14 +187,14 @@ instance Theme CallToActionT where
       margin-top      =: 8px
       margin-bottom   =: 8px
 
-data AboutPureT
-instance Theme AboutPureT where
+data AboutPure
+instance Theme AboutPure where
   theme c = 
     is c do
       callToActionButtonStyles (toTxt green { brightness = 80 }) (toTxt base)
 
-data GetPureT
-instance Theme GetPureT where
+data GetPure
+instance Theme GetPure where
   theme c = 
     is c do
       callToActionButtonStyles (toTxt base) (toTxt lavender)

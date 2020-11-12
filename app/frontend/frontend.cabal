@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b4a02244829083c8b2641fdcf5e64d775ef3b8d587947f5d15ef62d349301ef7
+-- hash: a0ed8fac84f1dca8e5e4f591582d6a9846a485575b090a3d01237004be641a15
 
 name:           frontend
 version:        0.1.0.0
@@ -16,111 +16,39 @@ license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 
-library
-  exposed-modules:
-      App
-      Components.Article
-      Components.Author
-      Components.Avatar
-      Components.Breadcrumbs
-      Components.CopyToClipboard
-      Components.Editor
-      Components.Header
-      Components.Icons
-      Components.Listing
-      Components.Markdown
-      Components.Nav
-      Components.Preload
-      Components.Route
-      Components.Searcher
-      Components.Section
-      Components.Subtitle
-      Components.Tags
-      Components.Time
-      Components.Title
-      Data.Entity
-      Data.Placeholders
-      Data.Render
-      Data.Resource
-      Data.Route
-      Main
-      Pages.Author
-      Pages.Home
-      Pages.Package
-      Pages.Page
-      Pages.Post
-      Pages.Tutorial
-      Styles.Colors
-      Styles.Fonts
-      Styles.Responsive
-      Styles.Themes
-  hs-source-dirs:
-      src
-  default-extensions: AutoDeriveTypeable BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveDataTypeable DeriveFoldable DeriveFunctor DeriveGeneric DeriveTraversable DoAndIfThenElse EmptyCase EmptyDataDecls ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving ImplicitParams InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns OverloadedStrings PartialTypeSignatures PatternGuards PatternSynonyms PolyKinds RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators TypeSynonymInstances ViewPatterns TemplateHaskell PostfixOperators DerivingVia BlockArguments
-  ghc-options: -Wall -fno-warn-unused-do-bind -rtsopts -threaded 
-  ghcjs-options: -O -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=3000000 -DGHCJS_BUSY_YIELD=20
-  build-depends:
-      async
-    , base
-    , containers
-    , lens
-    , pure
-    , pure-css
-    , pure-elm
-    , pure-json
-    , pure-lifted
-    , pure-maybe
-    , pure-random-pcg
-    , pure-render
-    , pure-router
-    , pure-spinners
-    , pure-styles
-    , pure-svg
-    , pure-theme
-    , pure-time
-    , pure-try
-    , pure-txt
-    , pure-txt-interpolate
-    , pure-txt-search
-    , pure-uri
-    , pure-websocket
-    , shared
-  default-language: Haskell2010
-
 executable frontend
   main-is: Main.hs
   other-modules:
       App
-      Components.Article
+      Cache
       Components.Author
       Components.Avatar
       Components.Breadcrumbs
+      Components.Company
       Components.CopyToClipboard
+      Components.Description
       Components.Editor
+      Components.Email
+      Components.GitHubName
       Components.Header
       Components.Icons
-      Components.Listing
       Components.Markdown
       Components.Nav
       Components.Preload
-      Components.Route
+      Components.Published
       Components.Searcher
       Components.Section
       Components.Subtitle
       Components.Tags
-      Components.Time
       Components.Title
+      Components.Twitter
+      Components.Version
       Data.Entity
       Data.Placeholders
       Data.Render
       Data.Resource
       Data.Route
-      Pages.Author
       Pages.Home
-      Pages.Package
-      Pages.Page
-      Pages.Post
-      Pages.Tutorial
       Styles.Colors
       Styles.Fonts
       Styles.Responsive
@@ -130,7 +58,7 @@ executable frontend
       src
   default-extensions: AutoDeriveTypeable BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveDataTypeable DeriveFoldable DeriveFunctor DeriveGeneric DeriveTraversable DoAndIfThenElse EmptyCase EmptyDataDecls ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving ImplicitParams InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns OverloadedStrings PartialTypeSignatures PatternGuards PatternSynonyms PolyKinds RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators TypeSynonymInstances ViewPatterns TemplateHaskell PostfixOperators DerivingVia BlockArguments
   ghc-options: -Wall -fno-warn-unused-do-bind -rtsopts -threaded 
-  ghcjs-options: -O -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=3000000 -DGHCJS_BUSY_YIELD=20
+  ghcjs-options: -O1 -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=3000000 -DGHCJS_BUSY_YIELD=20
   build-depends:
       async
     , base

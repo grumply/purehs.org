@@ -2,7 +2,6 @@
 module Data.Entity where
 
 import qualified App
-import Components.Article
 import Components.CopyToClipboard
 import Data.Route
 
@@ -46,6 +45,7 @@ entities pn v (Module { name = m },ModuleContent (Rendered md)) =
          | otherwise                  -> ([],Entity Function i (EntityView vs) : es)
     extract continue v (vs,es) = continue (v:vs,es)
 
+linkEntities :: PackageName -> Types.Version -> ModuleName -> [View] -> [View]
 linkEntities pn v mn = go
   where
     go [] = []

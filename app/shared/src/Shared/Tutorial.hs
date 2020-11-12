@@ -44,10 +44,10 @@ data Tutorial format = Tutorial
   } deriving (Generic,ToJSON,FromJSON,Functor,Foldable,Search)
 
 instance Eq (Tutorial format) where
-  (==) = (==) `on` slug
+  (==) = (==) `on` (published &&& slug)
 
 instance Ord (Tutorial format) where
-  compare = compare `on` (series &&& episode &&& published)
+  compare = compare `on` (series &&& episode &&& published &&& slug)
 
 newtype TutorialContent content = TutorialContent content
   deriving (Functor,Foldable)

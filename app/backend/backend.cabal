@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 37d8dd82cd5c7df75fae9cce0c37358a4f7a833ddfea3aa8368796c1b4589450
+-- hash: b26916c6ab569d2ac9aa358ecc819573209bd8b1175cf4024159fc0c3f781fc3
 
 name:           backend
 version:        0.1.0.0
@@ -16,48 +16,6 @@ license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 
-library
-  exposed-modules:
-      Connection
-      Main
-      Services.Caches
-  hs-source-dirs:
-      src
-  default-extensions: AutoDeriveTypeable BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveDataTypeable DeriveFoldable DeriveFunctor DeriveGeneric DeriveTraversable DoAndIfThenElse EmptyCase EmptyDataDecls ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving ImplicitParams InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns OverloadedStrings PartialTypeSignatures PatternGuards PatternSynonyms PolyKinds RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators TypeSynonymInstances ViewPatterns TemplateHaskell PostfixOperators DerivingVia BlockArguments
-  ghc-options: -Wall -fno-warn-unused-do-bind -rtsopts -threaded 
-  ghcjs-options: -O -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=3000000 -DGHCJS_BUSY_YIELD=20
-  build-depends:
-      Glob
-    , base
-    , bytestring
-    , containers
-    , directory
-    , filepath
-    , http-types
-    , pandoc
-    , pure
-    , pure-cached
-    , pure-core
-    , pure-default
-    , pure-elm
-    , pure-json
-    , pure-render
-    , pure-server
-    , pure-tagsoup
-    , pure-time
-    , pure-try
-    , pure-txt
-    , pure-txt-interpolate
-    , pure-websocket
-    , shared
-    , text
-    , wai
-    , wai-app-static
-    , wai-extra
-    , warp
-    , yaml
-  default-language: Haskell2010
-
 executable backend
   main-is: Main.hs
   other-modules:
@@ -68,7 +26,7 @@ executable backend
       src
   default-extensions: AutoDeriveTypeable BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveDataTypeable DeriveFoldable DeriveFunctor DeriveGeneric DeriveTraversable DoAndIfThenElse EmptyCase EmptyDataDecls ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving ImplicitParams InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns OverloadedStrings PartialTypeSignatures PatternGuards PatternSynonyms PolyKinds RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators TypeSynonymInstances ViewPatterns TemplateHaskell PostfixOperators DerivingVia BlockArguments
   ghc-options: -Wall -fno-warn-unused-do-bind -rtsopts -threaded 
-  ghcjs-options: -O -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=3000000 -DGHCJS_BUSY_YIELD=20
+  ghcjs-options: -O1 -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=3000000 -DGHCJS_BUSY_YIELD=20
   build-depends:
       Glob
     , base

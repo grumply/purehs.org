@@ -5,13 +5,13 @@ import Styles.Colors
 import Styles.Fonts
 import Styles.Responsive
 
-import Pure.Elm hiding (selection,green,lavender,black,green,brightness,gray)
+import Pure.Elm hiding (App,selection,green,lavender,black,green,brightness,gray)
 import Pure.Spinners
 
 import Prelude hiding (or,max,min,reverse,any)
 
-data AppT
-instance Theme AppT where
+data App
+instance Theme App where
   theme c = do
     is c do 
       child (tag Div) do
@@ -58,8 +58,8 @@ instance Theme AppT where
     is (tag A) do
       text-decoration =: none
 
-data PageT
-instance Theme PageT where
+data Page
+instance Theme Page where
   theme c =
     is c do
       height =: (100%)
@@ -74,8 +74,8 @@ instance Theme PageT where
         margin-right   =: auto
         padding-bottom =: 10px
 
-data WithHeaderT
-instance Theme WithHeaderT where
+data WithHeader
+instance Theme WithHeader where
   theme c =
     is c do
       padding-top =: 40px
@@ -88,11 +88,11 @@ instance Theme WithHeaderT where
           padding-bottom =: 1px
     
 
-data HideT
-instance Theme HideT where
+data Hide
+instance Theme Hide where
   theme c =
     is c do
-      has (subtheme @MoreT) do
+      has (subtheme @More) do
         display =: none
 
       has ".hide" do
@@ -100,11 +100,11 @@ instance Theme HideT where
 
         -- display any .more elements iff there is a .hide 
         -- element before it at the same level
-        nexts (subtheme @MoreT) do
+        nexts (subtheme @More) do
           display =: initial
 
-data UnhideT
-instance Theme UnhideT where
+data Unhide
+instance Theme Unhide where
   theme c =
     is c do
       -- double up for precedence
@@ -112,11 +112,11 @@ instance Theme UnhideT where
         has ".hide" do
           display =: initial
 
-          nexts (subtheme @MoreT) do
+          nexts (subtheme @More) do
             display =: none
 
-data MoreT
-instance Theme MoreT where
+data More
+instance Theme More where
   theme c =
     is c do
 
@@ -143,8 +143,8 @@ instance Theme MoreT where
             color =: toTxt green
             background =: none
 
-data HiddenMediumT
-instance Theme HiddenMediumT where
+data HiddenMedium
+instance Theme HiddenMedium where
   theme c =
     is c do
       display =: none
@@ -152,24 +152,22 @@ instance Theme HiddenMediumT where
       largeScreens <%> do
         display =: block
 
-data LoadingT
-instance Theme LoadingT where
-  theme c = is c $ return ()
+data Loading
+instance Theme Loading 
 
-data FailedT
-instance Theme FailedT where
-  theme c = is c $ return ()
+data Failed
+instance Theme Failed 
 
 page :: View -> View
-page c = Div <| Themed @PageT |> [ c ]
+page c = Div <| Themed @Page |> [ c ]
 
 withHeader :: View -> View -> View
 withHeader h c = 
-  Div <| Themed @WithHeaderT |> 
+  Div <| Themed @WithHeader |> 
     [ h , c ]
 
-data ErrorT
-instance Theme ErrorT where
+data Error
+instance Theme Error where
   theme c =
     is c do
       width  =: (90%)
@@ -215,7 +213,7 @@ instance Theme ErrorT where
 problems :: Txt -> View -> View
 problems nm c =
     Div <||>
-      [ Div <| Themed @ErrorT |>
+      [ Div <| Themed @Error |>
         [ Header <||>
           [ H1 <||> [ fromTxt (nm <> " not found.") ]
           , H2 <||> [ "We couldn't find what you were looking for." ]
@@ -237,7 +235,7 @@ notFound nm = problems nm $ Div <||>
 emptyList :: View -> View -> View
 emptyList h1 h2 = 
   Div <||>
-    [ Div <| Themed @ErrorT |>
+    [ Div <| Themed @Error |>
       [ Header <||> 
         [ H1 <||> [ h1 ]
         , H2 <||> [ h2 ]
@@ -250,8 +248,8 @@ loading :: View
 loading = 
     View (ChasingDots :: ChasingDots 2000 40 40 40 "#333")
 
-data ButtonT
-instance Theme ButtonT where
+data Button
+instance Theme Button where
   theme c = is c do
     display          =: inline-block
     margin           =* [0px,16px]
@@ -266,21 +264,40 @@ instance Theme ButtonT where
     text-decoration  =: none
     white-space      =: nowrap
 
-data PlaceholderT
-instance Theme PlaceholderT
-
-data LatestT
-instance Theme LatestT
-data VersionT
-instance Theme VersionT
-data VersionsT
-instance Theme VersionsT where
+data Placeholder
+instance Theme Placeholder where
   theme c =
     is c do
-      has (subtheme @VersionT) do
+      important do
+        pointer-events =: none
+        filter_        =: blur(12px)
+
+data Load
+instance Theme Load where
+  theme c = do
+    is c do
+      animation =* ["focus",300ms]
+
+    atKeyframes "focus" do
+      has from do
+        opacity =: 0
+        filter_ =: blur(8px)
+      has to do
+        filter_ =: none
+        opacity =: 1
+
+data Latest
+instance Theme Latest
+data Version
+instance Theme Version
+data Versions
+instance Theme Versions where
+  theme c =
+    is c do
+      has (subtheme @Version) do
         color =: toTxt gray
 
-        at @LatestT do 
+        at @Latest do 
           color =: toTxt black
      
         hover do
@@ -289,22 +306,17 @@ instance Theme VersionsT where
           visited do
             color =: toTxt green
 
-            at @LatestT do
+            at @Latest do
               color =: toTxt green
 
         visited do
           color =: toTxt gray
 
-          at @LatestT do 
+          at @Latest do 
             color =: toTxt black
-      
-      within @PlaceholderT do
-        has (tag A) do
-          pointer-events =: none
-          filter_ =: blur(8px)
 
-data HeaderT
-instance Theme HeaderT where
+data Header
+instance Theme Header where
   theme c =
     is c do
       text-align =: center
@@ -320,10 +332,6 @@ instance Theme HeaderT where
 
       hugeScreens <%> do
         width =: 900px
-        
-      within @PlaceholderT do
-        pointer-events =: none
-        filter_        =: blur(12px)
 
 data SectionTitleT
 instance Theme SectionTitleT where
@@ -334,10 +342,6 @@ instance Theme SectionTitleT where
       font-weight =: 400
       color =: toTxt base
 
-      within @PlaceholderT do
-        pointer-events =: none
-        filter_ =: blur(10px)
-
 buttonBoxShadow :: Int -> Int -> Txt -> Int -> Int -> Txt -> Txt
 buttonBoxShadow vOff blr clr vOff' blr' clr' =
   customBoxShadow 0 vOff blr 0 clr <> ", " <>
@@ -347,8 +351,8 @@ customBoxShadow :: Int -> Int -> Int -> Int -> Txt -> Txt
 customBoxShadow hOff vOff blr spread clr = 
   pxs hOff <<>> pxs vOff <<>> pxs blr <<>> pxs spread <<>> clr
 
-data PageHeaderT
-instance Theme PageHeaderT where
+data PageHeader
+instance Theme PageHeader where
   theme c =
     is c do
       font-size       =: 18px
@@ -410,4 +414,135 @@ instance Theme PageHeaderT where
 
           visited do
             color =: toTxt gray
-    
+
+data Article
+instance Theme Article where
+  theme c =
+    is c do
+      width       =: (100%)
+      padding     =* [60px,30px]
+      padding-top =: 110px
+      margin      =* [0,auto,100px]
+      background  =: hex 0xfff
+      border      =* [1px,solid,hex 0xeaecee]
+      position    =: relative
+      width       =: (100%)
+      max-width   =: (100%)
+
+      mediumScreens <%> do
+        width =: 700px
+
+      largeScreens <%> do
+        width =: 800px
+
+      hugeScreens <%> do
+        width =: 900px
+
+      has ".drop" do
+        firstOfType do 
+          firstLetter do
+            font-family  =: serifFont
+            font-size    =: 4em
+            font-weight  =: 400
+            margin-top   =: 0.2em
+            margin-right =: 0.15em
+            float        =: left
+            color        =: toTxt lavender
+
+      next (subtheme @Subarticles) do
+        margin-top =: (-70)px
+
+data Subarticles
+instance Theme Subarticles where
+  theme c =
+    is c do
+      padding-bottom =: 30px
+
+      child (tag H2) do
+        font-family =: titleFont
+        font-size   =: 2.5em
+        font-weight =: 400
+        color       =: toTxt base { brightness = 45 }
+        text-align  =: center
+
+      has (tag Article) do
+        padding-top    =: 60px
+        margin-bottom =: 50px
+
+      has (subtheme @Article) do
+        padding =* [30px,30px]
+
+data Listing
+instance Theme Listing where
+  theme c = void $ 
+    is c $ do
+      font-size =: 18px
+      margin      =* [0,auto]
+      width       =: (100%)
+      width       =: (100%)
+      max-width   =: (100%)
+
+      mediumScreens <%> do
+        width =: 700px
+
+      largeScreens <%> do
+        width =: 800px
+
+      hugeScreens <%> do
+        width =: 900px
+
+      child (tag Div) do
+        display =: flex
+        justify-content =: space-between
+
+      child (tag P) do
+        font-family   =: defaultFont
+        font-size     =: 18px
+        color         =: toTxt black
+        margin-top    =: 8px
+        margin-bottom =: 0
+
+data Divided
+instance Theme Divided where
+  theme c =
+    is c do
+      isn't ":last-of-type" do
+        border-bottom =* [1px,solid,toTxt (faded gray)]
+        margin =* [15px,auto]
+        padding-bottom =: 30px
+
+      is ":last-of-type" do
+        padding-bottom =: 80px
+
+data Searcher
+instance Theme Searcher where
+  theme c =
+    is c do
+      margin-top =: (-60)px
+
+      smallScreens <%> do
+        margin-top =: 0
+
+      has (tag Input) do
+        display       =: block
+        margin        =* [30px,auto]
+        font-size     =: 24px
+        margin-top    =: 24px
+        margin-bottom =: 24px
+        border-radius =: 8px
+        border        =* [1px,solid,hex 0xeee]
+        outline       =: none
+        line-height   =: 1.2
+        padding       =: 10px
+        width         =: (100%)
+        margin-top    =: (-10)px
+        margin-bottom =: 60px
+
+        mediumScreens <%> do
+          width =: 700px
+
+        largeScreens <%> do
+          width =: 800px
+
+        hugeScreens <%> do
+          width =: 900px

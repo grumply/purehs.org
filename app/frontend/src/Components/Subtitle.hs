@@ -1,25 +1,16 @@
 module Components.Subtitle where
 
-import Data.Render
+import Shared.Types as Types ( Subtitle )
 
-import qualified Shared.Types as Types
-
-import Styles.Colors
-import Styles.Fonts
-import Styles.Themes
+import Styles.Colors ( base )
+import Styles.Fonts ( titleFont )
 
 import Pure.Elm
 
-data Subtitle = Subtitle (Maybe Types.Subtitle)
-
-instance Render Subtitle where
-  render (Subtitle subtitle)
-    | Just sub <- subtitle = 
-      H2 <| Themed @SubtitleT |> 
-        [ txt sub ]
-
-    | otherwise = 
-      Null
+subtitle :: Maybe Subtitle -> View
+subtitle = maybe Null sub
+  where
+    sub s = H2 <| Themed @SubtitleT |> [ txt s ]
 
 data SubtitleT
 instance Theme SubtitleT where
@@ -29,7 +20,3 @@ instance Theme SubtitleT where
       font-size   =: 1.3em
       font-weight =: 400
       color       =: toTxt base
-      
-      within @PlaceholderT do
-        pointer-events =: none
-        filter_        =: blur(12px)

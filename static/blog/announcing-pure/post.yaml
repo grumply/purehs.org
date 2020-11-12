@@ -3,9 +3,9 @@ slug: announcing-pure
 published: 2020-04-30
 authors:
   - Sean Hickman
-editors: []
 tags:
   - pure.hs
+packages: []
 short: |
   Announcing the first release of Pure.hs
 description: |

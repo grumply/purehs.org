@@ -192,7 +192,7 @@ aboutMenu ses =
           [ H2 <||> [ "From the blog" ] 
           , -- Pull most recent so it's programatically updated; 
             -- I don't want to be manually updating this
-            producing @[Post Rendered] (App.req ses Shared.listPosts () >>= either pure wait) $ consuming $ \ps ->
+            producing @[Post Rendered] (App.req Shared.backend Shared.listPosts ()) $ consuming $ \ps ->
               Ul <||> 
                 [ Li <||>
                   [ A <| prelink (PostR slug) |>
@@ -241,9 +241,8 @@ documentationMenu ses =
         [ H2 <||> [ "Newest Packages" ] 
         , let 
             rq = do
-              r <- App.req ses Shared.listPackages () 
+              ps <- App.req Shared.backend Shared.listPackages () 
               s <- newSeed
-              ps <- either pure wait r
               let pub Package {..} = published
               pure (List.take 3 $ List.sortBy (flip compare `on` pub) ps)
           in producing @[Package] rq $ consuming $ \ps ->
@@ -274,10 +273,10 @@ tutorialsMenu ses =
           [ H2 <||> [ "Featured Tutorials" ] 
           , let 
               rq = do
-                r <- App.req ses Shared.listTutorials () 
+                r <- App.req Shared.backend Shared.listTutorials () 
                 s <- newSeed
                 let notEpisode Tutorial {..} = isNothing episode
-                ts <- List.filter notEpisode <$> either pure wait r
+                let ts = List.filter notEpisode r
                 pure (List.take 4 $ List.cycle $ shuffle ts s)
             in producing @[Tutorial Rendered] rq $ consuming $ \ts ->
                 Ul <||> 

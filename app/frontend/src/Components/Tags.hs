@@ -1,8 +1,5 @@
 module Components.Tags where
 
-import Data.Render
-import Data.Route
-
 import Shared.Types (Tags(..),Tag(..))
 
 import Styles.Colors
@@ -11,30 +8,27 @@ import Styles.Themes
 
 import Pure.Elm.Application hiding (render,black,brightness,gray,green,lavender)
 
-import GHC.Exts (IsList(..))
+tags :: Tags -> View
+tags (Tags ts) = 
+  P <| Themed @Tags |>
+    [ Span <| Cursor "default" |> [ txt t ]
+    | Tag t <- ts
+    ]
 
-instance Render Tags where
-  render ts = 
-    P <| Themed @TagsT |>
-      [ Span <| Cursor "default" |> [ txt t ]
-      | Tag t <- toList ts
-      ]
+data TagLinks = TagLinks Tags (Txt -> IO ())
 
-instance Render (Tags,Txt -> IO()) where
-  render (ts,searcher) =
-    P <| Themed @TagsT |>
-      [ Span <| OnClick (\_ -> searcher t) . Cursor pointer |> [ txt t ]
-      | Tag t <- toList ts
-      ]
+searchableTags :: Tags -> (Txt -> IO ()) -> View
+searchableTags (Tags ts) searcher =
+  P <| Themed @Tags |>
+    [ Span <| OnClick (\_ -> searcher t) . Cursor pointer |> [ txt t ]
+    | Tag t <- ts
+    ]
 
-data TagsT
-instance Theme TagsT where
+instance Theme Tags where
   theme c =
     is c do
-      line-height =: 2.5
-
       has (tag Span) do
-        line-height      =: 1.3
+        line-height      =: 1.1
         display          =: inline-block
         font-family      =: titleFont
         background-color =: toTxt (faded green)
@@ -44,11 +38,9 @@ instance Theme TagsT where
         border-radius    =: 7px
         padding          =* [4px,8px]
         margin-right     =: 16px
-      
-        within @PlaceholderT do
-          color       =: transparent
-          text-shadow =* [0,0,10px,rgba(0,0,0,0.5)]
-          border      =: none
 
       lastChild do
         margin-right =: 0
+
+      within @Divided do
+        margin =* [15px,0px,20px,10px]

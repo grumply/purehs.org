@@ -5,6 +5,7 @@ import Shared.Types
   ( Title
   , Subtitle
   , Episode
+  , Series
   , Slug
   , Published
   , Edited
@@ -12,6 +13,7 @@ import Shared.Types
   , Editors
   , Tags
   , Excerpt
+  , Packages
   , Description
   , Short
   )
@@ -29,16 +31,19 @@ data Post format = Post
   { title :: Title
   , subtitle :: Maybe Subtitle
   , slug :: Slug
+  , episode :: Maybe Episode
+  , series :: Maybe Series
   , published :: Published
   , authors :: Authors
   , tags :: Tags
+  , packages :: Packages
   , short :: Short
   , description :: Description
   , excerpt :: Excerpt format
   } deriving (Generic,ToJSON,FromJSON,Functor,Foldable,Search)
 
 instance Ord (Post format) where
-  compare = compare `on` (published &&& slug)
+  compare = compare `on` (series &&& episode &&& published &&& slug)
 
 instance Eq (Post format) where
   (==) = (==) `on` (published &&& slug)

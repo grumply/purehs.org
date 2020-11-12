@@ -3,10 +3,10 @@ slug: announcing-try
 published: 2020-04-30
 authors:
   - Sean Hickman
-editors: []
 tags:
   - pure.hs
   - try
+packages: []
 short: |
   Announcing the try.purehs.org in-browser editor
 description: |

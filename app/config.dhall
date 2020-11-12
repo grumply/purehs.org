@@ -33,7 +33,7 @@ let package = \(pkg : PackageConfiguration) ->
       , email = authorEmail
       , license = "BSD3"
       , ghc-options = "-Wall -fno-warn-unused-do-bind -rtsopts -threaded "
-      , ghcjs-options = "-O -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=3000000 -DGHCJS_BUSY_YIELD=20"
+      , ghcjs-options = "-O1 -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=3000000 -DGHCJS_BUSY_YIELD=20"
       , default-extensions = extensions
       }
 in

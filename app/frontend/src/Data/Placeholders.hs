@@ -120,7 +120,9 @@ placeholderPageView = Page
 
 placeholderPageContentView :: PageContent Rendered
 placeholderPageContentView = PageContent $ fromList
-  [ P <||> [ fromTxt lorem_ipsum ] ]
+  [ H1 <||> [ "Page Title" ]
+  , P <||> [ fromTxt lorem_ipsum ] 
+  ]
 
 lorem_ipsum :: FromTxt a => a
 lorem_ipsum = fromTxt "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nec risus turpis. Cras quis sodales nunc. Morbi felis est, suscipit quis faucibus sed, porta ut velit. Integer suscipit tellus id laoreet aliquet. Sed condimentum, elit vel consequat semper, tellus neque consectetur nunc, ut vehicula nisi orci ut arcu. Suspendisse ultrices, lectus vitae varius interdum, ex velit laoreet mauris, non placerat lectus elit a nunc. Aliquam sit amet lacinia dolor. Duis auctor quis sem nec tincidunt tellus."

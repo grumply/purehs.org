@@ -5,4 +5,3 @@ packages:
   app/backend/
   app/frontend/
   app/shared/
-  app/test/

@@ -41,9 +41,9 @@ name: <display name>
 [email]: <email>
 [company]: <company>
 description: |
-  A short description to use in page description. <160 character max>
+  A short description only used in page description. <160 character max>
 excerpt: |
-  A markdown excerpt from the author's bio.
+  A markdown excerpt from the author's bio. 
 ```
 
 #### Page directory structure
@@ -61,7 +61,7 @@ pages/
 # page.yaml
 slug : <slug>
 description: |
-  A short description to use in page description. <160 character max>
+  A short description only used in page description. <160 character max>
 ```
 
 #### Blog directory structure
@@ -81,6 +81,8 @@ blog/
 title: <title>
 [subtitle]: <subtitle>
 slug: <slug>
+[series]: <series name>
+[episode]: <episode number; if series introduction, omit>
 published: <ISO 8601>
 authors:
   - author1
@@ -88,11 +90,18 @@ authors:
 tags:
   - tag1
   - tag2
+[packages]:
+  - package1
+  - package2
 short: Short post description. Used in the dropdown menu. <50 character max>
 description: |
-  A short description to use in page description. <160 character max>
+  Post description. Used only in page meta description. <160 character max; meta>
 excerpt: |
-  A post excerpt in markdown for display in post lists. Best kept short and compelling.
+  A post excerpt in markdown for display in lists. Best kept short and compelling. 
+  
+  Should answer the questions for the reader:
+
+    * What's the gist?
 ```
 
 #### Tutorials directory structure
@@ -112,7 +121,7 @@ title: <title>
 [subtitle]: <subtitle>
 slug: <slug>
 [series]: <series name>
-[episode]: <episode number>
+[episode]: <episode number; if series introduction, omit>
 published: <ISO 8601>
 authors:
   - author1
@@ -124,9 +133,14 @@ tags:
   - package1
   - package2
 short: Short tutorial description. Used in the dropdown menu. <50 character max> 
-description: Tutorial description. Used in page meta description. <160 character max>
+description: Tutorial description. Used only in page meta description. <160 character max; meta>
 excerpt: |
-  A tutorial excerpt in markdown for display in lists. Best kept short and compelling.
+  A tutorial excerpt in markdown for display in lists. Best kept short and compelling. 
+  
+  Should answer the questions for the reader:
+
+    * How can this tutorial help me?
+    * What's the gist?
 ```
 
 #### Packages directory structure
@@ -169,10 +183,17 @@ tags:
   - tag1
   - tag2
 short: A bite-sized package description. Used in the dropdown menu. <50 character max>
-description: Package description. Used in page meta description. <160 character max>
-excerpt: |
-  Short markdown description used in listings. Best kept short; doesn't need impetus or purpose, only capability.
+description: Package description. Used only in page meta description. <160 character max; meta>
 ```
+
+##### package.md
+
+This file should inform the reader if this is the package they're looking for and a quick overview of how to use it within a couple of minutes. This will appear on the package's main page, above versions.
+
+This answers the questions: 
+
+  * Does this package implement a solution to my problem?
+  * How does it work, simply?
 
 ##### version.yaml
 
@@ -180,7 +201,7 @@ excerpt: |
 # version.yaml
 version: <version>
 changes: |
-  Important version-specific changes and examples in markdown.
+  Important version-specific changes. 
 ```
 
 ##### module.yaml
@@ -189,9 +210,18 @@ changes: |
 # module.yaml
 name: <module name>
 description: |
-  A short description to use in page description. <160 character max>
+  A short description to use in page description. <160 character max; meta>
 excerpt: |
-  A module excerpt in markdown to be shown in lists of modules. General descriptive information goes here; explain the purpose of the module and maybe what, in general, it exports.
+  A module excerpt in markdown to be shown in lists of modules. 
+  
+  General descriptive information: explain the purpose of the module and maybe what, in general, it exports. 
+  
+  Someone looking for documentation is looking for one of two things at this point: 
+
+      * Is this the module for which I'm looking for documentation?
+      * What does this module do?
+
+  The first question is answered, simply, by the module name. The second question should be answered by the excerpt.
 ```
 
 ##### module.md
@@ -202,4 +232,6 @@ Module markdown format is:
 * Code highlighting with click-to-copy is supported in fenced code blocks
 * Inline live editors are supported when code is wrapped in ```<pre data-try></pre>```. The backend will guarantee that such code is compiled and results are cached.
 * Content wrapped in a ```<div class="hide">``` tag will be hidden in module pages, but not in entity pages.
+* Content wrapped in ```<div class="info">``` tag will display in a blue info box.
+* Content wrapped in ```<div class="warn">``` tag will display in a red warning box.
 

@@ -36,10 +36,6 @@ let deps =
 in
   backend //
     { dependencies = deps
-    , library = 
-        { source-dirs = ["src"]
-        , other-modules = [] : List Text
-        }
     , executables =
         { backend =
           { source-dirs = [ "src" ]

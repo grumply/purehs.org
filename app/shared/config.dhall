@@ -25,7 +25,7 @@ in
   shared //
     { dependencies = deps
     , library = 
-        { source-dirs = ["src " ]
+        { source-dirs = ["src"]
         , other-modules = [] : List Text
         }
     }

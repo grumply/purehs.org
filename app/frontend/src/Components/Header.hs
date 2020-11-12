@@ -1,4 +1,4 @@
-module Components.Header where
+module Components.Header ( header, bar ) where
 
 import qualified App
 import Components.Icons ( gitHubLink, logo )
@@ -7,11 +7,10 @@ import Data.Route ( Route(..) )
 import Styles.Responsive ( mediumScreens, largeScreens, hugeScreens, (<%>) )
 import Styles.Colors ( lavender )
 
-import Pure.Data.SVG (pattern Svg)
-import Pure.Elm hiding (nav,lavender)
-import qualified Pure.Elm as Pure
+import Pure.Data.SVG ( pattern Svg )
+import Pure.Elm hiding ( nav, lavender )
 
-import Prelude hiding (max)
+import Prelude hiding ( max )
 
 {-# NOINLINE header #-}
 header :: App.App => Route -> View

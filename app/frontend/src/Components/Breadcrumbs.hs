@@ -1,9 +1,9 @@
 module Components.Breadcrumbs (breadcrumbs,sublinks) where
 
 import qualified App
-import Components.Preload
+import Components.Preload ( prelink )
 import Data.Route as Route
-import Styles.Responsive
+import Styles.Responsive ( largeScreens, (<%>) )
 
 import Pure.Elm.Application
 

@@ -1,5 +1,5 @@
 {-# language CPP #-}
-module Components.CopyToClipboard where
+module Components.CopyToClipboard (processCopyable,copyable) where
 
 import Pure.Elm
 import Pure.Data.SVG (pattern Svg)

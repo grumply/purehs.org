@@ -1,0 +1,17 @@
+name: pure-intersection
+author: Sean Hickman
+latest: 0.8.0.0
+published: 2020-11-08
+license: BSD3
+repository: github.com/grumply/pure-intersection.git
+homepage: purehs.org/packages/pure-intersection
+collaborators: []
+tags:
+  - intersection
+  - observer
+  - lazy
+  - scroll
+short: |
+  Wrapper around Intersection Observers
+description: |
+  A simple wrapper around the IntersectionObserver API for delayed effects with intersection- and visibility-based events.

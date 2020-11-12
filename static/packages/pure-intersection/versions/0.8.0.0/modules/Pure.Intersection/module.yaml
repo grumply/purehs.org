@@ -1,0 +1,5 @@
+name: Pure.Intersection
+description: |
+  The [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) component.
+excerpt: |
+  A single-module wrapper around the [IntersectionObserver API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API).
