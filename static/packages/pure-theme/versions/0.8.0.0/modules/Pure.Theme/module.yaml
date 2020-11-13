@@ -1,0 +1,5 @@
+name: Pure.Theme
+description: |
+  Tools for managing themes and their associated styles.
+excerpt: |
+  Along with [pure-styles](/packages/pure-styles/latest) and [pure-css](/packages/pure-css/latest), enables a powerful theming abstraction with the full weight of Haskell, allowing for complex, configurable, and dynamically generated CSS.

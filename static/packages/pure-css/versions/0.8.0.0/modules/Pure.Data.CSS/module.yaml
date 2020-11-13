@@ -1,0 +1,5 @@
+name: Pure.Data.CSS
+description: |
+  An embedded domain-specific language for CSS styling.
+excerpt: |
+  Along with [pure-styles](/packages/pure-styles/latest) and [pure-theme](/packages/pure-theme/latest), enables a powerful CSS abstraction with the full weight of Haskell, allowing for complex, configurable, and dynamically generated CSS.

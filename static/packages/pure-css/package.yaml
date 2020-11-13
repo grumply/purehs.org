@@ -1,0 +1,15 @@
+name: pure-css
+author: Sean Hickman
+latest: 0.8.0.0
+published: 2020-10-28
+license: BSD3
+repository: github.com/grumply/pure-css.git
+homepage: purehs.org/packages/pure-css
+collaborators: []
+tags:
+  - core
+  - css
+short: |
+  CSS in Pure.hs
+description: |
+  A library of rich combinators composing an embedded CSS domain-specific language. 

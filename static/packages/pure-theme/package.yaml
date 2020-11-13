@@ -1,0 +1,16 @@
+name: pure-theme
+author: Sean Hickman
+latest: 0.8.0.0
+published: 2020-11-13
+license: BSD3
+repository: github.com/grumply/pure-theme.git
+homepage: purehs.org/packages/pure-theme
+collaborators: []
+tags:
+  - core
+  - css
+  - theme
+short: |
+  Theming in Pure.hs
+description: |
+  A library implementing a technique for automatically generating theme styles on-demand. 
