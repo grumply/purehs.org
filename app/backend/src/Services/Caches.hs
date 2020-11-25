@@ -138,7 +138,7 @@ scope = case getCallStack callStack of
 {-# NOINLINE authors #-}
 authors :: Cached (Map Name (Author Rendered,AuthorContent Rendered))
 authors = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     build <$>
       loadAuthors
   where
@@ -158,42 +158,42 @@ authors = unsafePerformIO $
 {-# NOINLINE rawAuthors #-}
 rawAuthors :: Cached (Map Name BSL.ByteString)
 rawAuthors = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap (encodeBS . fst) <$> 
       cached Services.Caches.authors
 
 {-# NOINLINE authorsList #-}
 authorsList :: Cached [Author Rendered]
 authorsList = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap fst . Map.elems <$> 
       cached Services.Caches.authors
 
 {-# NOINLINE rawAuthorsList #-}
 rawAuthorsList :: Cached BSL.ByteString
 rawAuthorsList = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     encodeBS <$> 
       cached authorsList
 
 {-# NOINLINE authorsContent #-}
 authorsContent :: Cached (Map Name (AuthorContent Rendered))
 authorsContent = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap snd <$> 
       cached Services.Caches.authors
 
 {-# NOINLINE rawAuthorsContent #-}
 rawAuthorsContent :: Cached (Map Name BSL.ByteString)
 rawAuthorsContent = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap encodeBS <$> 
       cached authorsContent
 
 {-# NOINLINE authorPosts #-}
 authorPosts :: Cached (Map Name [Post Rendered])
 authorPosts = unsafePerformIO $
-  debugForkCache $
+  forkCache epoch $
     fmap rebuild (cached posts)
   where
     rebuild :: Map Slug (Post Rendered,PostContent Rendered) -> Map Name [Post Rendered]
@@ -202,14 +202,14 @@ authorPosts = unsafePerformIO $
 {-# NOINLINE rawAuthorPosts #-}
 rawAuthorPosts :: Cached (Map Name BSL.ByteString)
 rawAuthorPosts = unsafePerformIO $
-  debugForkCache $
+  forkCache epoch $
     fmap encodeBS <$>
       cached authorPosts
 
 {-# NOINLINE authorTutorials #-}
 authorTutorials :: Cached (Map Name [Tutorial Rendered])
 authorTutorials = unsafePerformIO $
-  debugForkCache $
+  forkCache epoch $
     fmap rebuild (cached tutorials)
   where
     rebuild :: Map Slug (Tutorial Rendered,TutorialContent Rendered) -> Map Name [Tutorial Rendered]
@@ -218,14 +218,14 @@ authorTutorials = unsafePerformIO $
 {-# NOINLINE rawAuthorTutorials #-}
 rawAuthorTutorials :: Cached (Map Name BSL.ByteString)
 rawAuthorTutorials = unsafePerformIO $
-  debugForkCache $
+  forkCache epoch $
     fmap encodeBS <$>
       cached authorTutorials
 
 {-# NOINLINE pages #-}
 pages :: Cached (Map Slug (Page,PageContent Rendered))
 pages = unsafePerformIO $ 
-  debugForkCache $ do
+  forkCache epoch $ do
     fmap build loadPages
   where
     build = Map.fromList . fmap process
@@ -247,42 +247,42 @@ pages = unsafePerformIO $
 {-# NOINLINE rawPages #-}
 rawPages :: Cached (Map Slug BSL.ByteString)
 rawPages = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap (encodeBS . fst) <$> 
       cached pages
 
 {-# NOINLINE pagesList #-}
 pagesList :: Cached [Page]
 pagesList = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap fst . Map.elems <$> 
       cached pages
 
 {-# NOINLINE rawPagesList #-}
 rawPagesList :: Cached BSL.ByteString
 rawPagesList = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     encodeBS <$> 
       cached pagesList
 
 {-# NOINLINE pagesContent #-}
 pagesContent :: Cached (Map Slug (PageContent Rendered))
 pagesContent = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap snd <$> 
       cached pages
 
 {-# NOINLINE rawPagesContent #-}
 rawPagesContent :: Cached (Map Slug BSL.ByteString)
 rawPagesContent = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap encodeBS <$> 
       cached pagesContent
 
 {-# NOINLINE posts #-}
 posts :: Cached (Map Slug (Post Rendered,PostContent Rendered))
 posts = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     build <$>
       loadPosts
   where
@@ -307,42 +307,42 @@ posts = unsafePerformIO $
 {-# NOINLINE rawPosts #-}
 rawPosts :: Cached (Map Slug BSL.ByteString)
 rawPosts = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap (encodeBS . fst) <$> 
       cached posts
 
 {-# NOINLINE postsList #-}
 postsList :: Cached [Post Rendered]
 postsList =
-  unsafePerformIO $ debugForkCache $
+  unsafePerformIO $ forkCache epoch $
     fmap fst . Map.elems <$> 
       cached posts
 
 {-# NOINLINE rawPostsList #-}
 rawPostsList :: Cached BSL.ByteString
 rawPostsList = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     encodeBS <$> 
       cached postsList 
 
 {-# NOINLINE postsContent #-}
 postsContent :: Cached (Map Slug (PostContent Rendered))
 postsContent = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap snd <$> 
       cached posts
 
 {-# NOINLINE rawPostsContent #-}
 rawPostsContent :: Cached (Map Slug BSL.ByteString)
 rawPostsContent = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap encodeBS <$> 
       cached postsContent
 
 {-# NOINLINE tutorials #-}
 tutorials :: Cached (Map Slug (Tutorial Rendered,TutorialContent Rendered))
 tutorials = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     build <$> 
       loadTutorials
   where
@@ -365,35 +365,35 @@ tutorials = unsafePerformIO $
 {-# NOINLINE rawTutorials #-}
 rawTutorials :: Cached (Map Slug BSL.ByteString)
 rawTutorials = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap (encodeBS . fst) <$> 
       cached tutorials
 
 {-# NOINLINE rawTutorialsList #-}
 rawTutorialsList :: Cached BSL.ByteString
 rawTutorialsList = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     encodeBS . fmap fst . Map.elems <$> 
       cached tutorials
 
 {-# NOINLINE tutorialsContent #-}
 tutorialsContent :: Cached (Map Slug (TutorialContent Rendered))
 tutorialsContent = unsafePerformIO $
-  debugForkCache $
+  forkCache epoch $
     fmap snd <$>
       cached tutorials
 
 {-# NOINLINE rawTutorialsContent #-}
 rawTutorialsContent :: Cached (Map Slug BSL.ByteString)
 rawTutorialsContent = unsafePerformIO $
-  debugForkCache $
+  forkCache epoch $
     fmap encodeBS <$>
       cached tutorialsContent
 
 {-# NOINLINE packages #-}
 packages :: Cached (Map PackageName (Package,PackageContent Rendered))
 packages = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap build loadPackages
   where
     build = Map.fromList . fmap process
@@ -412,35 +412,35 @@ packages = unsafePerformIO $
 {-# NOINLINE rawPackages #-}
 rawPackages :: Cached (Map PackageName BSL.ByteString)
 rawPackages = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap (encodeBS . fst) <$> 
       cached Services.Caches.packages
 
 {-# NOINLINE rawPackageContents #-}
 rawPackageContents :: Cached (Map PackageName BSL.ByteString)
 rawPackageContents = unsafePerformIO $
-  debugForkCache $
+  forkCache epoch $
     fmap (encodeBS . snd) <$>
       cached Services.Caches.packages
 
 {-# NOINLINE packagesList #-}
 packagesList :: Cached [Package]
 packagesList = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     (fmap fst . Map.elems) <$> 
       cached Services.Caches.packages
 
 {-# NOINLINE rawPackagesList #-}
 rawPackagesList :: Cached BSL.ByteString
 rawPackagesList = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     encodeBS <$> 
       cached packagesList
 
 {-# NOINLINE authorPackages #-}
 authorPackages :: Cached (Map Name [Package])
 authorPackages = unsafePerformIO $ 
-  debugForkCache $ do
+  forkCache epoch $ do
     as :: [Author Rendered] <- cached authorsList
     ps :: Map PackageName (Package,PackageContent Rendered) <- cached Services.Caches.packages
     aps <- for as $ \a -> 
@@ -451,14 +451,14 @@ authorPackages = unsafePerformIO $
 {-# NOINLINE rawAuthorPackages #-}
 rawAuthorPackages :: Cached (Map Name BSL.ByteString)
 rawAuthorPackages = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap encodeBS <$> 
       cached authorPackages
 
 {-# NOINLINE packageVersions #-}
 packageVersions :: Cached (Map (PackageName,Types.Version) (Package.Version Rendered))
 packageVersions = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     build <$>
       loadVersions
   where
@@ -485,28 +485,28 @@ packageVersions = unsafePerformIO $
 {-# NOINLINE rawPackageVersions #-}
 rawPackageVersions :: Cached (Map (PackageName,Types.Version) BSL.ByteString)
 rawPackageVersions = unsafePerformIO $
-  debugForkCache $
+  forkCache epoch $
     fmap encodeBS <$>
       cached packageVersions
 
 {-# NOINLINE packageVersionsList #-}
 packageVersionsList :: Cached (Map PackageName [Package.Version Rendered])
 packageVersionsList = unsafePerformIO $
-  debugForkCache $
+  forkCache epoch $
     fmap (fmap snd) . pushdown id <$>
       cached packageVersions
 
 {-# NOINLINE rawPackageVersionsList #-}
 rawPackageVersionsList :: Cached (Map PackageName BSL.ByteString)
 rawPackageVersionsList = unsafePerformIO $
-  debugForkCache $
+  forkCache epoch $
     fmap encodeBS <$>
       cached packageVersionsList
 
 {-# NOINLINE packagePosts #-}
 packagePosts :: Cached (Map (PackageName,Slug) (Post Rendered,PostContent Rendered))
 packagePosts = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     build <$>
       loadPosts
   where
@@ -534,42 +534,42 @@ packagePosts = unsafePerformIO $
 {-# NOINLINE rawPackagePosts #-}
 rawPackagePosts :: Cached (Map (PackageName,Slug) BSL.ByteString)
 rawPackagePosts = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap (encodeBS . fst) <$> 
       cached packagePosts
 
 {-# NOINLINE packagePostsList #-}
 packagePostsList :: Cached (Map PackageName [Post Rendered])
 packagePostsList = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap (fmap (fst . snd)) . pushdown id <$> 
       cached packagePosts
 
 {-# NOINLINE rawPackagePostsList #-}
 rawPackagePostsList :: Cached (Map PackageName BSL.ByteString)
 rawPackagePostsList = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap encodeBS <$> 
       cached packagePostsList
 
 {-# NOINLINE packagePostsContent #-}
 packagePostsContent :: Cached (Map (PackageName,Slug) (PostContent Rendered))
 packagePostsContent = unsafePerformIO $
-  debugForkCache $
+  forkCache epoch $
     fmap snd <$>
       cached packagePosts
 
 {-# NOINLINE rawPackagePostsContent #-}
 rawPackagePostsContent :: Cached (Map (PackageName,Slug) BSL.ByteString)
 rawPackagePostsContent = unsafePerformIO $
-  debugForkCache $
+  forkCache epoch $
     fmap encodeBS <$>
       cached packagePostsContent
 
 {-# NOINLINE packageTutorials #-}
 packageTutorials :: Cached (Map (PackageName,Types.Version,Slug) (Tutorial Rendered,TutorialContent Rendered))
 packageTutorials = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     build <$>
       loadPackageTutorials
   where
@@ -602,35 +602,35 @@ packageTutorials = unsafePerformIO $
 {-# NOINLINE rawPackageTutorials #-}
 rawPackageTutorials :: Cached (Map (PackageName,Types.Version,Slug) BSL.ByteString)
 rawPackageTutorials = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap (encodeBS . fst) <$> 
       cached packageTutorials
 
 {-# NOINLINE packageTutorialsList #-}
 packageTutorialsList :: Cached (Map (PackageName,Types.Version) [Tutorial Rendered])
 packageTutorialsList = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap (fmap (fst . snd)) . pushdown (\(a,b,c) -> ((a,b),c)) <$> 
       cached packageTutorials
 
 {-# NOINLINE rawPackageTutorialsList #-}
 rawPackageTutorialsList :: Cached (Map (PackageName,Types.Version) BSL.ByteString)
 rawPackageTutorialsList = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap encodeBS <$> 
       cached packageTutorialsList
 
 {-# NOINLINE packageTutorialsContent #-}
 packageTutorialsContent :: Cached (Map (PackageName,Types.Version,Slug) (TutorialContent Rendered))
 packageTutorialsContent = unsafePerformIO $
-  debugForkCache $
+  forkCache epoch $
     fmap snd <$>
       cached packageTutorials
 
 {-# NOINLINE rawPackageTutorialsContent #-}
 rawPackageTutorialsContent :: Cached (Map (PackageName,Types.Version,Slug) BSL.ByteString)
 rawPackageTutorialsContent = unsafePerformIO $
-  debugForkCache $
+  forkCache epoch $
     fmap encodeBS <$>
       cached packageTutorialsContent
 
@@ -638,7 +638,7 @@ rawPackageTutorialsContent = unsafePerformIO $
 {-# NOINLINE modules #-}
 modules :: Cached (Map (PackageName,Types.Version,ModuleName) (Module Rendered,ModuleContent Rendered))
 modules =
-  unsafePerformIO $ debugForkCache $
+  unsafePerformIO $ forkCache epoch $
     fmap build loadModules
   where
     build = Map.fromList . fmap process
@@ -670,42 +670,42 @@ modules =
 {-# NOINLINE rawModules #-}
 rawModules :: Cached (Map (PackageName,Types.Version,ModuleName) BSL.ByteString)
 rawModules = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap (encodeBS . fst) <$> 
       cached modules
 
 {-# NOINLINE modulesList #-}
 modulesList :: Cached (Map (PackageName,Types.Version) [Module Rendered])
 modulesList = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap (fmap (fst . snd)) . pushdown (\(a,b,c) -> ((a,b),c)) <$> 
       cached modules
 
 {-# NOINLINE rawModulesList #-}
 rawModulesList :: Cached (Map (PackageName,Types.Version) BSL.ByteString)
 rawModulesList = unsafePerformIO $ 
-  debugForkCache $
+  forkCache epoch $
     fmap encodeBS <$> 
       cached modulesList
 
 {-# NOINLINE rawModulesContent #-}
 rawModulesContent :: Cached (Map (PackageName,Types.Version,ModuleName) BSL.ByteString)
 rawModulesContent = unsafePerformIO $
-  debugForkCache $
+  forkCache epoch $
     fmap (encodeBS . snd) <$>
       cached modules
 
 {-# NOINLINE modulesContentList #-}
 modulesContentList :: Cached (Map (PackageName,Types.Version) [(Module Rendered,ModuleContent Rendered)])
 modulesContentList = unsafePerformIO $
-  debugForkCache $
+  forkCache epoch $
     fmap (fmap snd) . pushdown (\(a,b,c) -> ((a,b),c)) <$>
       cached modules
 
 {-# NOINLINE rawModulesContentList #-}
 rawModulesContentList :: Cached (Map (PackageName,Types.Version) BSL.ByteString)
 rawModulesContentList = unsafePerformIO $
-  debugForkCache $
+  forkCache epoch $
     fmap encodeBS <$>
       cached modulesContentList
 
