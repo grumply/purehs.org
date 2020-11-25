@@ -1,12 +1,12 @@
-module Pages.Home (page,Gradient(..)) where
+module Pages.Home (page,Gradient) where
 
 import qualified App
 import Components.Header (header)
-import Components.Icons  (logo,animatedLogo)
+import Components.Icons  (logo)
 import Components.Preload (prelink)
-import Data.Route
-import Styles.Colors
-import Styles.Themes hiding (ContentT,page)
+import Data.Route ( Route(TutorialR, PageR, HomeR) )
+import Styles.Colors ( base, blue, green, lavender, teal, Color(brightness) )
+import Styles.Themes ( Button, buttonBoxShadow )
 
 import Pure.Elm.Application as Elm hiding (home,page,green,lavender,blue,brightness,teal)
 
