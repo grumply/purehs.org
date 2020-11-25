@@ -18,7 +18,7 @@ import Pure.Data.Txt as Txt (lines,dropWhileEnd,dropWhile,count)
 
 import GHC.Exts (IsList(..))
 
-import Prelude hiding (break,max,even,or)
+import Prelude hiding (break,max,even,or,odd,even)
 import Data.Char
 import Data.List as List (lookup,length,foldl')
 
@@ -81,6 +81,40 @@ instance Theme MarkdownT where
 
       has ".footnotes" do
         margin-top =: 1em
+
+      has (tag Table) do
+        margin =* [20px,auto]
+        border-collapse =: collapse
+        border-spacing =* [10px,10px]
+
+        has (tag Thead) do
+          font-weight =: 700
+          border-bottom =* [2px,solid,toTxt black]
+
+          has (tag Th) do
+            padding =* [10px,10px]
+
+            isn't ":last-child" do
+              isn't ":empty" do
+                border-right =* [2px,solid,toTxt gray]
+
+        has (tag Tbody) do
+          has (tag Tr) do
+            
+            nthChild(even) do
+              background-color =: toTxt (faded gray)
+
+            nthChild(odd) do
+              background-color =: toTxt white
+
+            has (tag Td) do
+              padding =* [10px,10px]
+
+              isn't ":first-child" do
+                border-left =* [1px,solid,toTxt gray]
+
+              firstChild do
+                font-weight =: 700
 
       has (subtheme @EditorT) do
         width  =: (100%)
