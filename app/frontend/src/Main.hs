@@ -5,12 +5,12 @@ import App ( Session, Page, App, Message(..), Settings(..), mkSession, req )
 import Cache ( cache )
 import qualified Components.Author as Author
 import qualified Components.Avatar as Avatar
-import qualified Components.Breadcrumbs as Breadcrumbs ( breadcrumbs, sublinks )
+import qualified Components.Breadcrumbs as Breadcrumbs
 import qualified Components.Company as Company
 import qualified Components.Description as Description
 import qualified Components.Email as Email
 import qualified Components.GitHubName as GitHubName
-import qualified Components.Header as Header ( header )
+import qualified Components.Header as Header
 import qualified Components.Markdown as Markdown
 import qualified Components.Preload as Preload
 import qualified Components.Published as Published
@@ -33,13 +33,12 @@ import Shared.Author as Author ( Author(..), AuthorContent(..) )
 import Shared.Blog as Blog ( Post(..), PostContent(..) )
 import Shared.Page as Page ( Page(..), PageContent(..) )
 import Shared.Package as Package ( Package(..), PackageContent(..), Version(..), Module(..), ModuleContent(..) )
-import qualified Shared.Package as Package
 import Shared.Tutorial as Tutorial ( Tutorial(..), TutorialContent(..) )
-import Shared.Types as Types
+import Shared.Types as Types ( Changes(Changes), Excerpt(Excerpt), Rendered(..) )
 
 import Pure.Elm.Application hiding (Session,Settings,page,wait,Async,title,render,Title,black,gray,green,lavender,alpha,brightness)
 import qualified Pure.Elm.Application as Pure
-import Pure.Maybe
+import Pure.Maybe ( consumingWith, defaultOptions, suspense, producing, producingKeyed )
 import qualified Pure.WebSocket as WS
 
 import Control.Concurrent.Async ( async, wait, Async )
@@ -209,7 +208,7 @@ package amp ampc avs = producing producer (consumingWith options (consumer True)
 
     consumer :: Bool -> Maybe (Package,PackageContent Rendered,[Package.Version Rendered]) -> View
     consumer _ Nothing = notFound "Package"
-    consumer loaded (Just (p@Package {..},PackageContent (Rendered md),vs))
+    consumer loaded (Just (p@Package {..},PackageContent md,vs))
       | theme <- if loaded then Themed @Load else Themed @Placeholder
       = Div <| theme |>
         [ Article <| Themed @Article |> 
@@ -224,7 +223,7 @@ package amp ampc avs = producing producer (consumingWith options (consumer True)
               | v <- fmap Package.version vs
               ]
             ]
-          , Description.description description
+          , Markdown.markdown md
           ]
         , Div <| Themed @Subarticles |> 
           [ H2 <||> [ "Versions" ]
