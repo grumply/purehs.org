@@ -6,7 +6,7 @@ import Styles.Colors
 import Styles.Fonts
 import Styles.Themes
 
-import Pure.Elm.Application hiding (render,black,brightness,gray,green,lavender)
+import Pure.Elm.Application hiding (render,black,brightness,gray,green,lavender,Tag)
 
 tags :: Tags -> View
 tags (Tags ts) = 

@@ -14,7 +14,7 @@ import System.IO.Unsafe ( unsafePerformIO )
 
 {-# NOINLINE tryWS #-}
 tryWS :: WebSocket
-tryWS = unsafePerformIO $ clientWS "204.48.20.19" 8080
+tryWS = unsafePerformIO $ clientWS "try.purehs.org" 8080
 
 newtype Editor = Editor JSV
   deriving Elm.Default

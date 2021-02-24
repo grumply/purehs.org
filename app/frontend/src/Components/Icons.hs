@@ -28,10 +28,11 @@ module Components.Icons
   ) where
 
 import Styles.Colors ( base, green, blue, black )
+import Data.Route
 
 import Shared.Types
 
-import Pure.Elm hiding (Step,green,blue,brightness,black)
+import Pure.Elm.Application hiding (Step,green,blue,brightness,black,path)
 import Pure.Data.SVG
 import Pure.Data.SVG.Properties as SVG
 import Pure.Router (lref)
@@ -174,7 +175,7 @@ logo simple linked =
   in
     Div <| Themed @t |>
       [ if linked then
-          A <| lref "/" . Attribute "aria-label" "Home" |> [ svg simple ]
+          A <| link HomeR . Attribute "aria-label" "Home" |> [ svg simple ]
         else
           svg simple
       ]
@@ -262,7 +263,7 @@ animatedLogo =
 
 -- TODO: add animations to typing logo and figure out layout
 typingLogo :: View
-typingLogo = run (App [Step] [] [] mdl update view) ()
+typingLogo = run (Applet [Step] [] [] mdl update view) ()
   where
     mdl = Model 0
     update Step _ (Model s) = pure $ Model (s + 1)
