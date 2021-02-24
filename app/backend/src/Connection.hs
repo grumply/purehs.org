@@ -44,6 +44,7 @@ update msg ws mdl =
       -- sendRaw ws (buildEncodedDispatchByteString (messageHeader setCache) c)
       pure mdl
 
+{-# NOINLINE authorEndpoints #-}
 authorEndpoints :: Endpoints '[] _ '[] _
 authorEndpoints = Endpoints Shared.authorAPI msgs reqs
   where
@@ -56,37 +57,43 @@ authorEndpoints = Endpoints Shared.authorAPI msgs reqs
        <:> handleListAuthorTutorials
        <:> WS.none
 
+{-# NOINLINE handleListAuthors #-}
 handleListAuthors :: RequestHandler Shared.ListAuthors
-handleListAuthors = respondWithRaw $ \_ -> do
-  cached rawAuthorsList
+handleListAuthors = respondWithRaw $ \_ -> pure rawAuthorsList
 
+{-# NOINLINE handleGetAuthor #-}
 handleGetAuthor :: RequestHandler Shared.GetAuthor
-handleGetAuthor = respondWithRaw $ \n -> do
-  as <- cached rawAuthors
-  pure $ fromMaybe "null" (Map.lookup n as) 
+handleGetAuthor = respondWithRaw $ \n ->
+  pure $ fromMaybe "null" do
+    Map.lookup n rawAuthors
 
+{-# NOINLINE handleGetAuthorContent #-}
 handleGetAuthorContent :: RequestHandler Shared.GetAuthorContent
-handleGetAuthorContent = respondWithRaw $ \n -> do
-  as <- cached rawAuthorsContent
-  pure $ fromMaybe "null" (Map.lookup n as)
+handleGetAuthorContent = respondWithRaw $ \n ->
+  pure $ fromMaybe "null" do
+    Map.lookup n rawAuthorsContent
 
+{-# NOINLINE handleListAuthorPackages #-}
 handleListAuthorPackages :: RequestHandler Shared.ListAuthorPackages
-handleListAuthorPackages = respondWithRaw $ \n -> do
-  as <- cached rawAuthorPackages
-  pure $ fromMaybe "[]" (Map.lookup n as)
+handleListAuthorPackages = respondWithRaw $ \n ->
+  pure $ fromMaybe "[]" do
+    Map.lookup n rawAuthorPackages
 
+{-# NOINLINE handleListAuthorPosts #-}
 handleListAuthorPosts :: RequestHandler Shared.ListAuthorPosts
-handleListAuthorPosts = respondWithRaw $ \n -> do
-  ps <- cached rawAuthorPosts
-  pure $ fromMaybe "[]" (Map.lookup n ps)
+handleListAuthorPosts = respondWithRaw $ \n ->
+  pure $ fromMaybe "[]" do
+    Map.lookup n rawAuthorPosts
 
+{-# NOINLINE handleListAuthorTutorials #-}
 handleListAuthorTutorials :: RequestHandler Shared.ListAuthorTutorials
-handleListAuthorTutorials = respondWithRaw $ \n -> do
-  ps <- cached rawAuthorTutorials
-  pure $ fromMaybe "[]" (Map.lookup n ps)
+handleListAuthorTutorials = respondWithRaw $ \n ->
+  pure $ fromMaybe "[]" do
+    Map.lookup n rawAuthorTutorials
 
 
 
+{-# NOINLINE pagesEndpoints #-}
 pagesEndpoints :: Endpoints '[] _ '[] _
 pagesEndpoints = Endpoints Shared.pagesAPI msgs reqs
   where
@@ -96,22 +103,25 @@ pagesEndpoints = Endpoints Shared.pagesAPI msgs reqs
        <:> handleGetPageContent
        <:> WS.none
 
+{-# NOINLINE handleListPages #-}
 handleListPages :: RequestHandler Shared.ListPages
-handleListPages = respondWithRaw $ \_ -> do
-  cached rawPagesList
+handleListPages = respondWithRaw $ \_ -> pure rawPagesList
 
+{-# NOINLINE handleGetPage #-}
 handleGetPage :: RequestHandler Shared.GetPage
-handleGetPage = respondWithRaw $ \s -> do
-  ps <- cached rawPages
-  pure $ fromMaybe "null" (Map.lookup s ps)
+handleGetPage = respondWithRaw $ \s ->
+  pure $ fromMaybe "null" do
+    Map.lookup s rawPages
 
+{-# NOINLINE handleGetPageContent #-}
 handleGetPageContent :: RequestHandler Shared.GetPageContent
-handleGetPageContent = respondWithRaw $ \s -> do
-  ps <- cached rawPagesContent
-  pure $ fromMaybe "null" (Map.lookup s ps)
+handleGetPageContent = respondWithRaw $ \s ->
+  pure $ fromMaybe "null" do
+    Map.lookup s rawPagesContent
 
 
 
+{-# NOINLINE blogEndpoints #-}
 blogEndpoints :: Endpoints '[] _ '[] _
 blogEndpoints = Endpoints Shared.blogAPI msgs reqs
   where
@@ -121,22 +131,25 @@ blogEndpoints = Endpoints Shared.blogAPI msgs reqs
        <:> handleGetPostContent
        <:> WS.none
 
+{-# NOINLINE handleListPosts #-}
 handleListPosts :: RequestHandler Shared.ListPosts
-handleListPosts = respondWithRaw $ \_ -> do
-  cached rawPostsList
+handleListPosts = respondWithRaw $ \_ -> pure rawPostsList
 
+{-# NOINLINE handleGetPost #-}
 handleGetPost :: RequestHandler Shared.GetPost
-handleGetPost = respondWithRaw $ \s -> do
-  ps <- cached rawPosts
-  pure $ fromMaybe "null" (Map.lookup s ps)
+handleGetPost = respondWithRaw $ \s ->
+  pure $ fromMaybe "null" do
+    Map.lookup s rawPosts
 
+{-# NOINLINE handleGetPostContent #-}
 handleGetPostContent :: RequestHandler Shared.GetPostContent
-handleGetPostContent = respondWithRaw $ \s -> do
-  ps <- cached rawPostsContent
-  pure $ fromMaybe "null" (Map.lookup s ps)
+handleGetPostContent = respondWithRaw $ \s ->
+  pure $ fromMaybe "null" do
+    Map.lookup s rawPostsContent
 
 
 
+{-# NOINLINE tutorialEndpoints #-}
 tutorialEndpoints :: Endpoints '[] _ '[] _
 tutorialEndpoints = Endpoints Shared.tutorialAPI msgs reqs
   where
@@ -146,22 +159,25 @@ tutorialEndpoints = Endpoints Shared.tutorialAPI msgs reqs
        <:> handleGetTutorialContent
        <:> WS.none
 
+{-# NOINLINE handleListTutorials #-}
 handleListTutorials :: RequestHandler Shared.ListTutorials
-handleListTutorials = respondWithRaw $ \_ -> do
-  cached rawTutorialsList
+handleListTutorials = respondWithRaw $ \_ -> pure rawTutorialsList
 
+{-# NOINLINE handleGetTutorial #-}
 handleGetTutorial :: RequestHandler Shared.GetTutorial
-handleGetTutorial = respondWithRaw $ \s -> do
-  ts <- cached rawTutorials
-  pure $ fromMaybe "null" (Map.lookup s ts)
+handleGetTutorial = respondWithRaw $ \s ->
+  pure $ fromMaybe "null" do
+    Map.lookup s rawTutorials
 
+{-# NOINLINE handleGetTutorialContent #-}
 handleGetTutorialContent :: RequestHandler Shared.GetTutorialContent
-handleGetTutorialContent = respondWithRaw $ \s -> do
-  ts <- cached rawTutorialsContent
-  pure $ fromMaybe "null" (Map.lookup s ts)
+handleGetTutorialContent = respondWithRaw $ \s ->
+  pure $ fromMaybe "null" do
+    Map.lookup s rawTutorialsContent
 
 
 
+{-# NOINLINE packageEndpoints #-}
 packageEndpoints :: Endpoints '[] _ '[] _
 packageEndpoints = Endpoints Shared.packageAPI msgs reqs
   where
@@ -171,20 +187,25 @@ packageEndpoints = Endpoints Shared.packageAPI msgs reqs
        <:> handleGetPackageContent
        <:> WS.none
 
+{-# NOINLINE handleListPackages #-}
 handleListPackages :: RequestHandler Shared.ListPackages
-handleListPackages = respondWithRaw $ \_ -> do
-  cached rawPackagesList
+handleListPackages = respondWithRaw $ \_ -> pure rawPackagesList
 
+{-# NOINLINE handleGetPackage #-}
 handleGetPackage :: RequestHandler Shared.GetPackage
-handleGetPackage = respondWithRaw $ \p -> do
-  ps <- cached rawPackages
-  pure $ fromMaybe "null" (Map.lookup p ps)
+handleGetPackage = respondWithRaw $ \p ->
+  pure $ fromMaybe "null" do
+    Map.lookup p rawPackages
 
+{-# NOINLINE handleGetPackageContent #-}
 handleGetPackageContent :: RequestHandler Shared.GetPackageContent
-handleGetPackageContent = respondWithRaw $ \p -> do
-  ps <- cached rawPackageContents
-  pure $ fromMaybe "null" (Map.lookup p ps)
+handleGetPackageContent = respondWithRaw $ \p ->
+  pure $ fromMaybe "null" do
+    Map.lookup p rawPackageContents
 
+
+
+{-# NOINLINE packageVersionEndpoints #-}
 packageVersionEndpoints :: Endpoints '[] _ '[] _
 packageVersionEndpoints = Endpoints Shared.packageVersionAPI msgs reqs
   where
@@ -193,22 +214,22 @@ packageVersionEndpoints = Endpoints Shared.packageVersionAPI msgs reqs
        <:> handleGetPackageVersion
        <:> WS.none
 
+{-# NOINLINE handleListPackageVersions #-}
 handleListPackageVersions :: RequestHandler Shared.ListPackageVersions
-handleListPackageVersions = respondWithRaw $ \p -> do
-  ps <- cached rawPackageVersionsList
-  pure $ fromMaybe "[]" (Map.lookup p ps)
+handleListPackageVersions = respondWithRaw $ \p ->
+  pure $ fromMaybe "[]" do
+    Map.lookup p rawPackageVersionsList
 
+{-# NOINLINE handleGetPackageVersion #-}
 handleGetPackageVersion :: RequestHandler Shared.GetPackageVersion
-handleGetPackageVersion = respondWithRaw $ \(pn,v0) -> do
-  mv <- normalizeVersion pn v0
-  case mv of
-    Nothing -> pure "null"
-    Just v  -> do
-      pvs <- cached rawPackageVersions
-      pure $ fromMaybe "null" (Map.lookup (pn,v) pvs)
+handleGetPackageVersion = respondWithRaw $ \(pn,v0) ->
+  pure $ fromMaybe "null" do
+    v <- normalizeVersion pn v0
+    Map.lookup (pn,v) rawPackageVersions
 
 
 
+{-# NOINLINE packageBlogEndpoints #-}
 packageBlogEndpoints :: Endpoints '[] _ '[] _
 packageBlogEndpoints = Endpoints Shared.packageBlogAPI msgs reqs
   where
@@ -218,23 +239,27 @@ packageBlogEndpoints = Endpoints Shared.packageBlogAPI msgs reqs
        <:> handleGetPackagePostContent
        <:> WS.none
 
+{-# NOINLINE handleListPackagePosts #-}
 handleListPackagePosts :: RequestHandler Shared.ListPackagePosts
-handleListPackagePosts = respondWithRaw $ \p -> do
-  ps <- cached rawPackagePostsList
-  pure $ fromMaybe "[]" (Map.lookup p ps)
+handleListPackagePosts = respondWithRaw $ \p ->
+  pure $ fromMaybe "[]" do
+    Map.lookup p rawPackagePostsList
 
+{-# NOINLINE handleGetPackagePost #-}
 handleGetPackagePost :: RequestHandler Shared.GetPackagePost
-handleGetPackagePost = respondWithRaw $ \ps -> do
-  pps <- cached rawPackagePosts
-  pure $ fromMaybe "null" (Map.lookup ps pps)
+handleGetPackagePost = respondWithRaw $ \ps ->
+  pure $ fromMaybe "null" do
+    Map.lookup ps rawPackagePosts
 
+{-# NOINLINE handleGetPackagePostContent #-}
 handleGetPackagePostContent :: RequestHandler Shared.GetPackagePostContent
-handleGetPackagePostContent = respondWithRaw $ \ps -> do
-  ppc <- cached rawPackagePostsContent
-  pure $ fromMaybe "null" (Map.lookup ps ppc)
+handleGetPackagePostContent = respondWithRaw $ \ps ->
+  pure $ fromMaybe "null" do
+    Map.lookup ps rawPackagePostsContent
 
 
 
+{-# NOINLINE packageTutorialEndpoints #-}
 packageTutorialEndpoints :: Endpoints '[] _ '[] _
 packageTutorialEndpoints = Endpoints Shared.packageTutorialAPI msgs reqs
   where
@@ -244,44 +269,37 @@ packageTutorialEndpoints = Endpoints Shared.packageTutorialAPI msgs reqs
        <:> handleGetPackageVersionTutorialContent
        <:> WS.none
 
-normalizeVersion :: PackageName -> Types.Version -> IO (Maybe Types.Version)
-normalizeVersion pn v = do
-  case v of
-    Version "latest" -> do
-      pvs <- cached packageVersionsList
-      pure $ fmap (maximum . fmap (Package.version :: Package.Version Rendered -> Types.Version)) (Map.lookup pn pvs)
-    _ -> 
-      pure (Just v)
+normalizeVersion :: PackageName -> Types.Version -> Maybe Types.Version
+normalizeVersion pn v
+  | Version "latest" <- v
+  = fmap (maximum . fmap (Package.version :: Package.Version Rendered -> Types.Version)) (Map.lookup pn packageVersionsList)
 
+  | otherwise 
+  = Just v
+
+{-# NOINLINE handleListPackageVersionTutorials #-}
 handleListPackageVersionTutorials :: RequestHandler Shared.ListPackageVersionTutorials
-handleListPackageVersionTutorials = respondWithRaw $ \pv@(pn,v0) -> do
-  mv <- normalizeVersion pn v0
-  case mv of
-    Nothing -> pure "[]"
-    Just v  -> do
-      pts <- cached rawPackageTutorialsList
-      pure $ fromMaybe "[]" (Map.lookup (pn,v) pts)
+handleListPackageVersionTutorials = respondWithRaw $ \pv@(pn,v0) ->
+  pure $ fromMaybe "[]" do
+    v <- normalizeVersion pn v0
+    Map.lookup (pn,v) rawPackageTutorialsList
 
+{-# NOINLINE handleGetPackageVersionTutorial #-}
 handleGetPackageVersionTutorial :: RequestHandler Shared.GetPackageVersionTutorial
-handleGetPackageVersionTutorial = respondWithRaw $ \(pn,v0,s) -> do
-  mv <- normalizeVersion pn v0
-  case mv of
-    Nothing -> pure "null"
-    Just v  -> do
-      pvts <- cached rawPackageTutorials
-      pure $ fromMaybe "null" (Map.lookup (pn,v,s) pvts)
+handleGetPackageVersionTutorial = respondWithRaw $ \(pn,v0,s) ->
+  pure $ fromMaybe "null" do
+    v <- normalizeVersion pn v0
+    Map.lookup (pn,v,s) rawPackageTutorials
 
+{-# NOINLINE handleGetPackageVersionTutorialContent #-}
 handleGetPackageVersionTutorialContent :: RequestHandler Shared.GetPackageVersionTutorialContent
-handleGetPackageVersionTutorialContent = respondWithRaw $ \(pn,v0,s) -> do
-  mv <- normalizeVersion pn v0
-  case mv of
-    Nothing -> pure "null"
-    Just v  -> do
-      pvtcs <- cached rawPackageTutorialsContent
-      pure $ fromMaybe "null" (Map.lookup (pn,v,s) pvtcs)
+handleGetPackageVersionTutorialContent = respondWithRaw $ \(pn,v0,s) ->
+  pure $ fromMaybe "null" do
+    v <- normalizeVersion pn v0
+    Map.lookup (pn,v,s) rawPackageTutorialsContent
 
 
-
+{-# NOINLINE packageModuleEndpoints #-}
 packageModuleEndpoints :: Endpoints '[] _ '[] _
 packageModuleEndpoints = Endpoints Shared.packageModuleAPI msgs reqs
   where
@@ -292,38 +310,30 @@ packageModuleEndpoints = Endpoints Shared.packageModuleAPI msgs reqs
        <:> handleGetPackageVersionModuleContent
        <:> WS.none
 
+{-# NOINLINE handleListPackageVersionModules #-}
 handleListPackageVersionModules :: RequestHandler Shared.ListPackageVersionModules
-handleListPackageVersionModules = respondWithRaw $ \(pn,v0) -> do
-  mv <- normalizeVersion pn v0
-  case mv of
-    Nothing -> pure "[]"
-    Just v  -> do
-      pvms <- cached rawModulesList
-      pure $ fromMaybe "[]" (Map.lookup (pn,v) pvms)
+handleListPackageVersionModules = respondWithRaw $ \(pn,v0) ->
+  pure $ fromMaybe "[]" do
+    v <- normalizeVersion pn v0
+    Map.lookup (pn,v) rawModulesList
 
+{-# NOINLINE handleListPackageVersionModulesContent #-}
 handleListPackageVersionModulesContent :: RequestHandler Shared.ListPackageVersionModulesContent
-handleListPackageVersionModulesContent = respondWithRaw $ \(pn,v0) -> do
-  mv <- normalizeVersion pn v0
-  case mv of
-    Nothing -> pure "[]"
-    Just v  -> do
-      pvms <- cached rawModulesContentList
-      pure $ fromMaybe "[]" (Map.lookup (pn,v) pvms)
+handleListPackageVersionModulesContent = respondWithRaw $ \(pn,v0) ->
+  pure $ fromMaybe "[]" do
+    v <- normalizeVersion pn v0
+    Map.lookup (pn,v) rawModulesContentList
 
+{-# NOINLINE handleGetPackageVersionModule #-}
 handleGetPackageVersionModule :: RequestHandler Shared.GetPackageVersionModule
-handleGetPackageVersionModule = respondWithRaw $ \(pn,v0,mn) -> do
-  mv <- normalizeVersion pn v0
-  case mv of
-    Nothing -> pure "null"
-    Just v  -> do
-      pvms <- cached rawModules
-      pure $ fromMaybe "null" (Map.lookup (pn,v,mn) pvms)
+handleGetPackageVersionModule = respondWithRaw $ \(pn,v0,mn) ->
+  pure $ fromMaybe "null" do
+    v <- normalizeVersion pn v0
+    Map.lookup (pn,v,mn) rawModules
 
+{-# NOINLINE handleGetPackageVersionModuleContent #-}
 handleGetPackageVersionModuleContent :: RequestHandler Shared.GetPackageVersionModuleContent
-handleGetPackageVersionModuleContent = respondWithRaw $ \(pn,v0,mn) -> do
-  mv <- normalizeVersion pn v0
-  case mv of
-    Nothing -> pure "null"
-    Just v  -> do
-      pvms <- cached rawModulesContent
-      pure $ fromMaybe "null" (Map.lookup (pn,v,mn) pvms)
+handleGetPackageVersionModuleContent = respondWithRaw $ \(pn,v0,mn) ->
+  pure $ fromMaybe "null" do
+    v <- normalizeVersion pn v0
+    Map.lookup (pn,v,mn) rawModulesContent
