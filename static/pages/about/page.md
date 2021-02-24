@@ -91,9 +91,9 @@ counter = run (App [] [] [] (Counter 0) update view) ()
 main = inject body counter
 </pre>
 
-## Themeing Support
+## Theming Support
 
-Out-of-the-bag, Pure.hs offers themeing and CSS functionality that is easy and safe.
+Out-of-the-bag, Pure.hs offers theming and CSS functionality that is easy and safe.
 
 <pre data-try>
 import Pure

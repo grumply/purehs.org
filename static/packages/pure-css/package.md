@@ -1,6 +1,6 @@
 This package implements a core DSL to embed dynamically generated CSS into Pure.hs applications.
 
-This package is generally used alongside [pure-styles](/packages/pure-styles/latest) and [pure-theme](/packages/pure-theme/latest) for a convenient styling and themeing experience. 
+This package is generally used alongside [pure-styles](/packages/pure-styles/latest) and [pure-theme](/packages/pure-theme/latest) for a convenient styling and theming experience. 
 
 You probably don't need to include this package as a dependency of your project, as it is exported from the meta packages [pure](/packages/pure/latest) and [pure-elm](/packages/pure-elm/latest).
 

@@ -165,7 +165,7 @@ We've a big red button that doesn't look too great. Maybe you can make it look b
 
 ## What have we learned?
 
-Using first-class views, we can pass around bits and pieces of our UI and enrich them with functionality in a way that lets us build up from pincipal pieces. Using some simple themeing tools, we can richly decorate views in a safe way with near-CSS syntax. Using event handlers we can program user-interaction-reactive functionality into our applications.
+Using first-class views, we can pass around bits and pieces of our UI and enrich them with functionality in a way that lets us build up from pincipal pieces. Using some simple theming tools, we can richly decorate views in a safe way with near-CSS syntax. Using event handlers we can program user-interaction-reactive functionality into our applications.
 
 Now that we've seen how static views are created and transformed, let's learn about dynamics - an important part of user interfaces. We'll see how to enrich views with state and other dynamic functionality in the [Components Tutorial](./components). Then, we'll learn how to use [The Elm Architecture](https://guide.elm-lang.org/architecture/) to bootstrap a fully integrated application in the [Applications Tutorial](./applications). After that, we'll apply some of the same abstractions to server-side development in the [Servers Tutorial](./servers).
 

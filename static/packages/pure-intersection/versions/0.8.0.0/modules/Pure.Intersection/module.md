@@ -25,7 +25,7 @@ Configuration properties are available
   * [Action](Pure.Intersection/pattern%20Action) for setting an action with access to intersection events
   * [Disable](Pure.Intersection/pattern%20Disable) for disabling the observer 
   
-Note that instances for [HasFeatures](/packages/pure-core/latest/Pure.Data.View.Patterns/class%20HasFeatures) and [HasChildren](/packages/pure-core/latest/Pure.Data.View.patterns/class%20HasChildren) allows for using [<|](/packages/pure-core/latest/Pure.Data.View.Patterns/%3C%7C), [<||>](/packages/pure-core/latest/Pure.Data.View.Patterns/%3C%7C%7C%3E), and [|>](/packages/pure-core/latest/Pure.Data.View.Patterns/%7C%3E) with a value of type `Observer`.
+Note that instances for [HasFeatures](/packages/pure-core/latest/Pure.Data.View.Patterns/class%20HasFeatures) and [HasChildren](/packages/pure-core/latest/Pure.Data.View.Patterns/class%20HasChildren) allows for using [<|](/packages/pure-core/latest/Pure.Data.View.Patterns/%3C%7C), [<||>](/packages/pure-core/latest/Pure.Data.View.Patterns/%3C%7C%7C%3E), and [|>](/packages/pure-core/latest/Pure.Data.View.Patterns/%7C%3E) with a value of type `Observer`.
 
 ```haskell
 import Pure hiding (any)
