@@ -43,6 +43,7 @@ import qualified Pure.WebSocket as WS
 
 import Control.Concurrent.Async ( async, wait, Async )
 import Control.Monad ( Monad((>>)), Functor(fmap), when )
+import Data.Function (on)
 import qualified Data.List as List
 import Data.Maybe ( Maybe(..), isNothing, isJust )
 import GHC.Exts (IsList(..))
@@ -430,7 +431,8 @@ tutorial rt at atc = producing producer (consumingWith options (consumer True))
                   inSeries Tutorial {..} = series == Just s
                   isEpisode Tutorial {..} = isJust episode
                   es = filter ((&&) <$> inSeries <*> isEpisode) ts
-                pure (Just es)
+                  es' = List.sortBy (compare `on` (\Tutorial { published } -> published)) es
+                pure (Just es')
               _ -> pure Nothing
           _ -> pure Nothing
 
