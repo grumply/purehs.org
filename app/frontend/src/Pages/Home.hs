@@ -1,6 +1,11 @@
 module Pages.Home (page,Gradient) where
 
 import qualified App
+import qualified Styles.Themes as Themes
+import Data.Resource
+import Data.Placeholders
+import Shared.Page
+import qualified Components.Markdown as Markdown
 import Components.Header (header)
 import Components.Icons  (logo)
 import Components.Preload (prelink)
@@ -8,15 +13,21 @@ import Data.Route ( Route(TutorialR, PageR, HomeR) )
 import Styles.Colors ( base, blue, green, lavender, teal, Color(brightness) )
 import Styles.Themes ( Button, buttonBoxShadow )
 
-import Pure.Elm.Application as Elm hiding (home,page,green,lavender,blue,brightness,teal)
+import Control.Concurrent.Async
+
+import Pure.Elm.Application as Elm hiding (home,page,green,lavender,blue,brightness,teal,wait)
+import Pure.Maybe
 
 import Prelude hiding (all,min,max)
+import Control.Monad
+import Data.Maybe
 
 page :: App.App => View
 page =
   Div <| Themed @Home |>
     [ header HomeR
     , home
+    , exposition
     ]
 
 home :: App.App => View
@@ -25,13 +36,13 @@ home =
     [ Div <| Themed @Intro |>
       [ Div <| Themed @Hero |>
         [ logo @HeroLogo False False 
-        , H1 <| Themed @Slogan |>
+        , H2 <| Themed @Slogan |>
           [ "Dynamic Hierarchical Contexts" ]
         , P <| Themed @Description |>
           [ "Performance + Expressiveness + Asynchrony" ]
         , Div <| Themed @CallToAction |>
-          [ A <| prelink (PageR "about") . Themed @Button . Themed @AboutPure |>
-            [ "About Pure.hs" ]
+          [ A <| prelink (TutorialR "5-minute") . Themed @Button . Themed @LearnPure |>
+            [ "Learn Pure.hs" ]
           , A <| prelink (TutorialR "install") . Themed @Button . Themed @GetPure |>
             [ "Get Pure.hs" ]
           ]
@@ -40,11 +51,34 @@ home =
     , Div <| Themed @Gradient
     ]
 
+exposition :: App.App => View
+exposition = producing producer (consuming consumer)
+  where     
+    producer = do
+      PageResource ap apc <- load (PageR (fromTxt "about"))
+      mp  <- wait ap
+      mpc <- wait apc
+      when (isNothing mp) do
+        retitle "Not Found"
+      pure mpc
+
+    consumer (Just (PageContent md)) = Markdown.markdown md <| Themed @Exposition
+    consumer _ = Null
+
+data Exposition
+instance Theme Exposition where
+  theme c =
+    is c do
+      important do
+        padding-top =: 2em
+        padding-bottom =: 4em
+
 data Home
 instance Theme Home where
   theme c = void $ do
     is c .> do
       height =: (100%)
+      box-shadow =* [0,0,15px,5px,toTxt gray]
 
     atMedia "(max-height: 500px)" $
       is c .> do
@@ -187,8 +221,8 @@ instance Theme CallToAction where
       margin-top      =: 8px
       margin-bottom   =: 8px
 
-data AboutPure
-instance Theme AboutPure where
+data LearnPure
+instance Theme LearnPure where
   theme c = 
     is c do
       callToActionButtonStyles (toTxt green { brightness = 80 }) (toTxt base)

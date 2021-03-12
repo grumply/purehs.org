@@ -1,6 +1,6 @@
 email: sean@grumply.com
 category: Web
-ghc-options: '-Wall -fno-warn-unused-do-bind -rtsopts -threaded '
+ghc-options: -Wall -fno-warn-unused-do-bind -rtsopts -threaded
 dependencies:
 - base
 - bytestring
@@ -82,7 +82,7 @@ name: backend
 version: 0.1.0.0
 synopsis: backend server
 author: Sean Hickman
-ghcjs-options: -O1 -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=3000000 -DGHCJS_BUSY_YIELD=20
+ghcjs-options: -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=3000000
 license: BSD3
 executables:
   backend:

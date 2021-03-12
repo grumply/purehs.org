@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b26916c6ab569d2ac9aa358ecc819573209bd8b1175cf4024159fc0c3f781fc3
+-- hash: aa48251923a82fda69be514cd5f70dd137d4fd6342b16fc52d193ce9a3b9ec02
 
 name:           backend
 version:        0.1.0.0
@@ -25,8 +25,8 @@ executable backend
   hs-source-dirs:
       src
   default-extensions: AutoDeriveTypeable BangPatterns ConstraintKinds DataKinds DefaultSignatures DeriveDataTypeable DeriveFoldable DeriveFunctor DeriveGeneric DeriveTraversable DoAndIfThenElse EmptyCase EmptyDataDecls ExistentialQuantification FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving ImplicitParams InstanceSigs KindSignatures LambdaCase MultiParamTypeClasses MultiWayIf NamedFieldPuns OverloadedStrings PartialTypeSignatures PatternGuards PatternSynonyms PolyKinds RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TupleSections TypeApplications TypeFamilies TypeFamilyDependencies TypeOperators TypeSynonymInstances ViewPatterns TemplateHaskell PostfixOperators DerivingVia BlockArguments
-  ghc-options: -Wall -fno-warn-unused-do-bind -rtsopts -threaded 
-  ghcjs-options: -O1 -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=3000000 -DGHCJS_BUSY_YIELD=20
+  ghc-options: -Wall -fno-warn-unused-do-bind -rtsopts -threaded
+  ghcjs-options: -threaded -dedupe -DGHCJS_BROWSER -DGHCJS_GC_INTERVAL=3000000
   build-depends:
       Glob
     , base

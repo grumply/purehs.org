@@ -31,17 +31,16 @@ import Data.List as List (reverse,cycle,take,filter,sortBy)
 
 import Prelude hiding (min,max)
 
-data Menu = AboutMenu | PackagesMenu | TutorialsMenu
+data Menu = BlogMenu | PackagesMenu | TutorialsMenu
   deriving (Eq,Ord,Enum,Show)
 
 target :: Menu -> Route
-target AboutMenu = PageR "about"
+target BlogMenu = BlogR
 target PackagesMenu = PackagesR
 target TutorialsMenu = TutorialsR 
 
 associated :: Route -> Menu -> Bool
-associated (PageR "about") AboutMenu = True
-associated (PostR _)       AboutMenu = True
+associated BlogR           BlogMenu = True
 associated PackagesR       PackagesMenu = True
 associated (PackageR _)    PackagesMenu = True
 associated TutorialsR      TutorialsMenu = True
@@ -49,7 +48,7 @@ associated (TutorialR _)   TutorialsMenu = True
 associated _               _        = False
 
 menuname :: Menu -> Txt
-menuname AboutMenu = "About"
+menuname BlogMenu = "Blog"
 menuname PackagesMenu = "Packages"
 menuname TutorialsMenu = "Tutorials"
 
@@ -120,7 +119,7 @@ prelink r =
 links :: Elm Msg => Route -> View
 links rt =
   Nav <| Attribute "aria-label" "Primary Navigation" . Themed @LinksT |>
-    [ item m | m <- [AboutMenu ..] ]
+    [ item m | m <- [BlogMenu ..] ]
   where
     item :: Elm Msg => Menu -> View
     item menu =
@@ -141,13 +140,13 @@ menus :: Elm Msg => App.Session -> Model -> View
 menus ses mdl =
   Div <| Themed @HarnessT . vis |>
     [ Div <| Themed @CardT . vis . activemenu |> 
-      [ item m | m <- [AboutMenu ..] ]
+      [ item m | m <- [BlogMenu ..] ]
     ]
   where
     activemenu 
       | Just m <- activeMenu mdl =
         case m of
-          AboutMenu     -> Themed @AboutMenuActiveT
+          BlogMenu      -> Themed @BlogMenuActiveT
           TutorialsMenu -> Themed @TutorialsMenuActiveT
           PackagesMenu  -> Themed @PackagesMenuActiveT
       | otherwise   = id
@@ -161,7 +160,7 @@ menus ses mdl =
       where
         menut =
           case m of
-            AboutMenu     -> Themed @AboutMenuT
+            BlogMenu      -> Themed @BlogMenuT
             PackagesMenu  -> Themed @PackagesMenuT
             TutorialsMenu -> Themed @TutorialsMenuT
 
@@ -174,12 +173,12 @@ menus ses mdl =
 
 menu :: Elm Msg => App.Session -> Menu -> View
 menu ses = \case
-  AboutMenu     -> aboutMenu ses
+  BlogMenu      -> blogMenu ses
   PackagesMenu  -> documentationMenu ses
   TutorialsMenu -> tutorialsMenu ses
 
-aboutMenu :: Elm Msg => App.Session -> View
-aboutMenu ses = 
+blogMenu :: Elm Msg => App.Session -> View
+blogMenu ses = 
   Div <||>
     [ Section <| Themed @MenuTopT |>
       [ -- Book SVG
@@ -214,7 +213,7 @@ aboutMenu ses =
         Footer <| Themed @MenuBottomT |>
           [ Div <||>
             [ list 
-              [ (aboutIcon,"About",Right (PageR "about"))
+              [ (aboutIcon,"Blog",Right BlogR)
               , (installIcon,"Install",Right (TutorialR "install"))
               , (playIcon,"Try It Live",Left "http://try.purehs.org")
               , (gitHubLogo_alt,"GitHub",Left "https://github.com/grumply/pure-platform")
@@ -443,7 +442,7 @@ instance Theme CardT where
           hover do
             color =: toTxt green
 
-      at @AboutMenuActiveT do
+      at @BlogMenuActiveT do
         width  =: 500px
         height =: 245px
 
@@ -507,11 +506,11 @@ instance Theme ActiveT where
         opacity   =: 1
         transform =: translateX(0) 
 
-data AboutMenuActiveT deriving Theme
+data BlogMenuActiveT deriving Theme
 data PackagesMenuActiveT deriving Theme
 data TutorialsMenuActiveT deriving Theme 
 
-data AboutMenuT deriving Theme
+data BlogMenuT deriving Theme
 data PackagesMenuT deriving Theme
 data TutorialsMenuT deriving Theme
 

@@ -117,6 +117,8 @@ instance Theme MarkdownT where
                 font-weight =: 700
 
       has (subtheme @EditorT) do
+        margin-top =: 2em
+        margin-bottom =: 3em
         width  =: (100%)
 
         has (tag A) do
