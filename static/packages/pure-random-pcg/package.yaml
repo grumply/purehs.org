@@ -1,7 +1,7 @@
 name: pure-random-pcg
 author: Sean Hickman
 latest: 0.8.0.0
-published: 2020-11-13
+published: 2021-3-13
 license: BSD3
 repository: github.com/grumply/pure-random-pcg.git
 homepage: purehs.org/packages/pure-random-pcg
