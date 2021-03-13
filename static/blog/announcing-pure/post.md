@@ -10,6 +10,6 @@ Check out the core features that [Pure.hs offers](/about).
 
 This website is written entirely in Pure.hs. Check out the source [here](https://github.com/grumply/purehs.org).
 
-If you're interested, take a look at the [tutorials](/tut). If you're really interested, feel free to [improve](https://github.com/grumply/purehs.org/pulls) the tutorials to benefit others.
+If your interest is piqued, take a look at the [tutorials](/tutorials), especially the [5-minute series](/tutorials/5-minute). If you're interested in helping out, feel free to [improve](https://github.com/grumply/purehs.org/pulls) the tutorials to benefit others.
 
-If you've got questions, check out the [discourse](http://discourse.purehs.org).
+If you have questions, come to the [forum](http://discourse.purehs.org) or chat live on [discord](https://discord.gg/hVkMsEA). I hope you're willing to join the fun. ***Above all, [be compassionate and helpful](https://www.youtube.com/watch?v=rph_1DODXDU)***
