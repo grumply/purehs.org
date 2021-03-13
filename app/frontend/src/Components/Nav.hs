@@ -14,20 +14,17 @@ import Shared
 import Shared.Blog
 import Shared.Package
 import Shared.Tutorial as Tutorial
-import Shared.Types (Episode,Rendered)
+import Shared.Types (Rendered)
 
 import Pure.Elm hiding (Command,Open,target,name,link,url,menu,delay,wait,Left,Right,green,blue,black,gray,lavender,touch,Preload)
-import Pure.Elm.Application (link,goto,location,url,session,URL(..))
-import Pure.Data.Styles (delay)
+import Pure.Elm.Application (link,goto,location,url,session)
 import Pure.Data.SVG
 import Pure.Maybe
 import Pure.Random (newSeed,shuffle)
 
-import Control.Concurrent.Async (wait)
-import Control.Monad
 import Data.Function (on)
 import Data.Maybe (isJust,isNothing)
-import Data.List as List (reverse,cycle,take,filter,sortBy)
+import Data.List as List (cycle,take,filter,sortBy)
 
 import Prelude hiding (min,max)
 
@@ -450,9 +447,8 @@ instance Theme CardT where
           height =: 365px
 
       at @PackagesMenuActiveT do
-        width  =: 400px
+        width  =: 410px
         height =: 270px
-
 
       at @TutorialsMenuActiveT do
         width =: 540px
