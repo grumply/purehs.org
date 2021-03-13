@@ -43,10 +43,10 @@ blog rt xs = Searcher.searcher listing xs
   where
     listing v search xs
       | ts <- List.filter (\t -> isNothing (episode (t :: Post Rendered))) xs
-      = Div <| Themed @Searcher . Themed @Load |>
+      = Div <| Themed @Searcher |>
         [ Input <| Value v . OnInput (withInput search) . Placeholder "Search Posts"
         , Div <||> 
-          [ Div <| Themed @Listing |>
+          [ Div <| Themed @Listing . Themed @Load |>
             [ Article <| Themed @Article |> 
               [ Header <| Themed @Header |> 
                 [ Avatar.avatars (toList authors)

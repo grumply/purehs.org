@@ -25,10 +25,10 @@ authors = producing producer (consuming consumer)
     consumer = Searcher.searcher listing
       where
         listing v search as = 
-          Div <| Themed @Searcher . Themed @Load |>
+          Div <| Themed @Searcher |>
             [ Input <| Value v . OnInput (withInput search) . Placeholder "Search Authors"
             , Div <||> 
-              [ Div <| Themed @Listing |>
+              [ Div <| Themed @Listing . Themed @Load |>
                 [ Article <| Themed @Article |> 
                   [ Header <| Themed @Header |> 
                     [ Avatar.avatars [name]

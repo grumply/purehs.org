@@ -3,6 +3,7 @@ module Page where
 import App (req,App)
 import Components.Markdown (markdown)
 import Components.Problem (notFound)
+import Styles.Themes (Load)
 
 import Shared (getPage, getPageContent, backend)
 import Shared.Page (Page, PageContent(..))
@@ -25,7 +26,7 @@ page pg = producingKeyed pg producer (\_ -> consuming consumer)
       pure mpc
 
     consumer (Just (PageContent md)) = 
-      markdown md <| Themed @Page
+      markdown md <| Themed @Page . Themed @Load
 
     consumer Nothing = 
       notFound "Page"
