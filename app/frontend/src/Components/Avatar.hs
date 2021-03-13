@@ -1,12 +1,12 @@
 module Components.Avatar (avatar, avatars, Avatars) where
 
 import Components.Preload ( prelink )
-import Data.Route ( Route(AuthorR) )
+import Data.Route
 
 import Shared.Types ( Name(Name) )
 
 import Styles.Colors ( Color(alpha), green, black )
-import Styles.Themes ( Subarticles, customBoxShadow )
+import Styles.Themes
 
 import Pure.Data.Txt as Txt ( ToTxt(toTxt), replace )
 import Pure.Elm.Application hiding (render,Title,green,black,alpha,brightness)
@@ -15,7 +15,7 @@ import Prelude hiding (reverse)
 
 avatar :: Name -> View
 avatar nm0 = let nm = Txt.replace " " "_" nm0 in
-  A <| prelink (AuthorR nm0) |>
+  A <| prelink (AuthorRoute (AuthorR nm0)) |>
     [ Img <| Src ("/static/avatars/" <> toTxt nm <> ".jpg") . Alt (toTxt nm0)
     ]
 
@@ -63,7 +63,6 @@ instance Theme Avatars where
           height         =: 130px
           border         =* [5px,solid,toTxt green]
           box-shadow     =: customBoxShadow 0 15 30 (-5) (toTxt black { alpha = 0.65 })
-        
+ 
       within @Subarticles do
-        display =: none
-
+        display =: none     

@@ -49,7 +49,7 @@ linkEntities :: PackageName -> Types.Version -> ModuleName -> [View] -> [View]
 linkEntities pn v mn = go
   where
     go [] = []
-    go (Children [t@(TextView _ e)] H2 : rest) = H2 <||> [ A <| link (EntityR pn v mn e) |> [ t ] ] : go rest
+    go (Children [t@(TextView _ e)] H2 : rest) = H2 <||> [ A <| link (PackageRoute (PackageEntityR pn v mn e)) |> [ t ] ] : go rest
     go (x : xs) = x : go xs
 
 rebaseEntityLinks :: PackageName -> Types.Version -> ModuleName -> Entity -> Entity

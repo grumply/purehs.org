@@ -175,7 +175,7 @@ logo simple linked =
   in
     Div <| Themed @t |>
       [ if linked then
-          A <| link HomeR . Attribute "aria-label" "Home" |> [ svg simple ]
+          A <| link HomeRoute . Attribute "aria-label" "Home" |> [ svg simple ]
         else
           svg simple
       ]

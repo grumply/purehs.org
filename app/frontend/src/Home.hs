@@ -1,63 +1,55 @@
-module Pages.Home (page,Gradient) where
+module Home (home) where
+
+import qualified Shared
 
 import qualified App
-import qualified Styles.Themes as Themes
-import Data.Resource
-import Data.Placeholders
 import Shared.Page
 import qualified Components.Markdown as Markdown
 import Components.Header (header)
 import Components.Icons  (logo)
 import Components.Preload (prelink)
-import Data.Route ( Route(TutorialR, PageR, HomeR) )
+import Data.Route
 import Styles.Colors ( base, blue, green, lavender, teal, Color(brightness) )
 import Styles.Themes ( Button, buttonBoxShadow )
 
-import Control.Concurrent.Async
-
-import Pure.Elm.Application as Elm hiding (home,page,green,lavender,blue,brightness,teal,wait)
+import Pure.Elm.Application as Elm hiding (home,page,green,lavender,blue,brightness,teal)
 import Pure.Maybe
 
 import Prelude hiding (all,min,max)
 import Control.Monad
 import Data.Maybe
 
-page :: App.App => View
-page =
-  Div <| Themed @Home |>
-    [ header HomeR
-    , home
-    , exposition
-    ]
-
 home :: App.App => View
-home = 
-  Div <| Themed @Content |>
-    [ Div <| Themed @Intro |>
-      [ Div <| Themed @Hero |>
-        [ logo @HeroLogo False False 
-        , H2 <| Themed @Slogan |>
-          [ "Dynamic Hierarchical Contexts" ]
-        , P <| Themed @Description |>
-          [ "Performance + Expressiveness + Asynchrony" ]
-        , Div <| Themed @CallToAction |>
-          [ A <| prelink (TutorialR "5-minute") . Themed @Button . Themed @LearnPure |>
-            [ "Learn Pure.hs" ]
-          , A <| prelink (TutorialR "install") . Themed @Button . Themed @GetPure |>
-            [ "Get Pure.hs" ]
+home =
+  Div <| Themed @Home |>
+    [ header HomeRoute
+    , Div <| Themed @Content |>
+      [ Div <| Themed @Intro |>
+        [ Div <| Themed @Hero |>
+          [ logo @HeroLogo False False 
+          , H2 <| Themed @Slogan |>
+            [ "Dynamic Hierarchical Contexts" ]
+          , P <| Themed @Description |>
+            [ "Performance + Expressiveness + Asynchrony" ]
+          , Div <| Themed @CallToAction |>
+            [ A <| prelink (TutorialRoute (TutorialR "5-minute")) . Themed @Button . Themed @LearnPure |>
+              [ "Learn Pure.hs" ]
+            , A <| prelink (TutorialRoute (TutorialR "install")) . Themed @Button . Themed @GetPure |>
+              [ "Get Pure.hs" ]
+            ]
           ]
         ]
+      , Div <| Themed @Gradient
       ]
-    , Div <| Themed @Gradient
+    , exposition
     ]
 
 exposition :: App.App => View
 exposition = producing producer (consuming consumer)
   where     
     producer = do
-      PageResource ap apc <- load (PageR (fromTxt "about"))
-      mp  <- wait ap
-      mpc <- wait apc
+      mp <- App.req Shared.backend Shared.getPage (fromTxt "about")
+      mpc <- App.req Shared.backend Shared.getPageContent (fromTxt "about") 
       when (isNothing mp) do
         retitle "Not Found"
       pure mpc

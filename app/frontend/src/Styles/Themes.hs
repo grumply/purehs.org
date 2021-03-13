@@ -88,61 +88,6 @@ instance Theme WithHeader where
           padding-bottom =: 1px
     
 
-data Hide
-instance Theme Hide where
-  theme c =
-    is c do
-      has (subtheme @More) do
-        display =: none
-
-      has ".hide" do
-        display =: none
-
-        -- display any .more elements iff there is a .hide 
-        -- element before it at the same level
-        nexts (subtheme @More) do
-          display =: initial
-
-data Unhide
-instance Theme Unhide where
-  theme c =
-    is c do
-      -- double up for precedence
-      is c do
-        has ".hide" do
-          display =: initial
-
-          nexts (subtheme @More) do
-            display =: none
-
-data More
-instance Theme More where
-  theme c =
-    is c do
-
-      has (tag A) do
-        display       =: block
-        text-align    =: right
-        margin-right  =: 16px
-        margin-top    =: 30px
-        color         =: toTxt black
-        border-bottom =: none
-        background    =: none
-        font-size     =: 18px
-
-        hover do
-          color =: toTxt green
-          background =: none
-
-        visited do
-          color =: toTxt black
-          background =: none
-
-        visited do
-          hover do
-            color =: toTxt green
-            background =: none
-
 data HiddenMedium
 instance Theme HiddenMedium where
   theme c =
@@ -166,84 +111,6 @@ withHeader h c =
   Div <| Themed @WithHeader |> 
     [ h , c ]
 
-data Error
-instance Theme Error where
-  theme c =
-    is c do
-      width  =: (90%)
-      margin =* [40px,auto]
-
-      mediumScreens <%> do
-        width =: 720px
-
-      largeScreens <%> do
-        width =: 900px
-
-      child (tag Header) do
-        child (tag H1) do
-          margin-top    =: 0
-          margin-bottom =: 24px
-          color         =: toTxt lavender
-          font-size     =: 4em
-          font-family   =: titleFont
-        
-        child (tag H2) do
-          margin-bottom =: 44px
-          color         =: toTxt black
-          font-size     =: 1.5em
-          font-family   =: titleFont
-
-      has (tag P) do
-        color =: toTxt black
-        font-family =: defaultFont
-        line-height =: 28px
-        font-size   =: 16px
-
-        has (tag A) do
-
-          background-color =: toTxt (faded green)
-          border-bottom    =* [1px,solid,toTxt green]
-          color            =: toTxt black
-          text-decoration  =: none
-
-          hover do
-            background    =: toTxt green
-            border-bottom =* [1px,solid,toTxt black]
-
-problems :: Txt -> View -> View
-problems nm c =
-    Div <||>
-      [ Div <| Themed @Error |>
-        [ Header <||>
-          [ H1 <||> [ fromTxt (nm <> " not found.") ]
-          , H2 <||> [ "We couldn't find what you were looking for." ]
-          ]
-        , c
-        ]
-      ]
-
-notFound :: Txt -> View
-notFound nm = problems nm $ Div <||>
-  [ P <||> [ "Please contact the owner of the site that linked you to the original URL and let them know their link is broken." ]
-  , P <||> 
-    [ "If an internal link brought you here, please file a bug report "
-    , A <| Rel "noopener" . Attribute "target" "_blank" . Href "https://github.com/grumply/purehs.org/issues/new" |> [ "here" ]
-    , "."
-    ]
-  ]
-
-emptyList :: View -> View -> View
-emptyList h1 h2 = 
-  Div <||>
-    [ Div <| Themed @Error |>
-      [ Header <||> 
-        [ H1 <||> [ h1 ]
-        , H2 <||> [ h2 ]
-        ]
-      ]
-    ]
-
-
 loading :: View
 loading = 
     View (ChasingDots :: ChasingDots 2000 40 40 40 "#333")
@@ -264,14 +131,6 @@ instance Theme Button where
     text-decoration  =: none
     white-space      =: nowrap
 
-data Placeholder
-instance Theme Placeholder where
-  theme c =
-    is c do
-      important do
-        pointer-events =: none
-        filter_        =: blur(12px)
-
 data Load
 instance Theme Load where
   theme c = do
@@ -282,38 +141,11 @@ instance Theme Load where
       has from do
         opacity =: 0
         filter_ =: blur(8px)
+        transform =: translateY(5vh)
       has to do
-        filter_ =: none
         opacity =: 1
-
-data Latest
-instance Theme Latest
-data Version
-instance Theme Version
-data Versions
-instance Theme Versions where
-  theme c =
-    is c do
-      has (subtheme @Version) do
-        color =: toTxt gray
-
-        at @Latest do 
-          color =: toTxt black
-     
-        hover do
-          color =: toTxt green
-
-          visited do
-            color =: toTxt green
-
-            at @Latest do
-              color =: toTxt green
-
-        visited do
-          color =: toTxt gray
-
-          at @Latest do 
-            color =: toTxt black
+        filter_ =: none
+        transform =: translateY(0)
 
 data Header
 instance Theme Header where
@@ -449,28 +281,6 @@ instance Theme Article where
             float        =: left
             color        =: toTxt lavender
 
-      next (subtheme @Subarticles) do
-        margin-top =: (-70)px
-
-data Subarticles
-instance Theme Subarticles where
-  theme c =
-    is c do
-      padding-bottom =: 30px
-
-      child (tag H2) do
-        font-family =: titleFont
-        font-size   =: 2.5em
-        font-weight =: 400
-        color       =: toTxt base { brightness = 45 }
-        text-align  =: center
-
-      has (tag Article) do
-        padding-top    =: 60px
-        margin-bottom =: 50px
-
-      has (subtheme @Article) do
-        padding =* [30px,30px]
 
 data Listing
 instance Theme Listing where
@@ -546,3 +356,33 @@ instance Theme Searcher where
 
         hugeScreens <%> do
           width =: 900px
+
+data Latest
+instance Theme Latest
+data Version
+instance Theme Version
+
+
+data Subarticles
+instance Theme Subarticles where
+  theme c =
+    is c do
+      padding-bottom =: 30px
+
+      child (tag H2) do
+        font-family =: titleFont
+        font-size   =: 2.5em
+        font-weight =: 400
+        color       =: toTxt base { brightness = 45 }
+        text-align  =: center
+
+      has (tag Article) do
+        padding-top    =: 60px
+        margin-bottom =: 50px
+
+      has (subtheme @Article) do
+        padding =* [30px,30px]
+
+      within @Article do
+        margin-top =: (-70)px
+

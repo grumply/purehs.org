@@ -35,17 +35,17 @@ data Menu = BlogMenu | PackagesMenu | TutorialsMenu
   deriving (Eq,Ord,Enum,Show)
 
 target :: Menu -> Route
-target BlogMenu = BlogR
-target PackagesMenu = PackagesR
-target TutorialsMenu = TutorialsR 
+target BlogMenu = BlogRoute BlogR
+target PackagesMenu = PackageRoute PackagesR
+target TutorialsMenu = TutorialRoute TutorialsR 
 
 associated :: Route -> Menu -> Bool
-associated BlogR           BlogMenu = True
-associated PackagesR       PackagesMenu = True
-associated (PackageR _)    PackagesMenu = True
-associated TutorialsR      TutorialsMenu = True
-associated (TutorialR _)   TutorialsMenu = True
-associated _               _        = False
+associated (BlogRoute BlogR) BlogMenu = True
+associated (PackageRoute PackagesR) PackagesMenu = True
+associated (PackageRoute (PackageR _)) PackagesMenu = True
+associated (TutorialRoute TutorialsR) TutorialsMenu = True
+associated (TutorialRoute (TutorialR _)) TutorialsMenu = True
+associated _ _ = False
 
 menuname :: Menu -> Txt
 menuname BlogMenu = "Blog"
@@ -183,7 +183,7 @@ blogMenu ses =
     [ Section <| Themed @MenuTopT |>
       [ -- Book SVG
         Header <||> 
-        [ H1 <||> [ A <| prelink BlogR |> [ newsIcon, "Blog" ] ]
+        [ H1 <||> [ A <| prelink (BlogRoute BlogR) |> [ newsIcon, "Blog" ] ]
         , P  <||> [ "Get news and important announcements about Pure.hs" ]
         ]
       , Section <||>
@@ -194,7 +194,7 @@ blogMenu ses =
             producing @[Post Rendered] (App.req Shared.backend Shared.listPosts ()) $ consuming $ \ps ->
               Ul <||> 
                 [ Li <||>
-                  [ A <| prelink (PostR slug) |>
+                  [ A <| prelink (BlogRoute (PostR slug)) |>
                     [ txt (toTxt title <> " ❯") ]
                   ]
                 | Post {..} <- List.take 4 (List.cycle $ List.sortBy (flip compare) ps)
@@ -213,14 +213,14 @@ blogMenu ses =
         Footer <| Themed @MenuBottomT |>
           [ Div <||>
             [ list 
-              [ (aboutIcon,"Blog",Right BlogR)
-              , (installIcon,"Install",Right (TutorialR "install"))
+              [ (aboutIcon,"Blog",Right (BlogRoute BlogR))
+              , (installIcon,"Install",Right (TutorialRoute (TutorialR "install")))
               , (playIcon,"Try It Live",Left "http://try.purehs.org")
               , (gitHubLogo_alt,"GitHub",Left "https://github.com/grumply/pure-platform")
               ]
             , list 
-              [ (authorsIcon,"Authors",Right AuthorsR)
-              , (newsIcon,"Blog",Right BlogR)
+              [ (authorsIcon,"Authors",Right (AuthorRoute AuthorsR))
+              , (newsIcon,"Blog",Right (BlogRoute BlogR))
               , (discourseIcon,"Forum",Left "http://discourse.purehs.org")
               , (discordIcon,"Chat",Left "https://discord.gg/hVkMsEA")
               ]
@@ -233,7 +233,7 @@ documentationMenu ses =
   Div <||>
     [ Section <| Themed @MenuTopT |> 
       [ Header <||> 
-        [ H1 <||> [ A <| prelink PackagesR |> [ compoundIcon, "Packages" ] ]
+        [ H1 <||> [ A <| prelink (PackageRoute PackagesR) |> [ compoundIcon, "Packages" ] ]
         , P  <||> [ "Per-package documentation, blogs and tutorials." ]
         ]
       , Div <||>
@@ -247,7 +247,7 @@ documentationMenu ses =
           in producing @[Package] rq $ consuming $ \ps ->
               Ul <||> 
                 [ Li <||>
-                  [ A <| prelink (PackageR name) |>
+                  [ A <| prelink (PackageRoute (PackageR name)) |>
                     [ txt (toTxt name <> " ❯") ]
                   , P <||>
                     [ txt short ]
@@ -264,7 +264,7 @@ tutorialsMenu ses =
   Div <||>
     [ Section <| Themed @MenuTopT |> 
       [ Header <||> 
-        [ H1 <||> [ A <| prelink TutorialsR |> [ codeIcon, "Tutorials" ] ]
+        [ H1 <||> [ A <| prelink (TutorialRoute TutorialsR) |> [ codeIcon, "Tutorials" ] ]
         , P  <||> [ "Start learning Pure.hs development." ]
         ]
       , Section <||>
@@ -280,7 +280,7 @@ tutorialsMenu ses =
             in producing @[Tutorial Rendered] rq $ consuming $ \ts ->
                 Ul <||> 
                   [ Li <||>
-                    [ A <| prelink (TutorialR slug) |>
+                    [ A <| prelink (TutorialRoute (TutorialR slug)) |>
                       [ txt (toTxt title <> " ❯") ]
                     , P <||>
                       [ txt short ]
@@ -301,12 +301,12 @@ tutorialsMenu ses =
         Footer <| Themed @MenuBottomT |> 
           [ Div <||>
             [ list 
-              [ (installIcon,"Quickstart",Right (TutorialR "quickstart"))
-              , (timerIcon,"5-Minute Series",Right (TutorialR "5-minute"))
+              [ (installIcon,"Quickstart",Right (TutorialRoute (TutorialR "quickstart")))
+              , (timerIcon,"5-Minute Series",Right (TutorialRoute (TutorialR "5-minute")))
               ]
             , list
-              [ (lightbulbIcon,"Examples",Right (PageR "examples"))
-              , (cookIcon,"Cookbook",Right (PageR "cookbook"))
+              [ (lightbulbIcon,"Examples",Right (PageRoute "examples"))
+              , (cookIcon,"Cookbook",Right (PageRoute "cookbook"))
               ]
             ]
           ]

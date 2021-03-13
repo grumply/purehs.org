@@ -1,6 +1,4 @@
-module Components.Section where
-
-import Data.Render
+module Components.Section (section,Section(..)) where
 
 import qualified Shared.Types as Types
 
@@ -10,22 +8,21 @@ import Styles.Responsive
 import Styles.Themes
 
 import Pure.Elm.Application hiding (Section)
-import qualified Pure.Elm.Application as Elm
+import qualified Pure.Elm.Application as Pure
 
 import Prelude hiding (max)
 
 data Section = Section View View
 
-instance Render Section where
-  render (Section header content) =
-    Elm.Section <| Themed @SectionT |>
-      [ Header <||>
-        [ H2 <||> [ header ] ]
-      , content
-      ]
+section :: Section -> View
+section (Section header content) =
+  Pure.Section <| Themed @Section |>
+    [ Header <||>
+      [ H2 <||> [ header ] ]
+    , content
+    ]
 
-data SectionT
-instance Theme SectionT where
+instance Theme Section where
   theme c = void $
     is c $ do
       width  =: (100%)

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 23aaf1b6a7b468747bab134695622a6a1e396d8cde48d858f76aba00721a8f8b
+-- hash: 391b8a8ebb8ec1ecf6b853ec66f4d257d15827aa99b626eb9480a6e3a921476e
 
 name:           frontend
 version:        0.1.0.0
@@ -20,6 +20,9 @@ executable frontend
   main-is: Main.hs
   other-modules:
       App
+      Author
+      Authors
+      Blog
       Cache
       Components.Author
       Components.Avatar
@@ -33,8 +36,10 @@ executable frontend
       Components.Header
       Components.Icons
       Components.Markdown
+      Components.More
       Components.Nav
       Components.Preload
+      Components.Problem
       Components.Published
       Components.Searcher
       Components.Section
@@ -44,15 +49,21 @@ executable frontend
       Components.Twitter
       Components.Version
       Data.Entity
-      Data.Placeholders
-      Data.Render
-      Data.Resource
       Data.Route
-      Pages.Home
+      Entity
+      Home
+      Module
+      Package
+      Packages
+      Page
+      Post
       Styles.Colors
       Styles.Fonts
       Styles.Responsive
       Styles.Themes
+      Tutorial
+      Tutorials
+      Version
       Paths_frontend
   hs-source-dirs:
       src

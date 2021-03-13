@@ -11,61 +11,68 @@ breadcrumbs :: App.App => Route -> [View]
 breadcrumbs r =
   case r of
 
-    BlogR                     -> b : []
-    PostR _                   -> b : []
+    BlogRoute r -> case r of
+      BlogR                     -> b : []
+      PostR _                   -> b : []
 
-    TutorialsR                -> t : []
-    TutorialR _               -> t : []
+    TutorialRoute r -> case r of 
+      TutorialsR                -> t : []
+      TutorialR _               -> t : []
 
-    AuthorsR                  -> a : []
-    AuthorR nm                -> a : chevron : n nm : []
-    AuthorPackagesR nm        -> a : chevron : n nm : []
-    AuthorTutorialsR nm       -> a : chevron : n nm : []
-    AuthorPostsR nm           -> a : chevron : n nm : []
+    AuthorRoute r -> case r of
+      AuthorsR                  -> a : []
+      AuthorR nm                -> a : chevron : n nm : []
+      AuthorPackagesR nm        -> a : chevron : n nm : []
+      AuthorTutorialsR nm       -> a : chevron : n nm : []
+      AuthorBlogR nm            -> a : chevron : n nm : []
 
-    PackagesR                 -> ps : []
-    PackageR pn               -> ps : chevron : p pn : []
-    PackageBlogR pn           -> ps : chevron : p pn : []
-    PackagePostR pn _         -> ps : chevron : p pn : []
-    VersionR pn ver           -> ps : chevron : p pn : chevron : v pn ver : []
-    VersionTutorialsR pn ver  -> ps : chevron : p pn : chevron : v pn ver : []
-    VersionTutorialR pn ver _ -> ps : chevron : p pn : chevron : v pn ver : []
-    ModuleR pn ver _          -> ps : chevron : p pn : chevron : v pn ver : []
-    EntityR pn ver _ _        -> ps : chevron : p pn : chevron : v pn ver : []
+    PackageRoute r -> case r of
+      PackagesR                 -> ps : []
+      PackageR pn               -> ps : chevron : p pn : []
+      PackageBlogR pn _         -> ps : chevron : p pn : []
+      PackageVersionR pn ver    -> ps : chevron : p pn : chevron : v pn ver : []
+      PackageTutorialR pn ver _ -> ps : chevron : p pn : chevron : v pn ver : []
+      PackageModuleR pn ver _   -> ps : chevron : p pn : chevron : v pn ver : []
+      PackageEntityR pn ver _ _ -> ps : chevron : p pn : chevron : v pn ver : []
 
-    _                         -> []
+    _                           -> []
   where
     chevron  = " ❯ " 
-    ps       = A <| prelink PackagesR |> [ "Packages" ]
-    p pn     = A <| prelink (PackageR pn) |> [ txt pn ] 
-    v pn ver = A <| prelink (VersionR pn ver) |> [ txt ver ]
-    b        = A <| prelink BlogR |> [ "Blog" ]
-    t        = A <| prelink TutorialsR |> [ "Tutorials" ]
-    a        = A <| prelink AuthorsR |> [ "Authors" ]
-    n nm     = A <| prelink (AuthorR nm) |> [ txt nm ]
+    ps       = A <| prelink (PackageRoute PackagesR) |> [ "Packages" ]
+    p pn     = A <| prelink (PackageRoute (PackageR pn)) |> [ txt pn ] 
+    v pn ver = A <| prelink (PackageRoute (PackageVersionR pn ver)) |> [ txt ver ]
+    b        = A <| prelink (BlogRoute BlogR) |> [ "Blog" ]
+    t        = A <| prelink (TutorialRoute TutorialsR) |> [ "Tutorials" ]
+    a        = A <| prelink (AuthorRoute AuthorsR) |> [ "Authors" ]
+    n nm     = A <| prelink (AuthorRoute (AuthorR nm)) |> [ txt nm ]
 
 sublinks :: App.App => Route -> [View]
 sublinks r =
   case r of
-    AuthorR n               -> ps n : pkgs n : ts n : []
-    AuthorPackagesR n       -> ps n : pkgs n : ts n : []
-    AuthorTutorialsR n      -> ps n : pkgs n : ts n : []
-    AuthorPostsR n          -> ps n : pkgs n : ts n : []
-    EntityR pn v mn _       -> m pn v mn : []
-    PackageR pn             -> pb pn : []
-    PackagePostR pn _       -> pb pn : []
-    PackageBlogR pn         -> pb pn : []
-    VersionTutorialsR pn v  -> pb pn : pts pn v : []
-    VersionTutorialR pn v _ -> pb pn : pts pn v : []
-    VersionR pn v           -> pb pn : pts pn v : []
-    _                       -> []
+    AuthorRoute r -> case r of
+      AuthorR n                 -> ps n : pkgs n : ts n : []
+      AuthorPackagesR n         -> ps n : pkgs n : ts n : []
+      AuthorTutorialsR n        -> ps n : pkgs n : ts n : []
+      AuthorBlogR n             -> ps n : pkgs n : ts n : []
+      _                         -> []
+
+    PackageRoute r -> case r of
+      PackagesR                 -> []
+      PackageR pn               -> pb pn : []
+      PackageBlogR pn _         -> pb pn : []
+      PackageVersionR pn v      -> pb pn : pts pn v : []
+      PackageTutorialR pn v _   -> pb pn : pts pn v : []
+      PackageModuleR pn v mn    -> m pn v mn : []
+      PackageEntityR pn v mn e  -> m pn v mn : []
+
+    _                           -> []
   where
-    ps n      = A <| prelink (AuthorPostsR n)     |> [ "Posts" ]
-    pkgs n    = A <| prelink (AuthorPackagesR n)  |> [ "Packages" ]
-    ts n      = A <| prelink (AuthorTutorialsR n) |> [ "Tutorials" ]
-    pb pn     = A <| prelink (PackageBlogR pn)    |> [ "Blog" ]
-    pts pn v  = A <| prelink (VersionTutorialsR pn v) |> [ "Tutorials" ]
-    m pn v mn = A <| Themed @Hideable . prelink (ModuleR pn v mn) |> [ txt mn ]
+    ps n      = A <| prelink (AuthorRoute (AuthorBlogR n)) |> [ "Posts" ]
+    pkgs n    = A <| prelink (AuthorRoute (AuthorPackagesR n)) |> [ "Packages" ]
+    ts n      = A <| prelink (AuthorRoute (AuthorTutorialsR n)) |> [ "Tutorials" ]
+    pb pn     = A <| prelink (PackageRoute (PackageBlogR pn BlogR)) |> [ "Blog" ]
+    pts pn v  = A <| prelink (PackageRoute (PackageTutorialR pn v TutorialsR)) |> [ "Tutorials" ]
+    m pn v mn = A <| Themed @Hideable . prelink (PackageRoute (PackageModuleR pn v mn)) |> [ txt mn ]
 
 data Hideable
 instance Theme Hideable where

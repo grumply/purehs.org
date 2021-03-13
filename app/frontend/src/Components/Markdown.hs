@@ -4,7 +4,6 @@ module Components.Markdown where
 import Components.Editor as Editor
 import Components.CopyToClipboard
 import Components.Preload
-import Data.Render
 import Styles.Colors
 import Styles.Fonts
 import Styles.Responsive

@@ -16,8 +16,8 @@ import Prelude hiding ( max )
 header :: App.App => Route -> View
 header rt =
   let 
-    transp | HomeR <- rt = True
-           | otherwise   = False
+    transp | HomeRoute <- rt = True
+           | otherwise       = False
     t = if transp then id else Themed @SolidHeaderT
     b = if transp then barMinusLogo else bar
   in 

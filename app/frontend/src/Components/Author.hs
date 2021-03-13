@@ -1,13 +1,13 @@
 module Components.Author (authors, author, Author(), Authors()) where
 
 import Components.Preload ( prelink )
-import Data.Route ( Route(AuthorR) )
+import Data.Route
 
 import Shared.Types (Authors(..),Name)
 
 import Styles.Colors ( lavender, green )
 import Styles.Fonts ( titleFont )
-import Styles.Themes ( Placeholder, Listing )
+import Styles.Themes ( Listing )
 
 import Pure.Elm.Application hiding (render,Title,green,black,lavender,brightness,blue)
 
@@ -24,7 +24,7 @@ authors (Authors as) =
 author :: Name -> View
 author nm =
     Address <| Themed @Author |>
-      [ A <| Rel "author" . prelink (AuthorR nm) |>
+      [ A <| Rel "author" . prelink (AuthorRoute (AuthorR nm)) |>
         [ txt nm ]
       ]
 
