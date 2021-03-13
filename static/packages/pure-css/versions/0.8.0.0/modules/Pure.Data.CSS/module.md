@@ -1026,7 +1026,7 @@ atMedia :: Txt -> CSS a -> CSS a
 ```
 
 <div class="note">
-See the [MDN documentation for @media](https://developer.mozilla.org/en-US/docs/Web/CSS/@media).
+See the [MDN documentation for \@media](https://developer.mozilla.org/en-US/docs/Web/CSS/@media).
 </div>
 
 ## atPage
@@ -1038,7 +1038,7 @@ atPage :: Txt -> CSS a -> CSS a
 ```
 
 <div class="note">
-See the [MDN documentation for @page](https://developer.mozilla.org/en-US/docs/Web/CSS/@page).
+See the [MDN documentation for \@page](https://developer.mozilla.org/en-US/docs/Web/CSS/@page).
 </div>
 
 ## atFontFace
@@ -1050,7 +1050,7 @@ atFontFace :: Txt -> CSS a -> CSS a
 ```
 
 <div class="note">
-See the [MDN documentation for @font-face](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face).
+See the [MDN documentation for \@font-face](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face).
 </div>
 
 ## atKeyframes
@@ -1062,5 +1062,5 @@ atKeyFrames :: Txt -> CSS a -> CSS a
 ```
 
 <div class="note">
-See the [MDN documentation for @keyframes](https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes).
+See the [MDN documentation for \@keyframes](https://developer.mozilla.org/en-US/docs/Web/CSS/@keyframes).
 </div>
