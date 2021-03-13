@@ -1,7 +1,7 @@
 
 # A Haskell Framework
 
-Pure.hs was developed to fill the role of modern application design within Haskell by implementing a compelling abstraction for the client applications as well as web servers and services.
+Pure.hs was developed to fill the role of modern application design within Haskell by implementing a compelling abstraction for client applications as well as web servers and services.
 
 If you know one of Haskell, Elm, PureScript, or ReactJS, you'll be able to design applications with Pure.hs.
 

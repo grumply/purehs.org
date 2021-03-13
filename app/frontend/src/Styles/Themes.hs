@@ -385,4 +385,3 @@ instance Theme Subarticles where
 
       within @Article do
         margin-top =: (-70)px
-

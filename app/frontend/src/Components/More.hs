@@ -1,4 +1,4 @@
-module Components.More (more,More) where
+module Components.More (more,More,Unhide) where
 
 import qualified Components.Preload as Preload
 import Data.Route
@@ -40,3 +40,14 @@ instance Theme More where
             color =: toTxt green
             background =: none
 
+data Unhide
+instance Theme Unhide where
+  theme c =
+    is c do
+      -- double up for precedence
+      is c do
+        has ".hide" do
+          display =: initial
+
+          nexts (subtheme @More) do
+            display =: none

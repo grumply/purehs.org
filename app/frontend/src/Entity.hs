@@ -4,6 +4,7 @@ import App (req,App)
 import qualified Components.Problem as Problem
 import qualified Components.Markdown as Markdown
 import qualified Components.Title as Title
+import qualified Components.More as More
 import Data.Entity
 import Data.Route
 import Styles.Themes
@@ -39,7 +40,7 @@ entity pn v mn e = producingKeyed (pn,v,mn,e) producer (\(pn,v,mn,e) -> consumin
       , es     <- entities pn v m
       , Just e <- List.find (\(Entity _ en _) -> e == en) es
       , Entity ety en (EntityView vs) <- rebaseEntityLinks pn v mn e
-      = Div <| Themed @Subarticles . Themed @Load |>
+      = Div <| Themed @Subarticles . Themed @More.Unhide . Themed @Load |>
         [ Div <| Themed @Article |>
           [ Header <| Themed @Header |>
             [ Title.title (PackageRoute (PackageEntityR pn v mn en)) (toTxt en)
