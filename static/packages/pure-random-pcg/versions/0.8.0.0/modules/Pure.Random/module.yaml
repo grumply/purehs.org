@@ -1,0 +1,5 @@
+name: Pure.Random
+description: |
+  Pseudo-random number generators and utilities.
+excerpt: |
+  Basic pseudo-random number generators with utlities for their creation and use.

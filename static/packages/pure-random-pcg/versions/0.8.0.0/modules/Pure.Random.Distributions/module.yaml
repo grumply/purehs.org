@@ -1,0 +1,5 @@
+name: Pure.Random.Distributions
+description: |
+  Generators for distributions.
+excerpt: |
+  Various normal and non-normal distribution generators.
