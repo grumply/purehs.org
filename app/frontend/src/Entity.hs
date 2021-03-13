@@ -34,7 +34,6 @@ entity pn v mn e = producingKeyed (pn,v,mn,e) producer (\(pn,v,mn,e) -> consumin
         v <- mv
         pure (p,v,ms)
 
-    consumer (pn,v,mn,e) Nothing = Problem.notFound "Entity"
     consumer (pn,v,mn,e) (Just (Package {..},Package.Version {..},ms))
       | Just m <- List.find (\(Module {..},_) -> mn == name) ms
       , es     <- entities pn v m
@@ -48,3 +47,4 @@ entity pn v mn e = producingKeyed (pn,v,mn,e) producer (\(pn,v,mn,e) -> consumin
           , Markdown.markdown $ Rendered vs
           ]
         ]
+    consumer _ _ = Problem.notFound "Entity"
