@@ -1,0 +1,6 @@
+name: Pure.Data.Bloom
+description: |
+  Simple Bloom filter data structure
+excerpt: |
+  Implements a simple text-oriented mutable thread-safe Bloom filter
+

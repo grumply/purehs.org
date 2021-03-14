@@ -1,0 +1,15 @@
+name: pure-bloom
+author: Sean Hickman
+latest: 0.8.0.0
+published: 2021-03-13
+license: BSD3
+repository: github.com/grumply/pure-bloom.git
+homepage: purehs.org/packages/pure-bloom
+collaborators: []
+tags:
+  - data
+  - bloom
+short: |
+  Simple Bloom filter
+description: |
+  Simple thread-safe mutable text-oriented Bloom filter
