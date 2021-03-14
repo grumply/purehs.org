@@ -35,7 +35,6 @@ module_ pn v mn = producing producer (consuming consumer)
         v <- mv
         pure (p,v,ms)
 
-    consumer Nothing = Problem.notFound "Module"
     consumer (Just (Package {..},Package.Version {..},ms))
       | Just m <- List.find (\(Module {..},_) -> mn == name) ms
       , es     <- entities pn v m
@@ -56,6 +55,7 @@ module_ pn v mn = producing producer (consuming consumer)
               , let more = [ Div <| Themed @More.More |> [ A <| url Href Href (location (PackageRoute (PackageEntityR pn v mn en))) |> [ "See More >" ]] ]
               ]
             ]
+    consumer _ = Problem.notFound "Module"
 
 data Hide
 instance Theme Hide where
