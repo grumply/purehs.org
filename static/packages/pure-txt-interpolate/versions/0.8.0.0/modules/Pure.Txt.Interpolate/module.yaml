@@ -1,0 +1,6 @@
+name: Pure.Txt.Interpolate
+description: |
+  String interpolation QuasiQuoter
+excerpt: |
+  Implements string interpolation with a TemplateHaskell QuasiQuoter.
+

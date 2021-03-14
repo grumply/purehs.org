@@ -1,0 +1,15 @@
+name: pure-txt-interpolate
+author: Sean Hickman
+latest: 0.8.0.0
+published: 2021-03-13
+license: BSD3
+repository: github.com/grumply/pure-txt-interpolate.git
+homepage: purehs.org/packages/pure-txt-interpolate
+collaborators: []
+tags:
+  - interpolate
+  - text
+short: |
+  String interpolation
+description: |
+  String interpolation with a TemplateHaskell QuasiQuoter.
