@@ -192,6 +192,24 @@ pattern OnDoubleClickWith :: HasFeatures a => Options -> (Evt -> IO ()) -> a -> 
 pattern OnDoubleClickWith opts f a = OnWith opts "dblclick" f a
 ```
 
+## pattern OnWheel
+
+`OnWheel` is an element listener for the [wheel](https://developer.mozilla.org/en-US/docs/Web/API/Element/wheel_event) event.
+
+```haskell
+pattern OnWheel :: HasFeatures a => (Evt -> IO ()) -> a -> a
+pattern OnWheel f a = On "wheel" f a
+```
+
+## pattern OnWheelWith
+
+`OnWheelWith` is an element listener for the [wheel](https://developer.mozilla.org/en-US/docs/Web/API/Element/wheel_event) event with listener [Options](/packages/pure-lifted/0.8.0.0/Pure.Data.Lifted/data%20Options).
+
+```haskell
+pattern OnWheelWith :: HasFeatures a => Options -> (Evt -> IO ()) -> a -> a
+pattern OnWheelWith opts f a = OnWith opts "wheel" f a
+```
+
 ## pattern OnMouseDown
 
 `OnMouseDown` is an element listener for the [mousedown](https://developer.mozilla.org/en-US/docs/Web/API/Element/mousedown_event) event.
@@ -263,6 +281,71 @@ pattern OnTouchEnd f a = On "touchend" f a
 pattern OnTouchEndWith :: HasFeatures a => Options -> (Evt -> IO ()) -> a -> a
 pattern OnTouchEndWith opts f a = OnWith opts "touchend" f a
 ```
+
+## pattern OnGestureStart
+
+`OnGestureStart` is an element listener for the Safari-only [gesturestart](https://developer.mozilla.org/en-US/docs/Web/API/Element/gesturestart_event) event.
+
+```haskell
+pattern OnGestureStart :: HasFeatures a => (Evt -> IO ()) -> a -> a
+pattern OnGestureStart f a = On "gesturestart" f a
+```
+
+## pattern OnGestureStartWith
+
+`OnGestureStartWith` is an element listener for the Safari-only [gesturestart](https://developer.mozilla.org/en-US/docs/Web/API/Element/gesturestart_event) event with listener [Options](/packages/pure-lifted/0.8.0.0/Pure.Data.Lifted/data%20Options).
+
+```haskell
+pattern OnGestureStartWith :: HasFeatures a => Options -> (Evt -> IO ()) -> a -> a
+pattern OnGestureStartWith opts f a = On opts "gesturestart" f a
+```
+
+## pattern OnGestureChange
+
+`OnGestureChange` is an element listener for the Safari-only [gesturechange](https://developer.mozilla.org/en-US/docs/Web/API/Element/gesturechange_event) event.
+
+```haskell
+pattern OnGestureChange :: HasFeatures a => (Evt -> IO ()) -> a -> a
+pattern OnGestureChange f a = On "gesturechange" f a
+```
+
+## pattern OnGestureChangeWith
+
+`OnGestureChangeWith` is an element listener for the Safari-only [gesturechange](https://developer.mozilla.org/en-US/docs/Web/API/Element/gesturechange_event) event with listener [Options](/packages/pure-lifted/0.8.0.0/Pure.Data.Lifted/data%20Options).
+
+```haskell
+pattern OnGestureChangeWith :: HasFeatures a => Options -> (Evt -> IO ()) -> a -> a
+pattern OnGestureChangeWith opts f a = On opts "gesturechange" f a
+```
+
+## pattern OnGestureEnd
+
+`OnGestureEnd` is an element listener for the Safari-only [gestureend](https://developer.mozilla.org/en-US/docs/Web/API/Element/gestureend_event) event.
+
+```haskell
+pattern OnGestureEnd :: HasFeatures a => (Evt -> IO ()) -> a -> a
+pattern OnGestureEnd f a = On "gestureend" f a
+```
+
+## pattern OnGestureEndWith
+
+`OnGestureEndWith` is an element listener for the Safari-only [gestureend](https://developer.mozilla.org/en-US/docs/Web/API/Element/gestureend_event) event with listener [Options](/packages/pure-lifted/0.8.0.0/Pure.Data.Lifted/data%20Options).
+
+```haskell
+pattern OnGestureEndWith :: HasFeatures a => Options -> (Evt -> IO ()) -> a -> a
+pattern OnGestureEndWith opts f a = On opts "gestureend" f a
+```
+
+## pattern OnMouseUpWith
+
+`OnMouseUpWith` is an element listener for the [mouseup](https://developer.mozilla.org/en-US/docs/Web/API/Element/mouseup_event) event with listener [Options](/packages/pure-lifted/0.8.0.0/Pure.Data.Lifted/data%20Options).
+
+```haskell
+pattern OnMouseUpWith :: HasFeatures a => Options -> (Evt -> IO ()) -> a -> a
+pattern OnMouseUpWith opts f a = OnWith opts "mouseup" f a
+```
+
+
 
 ## pattern OnMouseEnter
 
