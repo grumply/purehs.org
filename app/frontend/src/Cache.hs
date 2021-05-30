@@ -37,7 +37,7 @@ data Msg
   | Startup
 
 cache :: WS.WebSocket -> View
-cache = run (Applet [Startup] [] [] mdl upon view)
+cache = run (Applet [Startup] [] [] (pure mdl) upon view)
   where
     mdl = Model Map.empty
     

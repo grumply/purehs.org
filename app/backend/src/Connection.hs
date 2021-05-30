@@ -22,7 +22,7 @@ data Msg = Startup
 connection :: WebSocket -> View
 connection = run app
   where
-    app = App [Startup] [] [] mdl update view
+    app = App [Startup] [] [] (pure mdl) update view
     mdl = Model
     view _ _ = Null
 

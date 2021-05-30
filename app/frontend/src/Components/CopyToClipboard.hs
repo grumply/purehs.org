@@ -24,7 +24,7 @@ copyToClipboard n =
 
 data Msg = Copied | Received
 copyable :: View -> View
-copyable = run (App [] [Received] [] mdl update view) 
+copyable = run (App [] [Received] [] (pure mdl) update view) 
   where
     mdl = False
     update Copied _ _ = pure True

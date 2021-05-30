@@ -16,7 +16,7 @@ data Model x = Model Txt [x]
 
 {-# INLINE searcher #-}
 searcher :: (Search x, Typeable x) => Renderer x -> [x] -> View
-searcher f xs = run (App [Run] [Run] [] (Model "" []) update view) (Env xs f)
+searcher f xs = run (App [Run] [Run] [] (pure (Model "" [])) update view) (Env xs f)
 
 {-# INLINE update #-}
 update :: (Search x) => Msg -> Env x -> Model x -> IO (Model x)

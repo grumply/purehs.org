@@ -57,7 +57,7 @@ data Model = Model
 data Msg = Clicked Menu | Focused Menu | Touched Menu | Blurred | Preload Route
 
 nav :: App.App => Route -> View
-nav = let upd = update in run (App [] [] [] (Model Nothing False) upd (view session))
+nav = let upd = update in run (App [] [] [] (pure (Model Nothing False)) upd (view session))
 
 update :: App.App => Msg -> Route -> Model -> IO Model
 update (Clicked menu) _ mdl = do

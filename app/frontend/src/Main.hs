@@ -41,7 +41,7 @@ main = do
   inject body (cache ws)
   inject body (Div <| Themed @Themes.App |> [ run (app ws) App.Settings ])
   where
-    app ws = App [App.Startup] [] [App.Routed] [] (App.mkSession ws) update Main.view
+    app ws = App [App.Startup] [] [App.Routed] [] (pure (App.mkSession ws)) update Main.view
 
 update :: Route -> Message -> Settings -> Session -> IO Session
 update _ App.Startup _ ses =

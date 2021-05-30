@@ -89,7 +89,7 @@ data Msg
   | Receive | Refresh
 
 editor :: View -> View
-editor = run (App [] [Receive] [] (Model Editing Waiting Default def def) update view)
+editor = run (App [] [Receive] [] (pure (Model Editing Waiting Default def def)) update view)
   where
     update :: Elm Msg => Msg -> View -> Model -> IO Model
     update Receive _ mdl = do

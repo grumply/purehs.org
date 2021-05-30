@@ -263,7 +263,7 @@ animatedLogo =
 
 -- TODO: add animations to typing logo and figure out layout
 typingLogo :: View
-typingLogo = run (Applet [Step] [] [] mdl update view) ()
+typingLogo = run (Applet [Step] [] [] (pure mdl) update view) ()
   where
     mdl = Model 0
     update Step _ (Model s) = pure $ Model (s + 1)
