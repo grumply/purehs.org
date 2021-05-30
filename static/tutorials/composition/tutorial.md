@@ -18,7 +18,7 @@ First, we'll simplify our root model. Gloom will now manage it's own state, and 
 data Model = Doom | Gloom
 type Msg   = Model
 
-app = run (App [] [] [] Doom update view) ()
+app = run (App [] [] [] (pure Doom) update view) ()
   where
     update msg _ _ = pure msg
 
@@ -54,7 +54,7 @@ data Countdown = Countdown Time Time
 data Clock = Startup | Tick
 
 gloom :: IO () -> View
-gloom = run (App [Startup] [] [] mdl update view)
+gloom = run (App [Startup] [] [] (pure mdl) update view)
   where
     mdl = Countdown 0 0
 
@@ -95,7 +95,7 @@ main = inject body app
 data Model = Doom | Gloom
 type Msg   = Model
 
-app = run (App [] [] [] Doom update view) ()
+app = run (App [] [] [] (pure Doom) update view) ()
   where
     update msg _ _ = pure msg
 
@@ -110,7 +110,7 @@ data Countdown = Countdown Time Time
 data Clock = Startup | Tick
 
 gloom :: IO () -> View
-gloom = run (App [Startup] [] [] mdl update view)
+gloom = run (App [Startup] [] [] (pure mdl) update view)
  where
   mdl = Countdown 0 0
 

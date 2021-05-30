@@ -21,7 +21,7 @@ test =
 lazy :: View -> View 
 lazy = run app
   where
-    app = App [] [] [] mdl upon view
+    app = App [] [] [] (pure mdl) upon view
     
     -- Default to not loaded
     mdl = False

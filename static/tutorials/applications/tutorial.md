@@ -23,7 +23,7 @@ data Model = Doom  | Gloom { safe :: Time, remaining :: Time }
 data Msg   = Start | Fired | Ticked | Dissipated
 
 app :: View
-app = run (App [Start] [] [] Doom update view) ()
+app = run (App [Start] [] [] (pure Doom) update view) ()
 
 update :: Elm Msg => Msg -> () -> Model -> IO Model
 update Start _ mdl = do
@@ -71,7 +71,7 @@ main = inject body app
 An application is started with the `run` command.
 
 ```haskell
-app = run (App [Start] [] [] Doom update view) ()
+app = run (App [Start] [] [] (pure Doom) update view) ()
 ```
 
 ### Properties
@@ -201,7 +201,7 @@ data Model = Doom  | Gloom { safe :: Time, remaining :: Time }
 data Msg   = Start | Fired | Ticked | Dissipated
 
 app :: View
-app = run (App [Start] [] [] Doom update view) ()
+app = run (App [Start] [] [] (pure Doom) update view) ()
 
 update :: Elm Msg => Msg -> () -> Model -> IO Model
 update Start _ mdl = do

@@ -29,7 +29,7 @@ main = inject body counter
 newtype Counter = Counter Int deriving (Num)
 data Msg = Increment | Decrement
 
-counter = run (App [] [] [] (Counter 0) update view) ()
+counter = run (App [] [] [] (pure (Counter 0)) update view) ()
 
 update Increment _ c = pure (c + 1)
 update Decrement _ c = pure (c - 1)
@@ -55,7 +55,7 @@ main = do
 data Model = Model Seed (Maybe Int)
 data Msg = Roll
 
-die s = run (App [] [] [] (Model s Nothing) update view) ()
+die s = run (App [] [] [] (pure (Model s Nothing)) update view) ()
 
 update Roll _ (Model s _) =
   let (s',x) = generate (uniformR 1 6) s
@@ -78,7 +78,7 @@ newtype Name = Name Txt deriving (ToTxt,FromTxt,Eq,Semigroup)
 
 data Msg = SetName Name
 
-input = run (App [] [] [] (Name "") update view) ()
+input = run (App [] [] [] (pure (Name "")) update view) ()
 
 update (SetName nm) _ _ = pure nm
 

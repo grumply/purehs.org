@@ -115,7 +115,7 @@ data Model = Model
 data Msg = Startup
 
 conn :: App -> WebSocket -> View
-conn ref ws = run (App [Startup] [] [] Model update view) (ref,ws)
+conn ref ws = run (App [Startup] [] [] (pure Model) update view) (ref,ws)
   where
     update Startup (ref,ws) mdl = do
       enact (doomsdayEndpoints ref) ws
@@ -180,7 +180,7 @@ data Model = Model (Maybe Status)
 data Msg = GetStatus | SetStatus Status | Untrigger
 
 app :: WebSocket -> View
-app = run (App [] [] [] (Model Nothing) update view)
+app = run (App [] [] [] (pure (Model Nothing)) update view)
   where
     update GetStatus ws mdl = do
       remote doomsday ws getStatus (command . SetStatus)

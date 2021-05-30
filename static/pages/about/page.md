@@ -155,14 +155,12 @@ main = inject body (clock (1 * Second))
 
 ## Dynamic State Abstractions
 
-The core Pure.hs component abstraction is alluring and powerful, but often much more powerful than required, and other approaches, like *The Elm Architecture* - while more constrained - make your components and applications easy to reason about by disentangling complex update dynamics. Pure.hs has an [implementation of The Elm Architecture](/packages/pure-elm/latest) extended with proper nesting, inline effects, a convenient publish-subscribe system for out-of-tree messaging, and an application interface for titling, routing and scroll management - all implemented top of Pure.hs components.
+The core Pure.hs component abstraction is alluring and powerful, but often much more powerful than required, and other approaches, like *The Elm Architecture* - while more constrained - make your components and applications easy to reason about by disentangling complex update dynamics. Pure.hs has an [implementation of The Elm Architecture](/packages/pure-elm/latest) extended with proper nesting, inline effects, a convenient publish-subscribe system for out-of-tree messaging, and an application interface for titling, routing and scroll restoration - all implemented top of Pure.hs components.
 
 <pre data-try>
 import Pure.Elm
 
 import Control.Concurrent
-import Control.Monad
-
 import System.IO
 
 data Model = Model
@@ -172,39 +170,28 @@ data Model = Model
 
 data Msg = Startup | Tick | Shutdown
 
-clock :: Time -> View
-clock = run (Applet [Startup] [] [Shutdown] init upon view)
+clock = run (Applet [Startup] [] [Shutdown] (pure init) update view)
   where init = Model Nothing 0
 
-type Update = Elm Msg => Time -> Model -> IO Model
+update msg interval Model {..} =
+  case msg of
+    Startup -> do
+      thread <- Just <$> forkIO ticker
+      pure Model {..}
 
-upon :: Msg -> Update
-upon = \case
-  Startup  -> startup
-  Shutdown -> shutdown
-  Tick     -> tick
+    Shutdown -> do
+      for_ thread killThread  
+      pure Model {..}
 
-startup :: Update
-startup interval Model {..} = do
-  thread <- fmap Just $ forkIO do
-    forever do
+    Tick -> do
+      now <- time
+      pure Model {..}
+  where
+    ticker = do
       command Tick
       delay interval
-  pure Model {..}
+      ticker
 
-shutdown :: Update 
-shutdown _ Model {..} = do
-  for_ thread killThread  
-  pure Model {..}
-
-tick :: Update
-tick _ Model {..} = do
-  now <- time
-  pure Model {..}
-
-type Render = Elm Msg => Time -> Model -> View
-
-view :: Render
 view _ Model {..} = toDateTime now
 
 main = inject body (clock (1 * Second))
@@ -224,7 +211,7 @@ newtype Counter = Counter Int deriving (Num)
 data Msg = Increment | Decrement
 
 counter :: Time -> View
-counter = run (Applet [] [] [] (Counter 0) update view) 
+counter = run (Applet [] [] [] (pure (Counter 0)) update view) 
   where
     update Increment d c = delay d >> pure (c + 1)
     update Decrement d c = delay d >> pure (c - 1)
@@ -253,7 +240,7 @@ In the general case, Pure.hs is about 50% slower than hand-optimized JavaScript.
 
 ![Some slightly outdated benchmarks, but still representative.](/static/results-small.png)
 
-Everything within this website, except for the hero at the top of the home page, is served dynamically, as JSON. No extraordinary optimizations are enacted to make it especially performant, but you should find every page to load efficiently (except for some firefox bugs with blurring). But, while the performance is a great reason to choose Pure.hs, the real power of Pure.hs is the integration of Haskell with familiar development approaches.
+Everything within this website, except for the hero at the top of the home page, is served dynamically, as JSON. No extraordinary optimizations are enacted to make it especially performant, but you should find every page to load efficiently. But, while the performance is a great reason to choose Pure.hs, the real power of Pure.hs is the integration of Haskell with familiar development approaches.
 
 ## WebSockets
 
@@ -304,7 +291,7 @@ data Msg = Startup | Shutdown
 data Model = Model
 
 conn :: WebSocket -> View
-conn = run (Applet [] [] [] Model upon view)
+conn = run (Applet [] [] [] (pure Model) upon view)
 
 type Update = Elm Msg => WebSocket -> Model -> IO Model
 

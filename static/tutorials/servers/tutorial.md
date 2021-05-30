@@ -114,7 +114,7 @@ data Model = Model
 data Msg = Startup
 
 conn :: WebSocket -> View
-conn = run (App [Startup] [] [] Model update view)
+conn = run (App [Startup] [] [] (pure Model) update view)
 
 update :: Elm Msg => Msg -> WebSocket -> Model -> IO Model
 update Startup ws mdl = do
@@ -145,7 +145,7 @@ data ModelA = ModelA
 data MsgA = MsgA
 
 a :: View
-a = run (App [] [] [] ModelA update view) ()
+a = run (App [] [] [] (pure ModelA) update view) ()
   where
     update MsgA _ mdl = print "Got MsgA in (a)" >> pure mdl
     view _ _ = b
@@ -154,7 +154,7 @@ data ModelB = ModelB
 data MsgB = MsgB
 
 b :: Elm MsgA => View
-b = run (App [] [] [] ModelB update view) ()
+b = run (App [] [] [] (pure ModelB) update view) ()
   where
     update MsgB _ mdl = print "Got MsgB in (b)" >> pure mdl
     view _ _ = 
@@ -196,7 +196,7 @@ data ModelA = ModelA
 data MsgA = MsgA
 
 a :: View
-a = run (App [] [] [] ModelA update view) ()
+a = run (App [] [] [] (pure ModelA) update view) ()
   where
     update MsgA _ mdl = print "Got MsgA in (a)" >> pure mdl
     view _ _ = b command
@@ -205,7 +205,7 @@ data ModelB = ModelB
 data MsgB = MsgB
 
 b :: (MsgA -> IO ()) -> View
-b = run (App [] [] [] ModelB update view)
+b = run (App [] [] [] (pure ModelB) update view)
   where
     update MsgB _ mdl = print "Got MsgB in (b)" >> pure mdl
     view channelA _ = 
@@ -221,7 +221,7 @@ The following would be a valid reification.
 
 ```haskell
 b :: Elm MsgA => View
-b = run (App [] [] [] ModelB update view) ()
+b = run (App [] [] [] (pure ModelB) update view) ()
   where
     sendA :: MsgA -> IO ()
     sendA = command
@@ -260,7 +260,7 @@ data ModelA = ModelA
 data MsgA = StartupA | MsgA
 
 a :: View
-a = run (App [StartupA] [] [] ModelA update view) ()
+a = run (App [StartupA] [] [] (pure ModelA) update view) ()
   where
     update StartupA _ mdl = subscribe >> pure mdl
     update MsgA _ mdl = do
@@ -273,7 +273,7 @@ data ModelB = ModelB
 data MsgB = StartupB | MsgB
 
 b :: View
-b = run (App [StartupB] [] [] ModelB update view) ()
+b = run (App [StartupB] [] [] (pure ModelB) update view) ()
   where
     update StartupB _ mdl = subscribe >> pure mdl
     update MsgB _ mdl = print "Got MsgB in (b)" >> pure mdl
